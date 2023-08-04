@@ -1,0 +1,6 @@
+*.suo
+*.vbproj.user
+obj
+bin
+.vs
+.editorconfig
