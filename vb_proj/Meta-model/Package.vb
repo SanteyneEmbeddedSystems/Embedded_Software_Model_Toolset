@@ -9,6 +9,7 @@ Public Class Package
      XmlArrayItemAttribute(GetType(Basic_Boolean_Type)),
      XmlArrayItemAttribute(GetType(Basic_Floating_Point_Type)),
      XmlArrayItemAttribute(GetType(Array_Type)),
+     XmlArrayItemAttribute(GetType(Enumerated_Type)),
      XmlArray("Types")>
     Public Types As New List(Of Type)
 
@@ -154,6 +155,36 @@ Public Class Package
 
     End Sub
 
+    Public Sub Add_Enumerated_Type()
+
+        Dim enumerals_table As New DataTable
+        With enumerals_table
+            .Columns.Add("Name", GetType(String))
+            .Columns.Add("Description", GetType(String))
+        End With
+
+        Dim creation_form As New Enumerated_Type_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            Enumerated_Type.Metaclass_Name,
+            "",
+            Enumerated_Type.Metaclass_Name,
+            "",
+            Me.Get_Children_Name(),
+            enumerals_table)
+
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_enumeration As New Enumerated_Type(
+                    creation_form.Get_Element_Name(),
+                    creation_form.Get_Element_Description(),
+                    Me,
+                    Me.Node,
+                    enumerals_table)
+            Me.Types.Add(new_enumeration)
+            Me.Children.Add(new_enumeration)
+            Me.Display_Package_Modified()
+        End If
+    End Sub
 
 
     ' -------------------------------------------------------------------------------------------- '
