@@ -2,7 +2,7 @@
 
 
 Public MustInherit Class Type
-    Inherits Software_Element
+    Inherits Must_Describe_Software_Element
 
     Protected Shared SVG_COLOR As String = "rgb(136,0,21)"
 
@@ -131,6 +131,17 @@ Public Class Array_Type
 
     Public Shared ReadOnly Multiplicity_Minimum_Value As UInteger = 2
 
+    Private Shared Multiplicity_Rule As New Modeling_Rule(
+        "Array_Multiplicity",
+        "Multiplicity shall be strictly greater than 1.")
+    Private Shared Base_Type_Rule As New Modeling_Rule(
+        "Base_Type_Defined",
+        "Shall reference a base Data_Type.")
+    Private Shared Base_Not_Self_Rule As New Modeling_Rule(
+        "Array_Base_Not_Self",
+        "Shall not reference itself.")
+
+
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
     ' -------------------------------------------------------------------------------------------- '
@@ -194,7 +205,7 @@ Public Class Array_Type
         Dim edition_form As New Array_Type_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Array_Type.Metaclass_Name,
-            Me.UUID.ToString,
+            Me.Identifier.ToString,
             Me.Name,
             Me.Description,
             forbidden_name_list,
@@ -216,7 +227,7 @@ Public Class Array_Type
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
             Me.Multiplicity = CUInt(edition_form.Get_Multiplicity())
-            Me.Base_Type_Ref = new_referenced_type.UUID
+            Me.Base_Type_Ref = new_referenced_type.Identifier
 
             Me.Display_Package_Modified()
         End If
@@ -239,7 +250,7 @@ Public Class Array_Type
         Dim elmt_view_form As New Array_Type_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
             Array_Type.Metaclass_Name,
-            Me.UUID.ToString,
+            Me.Identifier.ToString,
             Me.Name,
             Me.Description,
             Nothing, ' Forbidden name list, useless for View
@@ -294,6 +305,31 @@ Public Class Array_Type
         Return svg_content
     End Function
 
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+
+        Dim multiplicity_check =
+            New Consistency_Check_Report_Item(Me, Array_Type.Multiplicity_Rule)
+        report.Add_Item(multiplicity_check)
+        multiplicity_check.Set_Compliance(Me.Multiplicity > 1)
+
+        Dim base_type_check =
+            New Consistency_Check_Report_Item(Me, Array_Type.Base_Type_Rule)
+        report.Add_Item(base_type_check)
+        base_type_check.Set_Compliance(Me.Base_Type_Ref <> Guid.Empty)
+
+        Dim base_not_self_check =
+            New Consistency_Check_Report_Item(Me, Array_Type.Base_Not_Self_Rule)
+        report.Add_Item(base_not_self_check)
+        base_not_self_check.Set_Compliance(Me.Base_Type_Ref <> Me.Identifier)
+
+    End Sub
+
 End Class
 
 
@@ -303,6 +339,15 @@ Public Class Enumerated_Type
     Public Enumerals As New List(Of Enumeral)
 
     Public Shared ReadOnly Metaclass_Name As String = "Enumerated_Type"
+
+    Private Shared Nb_Enumerals As New Modeling_Rule(
+        "Number_Of_Enumerals",
+        "Shall aggregate at least two Enumerals.")
+
+    Private Shared Unique_Enumeral_Name As New Modeling_Rule(
+        "Unique_Enumeral_Name",
+        "Name of Enulerals shall be unique.")
+
 
     Public Class Enumeral
         Public Name As String
@@ -396,7 +441,7 @@ Public Class Enumerated_Type
         Dim edit_form As New Enumerated_Type_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Me.Get_Metaclass_Name(),
-            Me.UUID.ToString(),
+            Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
             forbidden_name_list,
@@ -428,7 +473,7 @@ Public Class Enumerated_Type
         Dim view_form As New Enumerated_Type_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
             Me.Get_Metaclass_Name(),
-            Me.UUID.ToString(),
+            Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
             Nothing, ' forbidden name list
@@ -473,4 +518,22 @@ Public Class Enumerated_Type
     End Function
 
 
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+
+        Dim nb_enum_check As New _
+            Consistency_Check_Report_Item(Me, Enumerated_Type.Nb_Enumerals)
+        report.Add_Item(nb_enum_check)
+        nb_enum_check.Set_Compliance(Me.Enumerals.Count >= 2)
+
+        Dim enum_name_check As New _
+            Consistency_Check_Report_Item(Me, Enumerated_Type.Unique_Enumeral_Name)
+        report.Add_Item(enum_name_check)
+        enum_name_check.Set_Compliance(False) ' TODO
+
+    End Sub
 End Class

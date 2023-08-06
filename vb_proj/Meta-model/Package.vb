@@ -1,7 +1,7 @@
 ﻿Imports System.Xml.Serialization
 
 Public Class Package
-    Inherits Software_Element
+    Inherits Must_Describe_Software_Element
 
     Public Packages As New List(Of Package)
 
@@ -16,6 +16,10 @@ Public Class Package
     Private Shared Context_Menu As New Package_Context_Menu()
 
     Public Shared ReadOnly Metaclass_Name As String = "Package"
+
+    Private Shared Package_Not_Empty As New Modeling_Rule(
+        "Package_Not_Empty",
+        "Shall aggregate a least one element.")
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -144,7 +148,7 @@ Public Class Package
                     Me,
                     Me.Node,
                     CUInt(creation_form.Get_Multiplicity()),
-                    ref_type.UUID)
+                    ref_type.Identifier)
 
             ' Add array type to its package
             Me.Types.Add(new_array_type)
@@ -196,6 +200,18 @@ Public Class Package
         For Each pkg In Me.Packages
             pkg.Complete_Type_List(type_list)
         Next
+    End Sub
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+        Dim empty_check As New Consistency_Check_Report_Item(Me, Package.Package_Not_Empty)
+        report.Add_Item(empty_check)
+        empty_check.Set_Compliance(Me.Children.Count > 0)
     End Sub
 
 End Class

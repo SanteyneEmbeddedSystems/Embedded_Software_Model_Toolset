@@ -7,6 +7,7 @@
     Private WithEvents Menu_Add_Existing_Readable_Package As _
         New ToolStripMenuItem("Add existing Package (read only)")
     Private WithEvents Menu_Add_New_Package As New ToolStripMenuItem("Add new Package")
+    Private WithEvents Menu_Check_Model As New ToolStripMenuItem("Check model")
 
     Public Sub New()
         Me.Items.AddRange(New ToolStripItem() {
@@ -16,7 +17,9 @@
             New ToolStripSeparator,
             Me.Menu_Add_Existing_Package,
             Me.Menu_Add_Existing_Readable_Package,
-            Me.Menu_Add_New_Package})
+            Me.Menu_Add_New_Package,
+            New ToolStripSeparator,
+            Me.Menu_Check_Model})
     End Sub
 
     Private Sub Save(
@@ -41,6 +44,12 @@
             ByVal sender As Object,
             ByVal e As EventArgs) Handles Menu_Add_New_Package.Click
         Get_Project(sender).Create_Package()
+    End Sub
+
+    Private Sub Check_Model(
+            ByVal sender As Object,
+            ByVal e As EventArgs) Handles Menu_Check_Model.Click
+        Get_Project(sender).Check_Model()
     End Sub
 
     Private Shared Function Get_Project(sender As Object) As Software_Project

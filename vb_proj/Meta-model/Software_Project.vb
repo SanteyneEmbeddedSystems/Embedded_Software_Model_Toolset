@@ -5,7 +5,7 @@ Imports System.Text
 
 Public Class Software_Project
 
-    Inherits Software_Element
+    Inherits Must_Describe_Software_Element
 
     <XmlArrayItemAttribute(GetType(Package_Reference)), XmlArray("Packages_References")>
     Public Packages_References_List As List(Of Package_Reference)
@@ -37,7 +37,7 @@ Public Class Software_Project
             browser As TreeView)
         Me.Name = name
         Me.Description = desc
-        Me.UUID = Guid.NewGuid()
+        Me.Identifier = Guid.NewGuid()
         Me.Create_Node()
         browser.Nodes.Add(Me.Node)
         Me.Xml_File_Path = file_path
@@ -172,7 +172,7 @@ Public Class Software_Project
         Dim prj_edit_form As New Recordable_Element_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Software_Project.Metaclass_Name,
-            Me.UUID.ToString,
+            Me.Identifier.ToString,
             Me.Name,
             Me.Description,
             Nothing,
@@ -201,7 +201,7 @@ Public Class Software_Project
         Dim view_form As New Recordable_Element_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
             Software_Project.Metaclass_Name,
-            Me.UUID.ToString,
+            Me.Identifier.ToString,
             Me.Name,
             Me.Description,
             Nothing,
@@ -316,6 +316,33 @@ Public Class Software_Project
 
     End Sub
 
+    Public Sub Check_Model()
+        Dim report As New Consistency_Check_Report(Me.Name)
+        For Each pkg In Me.Top_Level_Packages_List
+            pkg.Check_Consistency(report)
+        Next
+        Dim report_file_path As String
+        report_file_path = report.Generate_Report(
+            E_Report_File_Format.CSV,
+            Path.GetDirectoryName(Me.Xml_File_Path),
+            False,
+            False)
+        Process.Start(report_file_path)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for model management
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Function Get_Type_List() As List(Of Type)
+        Dim type_list As New List(Of Type)
+        For Each pkg In Me.Top_Level_Packages_List
+            pkg.Complete_Type_List(type_list)
+        Next
+        Return type_list
+    End Function
+
     Public Sub Remove_Package(pkg_name As String)
         ' Remove from packages list
         For Each pkg In Me.Top_Level_Packages_List
@@ -404,19 +431,6 @@ Public Class Software_Project
         Next
         Me.Display_Modified()
     End Sub
-
-
-    ' -------------------------------------------------------------------------------------------- '
-    ' Methods for model management
-    ' -------------------------------------------------------------------------------------------- '
-
-    Public Function Get_Type_List() As List(Of Type)
-        Dim type_list As New List(Of Type)
-        For Each pkg In Me.Top_Level_Packages_List
-            pkg.Complete_Type_List(type_list)
-        Next
-        Return type_list
-    End Function
 
 
     ' -------------------------------------------------------------------------------------------- '

@@ -4,7 +4,7 @@ Imports System.IO
 Public MustInherit Class Software_Element
 
     Public Name As String
-    Public UUID As Guid
+    Public Identifier As Guid
     Public Description As String
 
     Protected Node As TreeNode
@@ -21,6 +21,11 @@ Public MustInherit Class Software_Element
     Protected Shared Leaf_Context_Menu As New Leaf_Context_Menu
 
 
+    Private Shared Name_Rule As New Modeling_Rule(
+        "Name_Pattern",
+        "Name shall match " & Valid_Symbol_Regex)
+
+
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
     ' -------------------------------------------------------------------------------------------- '
@@ -35,7 +40,7 @@ Public MustInherit Class Software_Element
             parent_node As TreeNode)
         Me.Name = name
         Me.Description = description
-        Me.UUID = Guid.NewGuid()
+        Me.Identifier = Guid.NewGuid()
         Me.Owner = owner
         Me.Create_Node()
         parent_node.Nodes.Add(Me.Node)
@@ -71,7 +76,7 @@ Public MustInherit Class Software_Element
             elmt_list As IEnumerable(Of Software_Element)) As Dictionary(Of Guid, Software_Element)
         Dim dico As New Dictionary(Of Guid, Software_Element)
         For Each elmt In elmt_list
-            dico.Add(elmt.UUID, elmt)
+            dico.Add(elmt.Identifier, elmt)
         Next
         Return dico
     End Function
@@ -226,7 +231,7 @@ Public MustInherit Class Software_Element
         Dim edit_form As New Element_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Me.Get_Metaclass_Name(),
-            Me.UUID.ToString(),
+            Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
             forbidden_name_list)
@@ -259,7 +264,7 @@ Public MustInherit Class Software_Element
         Dim view_form As New Element_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
             Me.Get_Metaclass_Name(),
-            Me.UUID.ToString(),
+            Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
             Nothing) ' forbidden name list
@@ -304,5 +309,63 @@ Public MustInherit Class Software_Element
         Return svg_content
     End Function
 
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub Check_Consistency(report As Consistency_Check_Report)
+        Me.Check_Own_Consistency(report)
+        For Each child In Me.Children
+            child.Check_Consistency(report)
+        Next
+    End Sub
+
+    Protected Overridable Sub Check_Own_Consistency(report As Consistency_Check_Report)
+
+        Dim name_check As New Consistency_Check_Report_Item(Me, Software_Element.Name_Rule)
+        report.Add_Item(name_check)
+        name_check.Set_Compliance(Software_Element.Is_Symbol_Valid(Me.Name))
+
+    End Sub
+
+End Class
+
+
+
+Public MustInherit Class Must_Describe_Software_Element
+    Inherits Software_Element
+
+    Private Shared Desc_Rule As New Modeling_Rule(
+        "Description_Mandatory",
+        "Description is mandatory.")
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+        name As String,
+        description As String,
+        owner As Software_Element,
+        parent_node As TreeNode)
+        MyBase.New(name, description, owner, parent_node)
+    End Sub
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+        Dim desc_check As New _
+            Consistency_Check_Report_Item(Me, Must_Describe_Software_Element.Desc_Rule)
+        report.Add_Item(desc_check)
+        desc_check.Set_Compliance(Me.Description <> "")
+    End Sub
 
 End Class

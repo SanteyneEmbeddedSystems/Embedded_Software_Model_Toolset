@@ -279,7 +279,7 @@ Public Class Top_Level_Package
         Dim edit_form As New Recordable_Element_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Package.Metaclass_Name,
-            Me.UUID.ToString,
+            Me.Identifier.ToString,
             Me.Name,
             Me.Description,
             forbidden_name_list,
@@ -311,7 +311,7 @@ Public Class Top_Level_Package
         Dim view_form As New Recordable_Element_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
             Package.Metaclass_Name,
-            Me.UUID.ToString,
+            Me.Identifier.ToString,
             Me.Name,
             Me.Description,
             Nothing,
