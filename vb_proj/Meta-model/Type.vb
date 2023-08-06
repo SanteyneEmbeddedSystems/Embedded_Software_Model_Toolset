@@ -82,6 +82,29 @@ Public MustInherit Class Basic_Type
         Return svg_file_full_path
     End Function
 
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
+        Dim svg_content As String
+
+        ' Title (Name + stereotype)
+        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name, Type.SVG_COLOR, "basic_type")
+
+        ' Description compartment
+        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT,
+            split_description,
+            Type.SVG_COLOR)
+
+        Return svg_content
+
+    End Function
+
 End Class
 
 
