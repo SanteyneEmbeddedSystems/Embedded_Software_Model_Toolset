@@ -7,15 +7,8 @@
     Private WithEvents Model_Browser As New TreeView
     Private WithEvents Diagram_Page As New WebBrowser
 
-    Private WithEvents Active_Page As TabPage
-    Private WithEvents Active_Picture As PictureBox
-
     Private WithEvents Menu_Load_Project As New ToolStripMenuItem
     Private WithEvents Menu_New_Project As New ToolStripMenuItem
-
-    Private tip As New ToolTip()
-
-    Private Diagram_Left_Mouse_Down As Boolean = False
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -249,17 +242,15 @@
             ByVal e As TreeViewEventArgs) _
             Handles Model_Browser.AfterSelect
 
-        ' Exit if 
-
         ' Update/Create SVG file for selected element
         Dim sw_elmt As Software_Element = CType(e.Node.Tag, Software_Element)
         Dim diagram_full_path As String
         diagram_full_path = sw_elmt.Update_SVG_Diagram()
 
         ' Update diagram area
-        Dim web_text As String = System.IO.File.ReadAllText(diagram_full_path)
-        Me.Diagram_Page.DocumentText = web_text
+        Me.Diagram_Page.Navigate(diagram_full_path)
 
     End Sub
+
 
 End Class
