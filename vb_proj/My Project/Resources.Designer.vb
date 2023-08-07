@@ -93,16 +93,6 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
-        Friend ReadOnly Property Enumeral() As System.Drawing.Icon
-            Get
-                Dim obj As Object = ResourceManager.GetObject("Enumeral", resourceCulture)
-                Return CType(obj,System.Drawing.Icon)
-            End Get
-        End Property
-        
-        '''<summary>
-        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
-        '''</summary>
         Friend ReadOnly Property Enumerated_Type() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("Enumerated_Type", resourceCulture)
@@ -143,9 +133,19 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
-        Friend ReadOnly Property Structured_Type() As System.Drawing.Icon
+        Friend ReadOnly Property Record_Field() As System.Drawing.Icon
             Get
-                Dim obj As Object = ResourceManager.GetObject("Structured_Type", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("Record_Field", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
+        Friend ReadOnly Property Record_Type() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Record_Type", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property

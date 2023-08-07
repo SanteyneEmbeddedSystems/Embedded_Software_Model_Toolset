@@ -11,6 +11,7 @@ Public Class Package
      XmlArrayItemAttribute(GetType(Array_Type)),
      XmlArrayItemAttribute(GetType(Enumerated_Type)),
      XmlArrayItemAttribute(GetType(Fixed_Point_Type)),
+     XmlArrayItemAttribute(GetType(Record_Type)),
      XmlArray("Types")>
     Public Types As New List(Of Type)
 
@@ -36,7 +37,6 @@ Public Class Package
             owner As Software_Element,
             parent_node As TreeNode)
         MyBase.New(name, description, owner, parent_node)
-        Me.Packages = New List(Of Package)
     End Sub
 
 
@@ -232,6 +232,28 @@ Public Class Package
 
         End If
     End Sub
+
+    Public Sub Add_Record_Type()
+        Dim creation_form As New Element_Form(
+             Element_Form.E_Form_Kind.CREATION_FORM,
+             Record_Type.Metaclass_Name,
+             "",
+             Record_Type.Metaclass_Name,
+             "",
+             Me.Get_Children_Name())
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_record As New Record_Type(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node)
+            Me.Types.Add(new_record)
+            Me.Children.Add(new_record)
+            Me.Display_Package_Modified()
+        End If
+    End Sub
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for model management
