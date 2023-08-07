@@ -29,7 +29,7 @@ Module Utilities
         Dim result As New List(Of String)
 
         Dim remaning_str As String = input_string
-        While (remaning_str.Length >= nb_char_per_line)
+        While (remaning_str.Length > nb_char_per_line)
             If Char.IsWhiteSpace(remaning_str(nb_char_per_line)) Then
                 result.Add(remaning_str.Substring(0, nb_char_per_line))
                 remaning_str = remaning_str.Substring(nb_char_per_line)
