@@ -362,22 +362,6 @@ Public Class Software_Project
 
     End Sub
 
-    Public Sub Display_Package_File_Path(pkg_name As String)
-        For Each ref In Me.Packages_References_List
-            If ref.Last_Known_Name = pkg_name Then
-                MsgBox(
-                    pkg_name & "file path :" & vbCrLf &
-                    "relative : " & ref.Relative_Path & vbCrLf &
-                    "local : " & ref.Get_Full_Path(),
-                    MsgBoxStyle.Information,
-                    "Package file path")
-                Exit Sub
-            End If
-        Next
-        ' Reached if package not found
-        Throw New Exception("Package not found !")
-    End Sub
-
     Public Sub Make_Package_Read_Only(pkg_name As String)
 
         For Each pkg In Me.Top_Level_Packages_List

@@ -8,7 +8,6 @@
         Me.Items.Clear()
         Me.Items.AddRange(New ToolStripItem() {
             Me.Menu_Remove_Top,
-            Me.Menu_Display_Path,
             New ToolStripSeparator,
             Me.Menu_View,
             Me.Menu_Make_Writable})
