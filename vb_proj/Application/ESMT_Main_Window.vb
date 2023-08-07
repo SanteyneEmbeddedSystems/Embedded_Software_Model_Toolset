@@ -69,6 +69,8 @@
             .Add("Array_Type", My.Resources.Array_Type)
             .Add("Enumerated_Type", My.Resources.Enumerated_Type)
             .Add("Fixed_Point_Type", My.Resources.Fixed_Point_Type)
+            .Add("Record_Type", My.Resources.Record_Type)
+            .Add("Record_Field", My.Resources.Record_Field)
         End With
 
 

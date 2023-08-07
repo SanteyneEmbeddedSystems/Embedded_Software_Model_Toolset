@@ -127,9 +127,6 @@
   <data name="Basic_Types" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Meta-model\Basic_Types.pkgx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Enumeral" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Enumeral.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
   <data name="Enumerated_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Enumerated_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -142,7 +139,10 @@
   <data name="Project" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Project.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Structured_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Structured_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Record_Field" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Field.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Record_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Record_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

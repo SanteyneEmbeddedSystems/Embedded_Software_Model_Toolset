@@ -96,6 +96,9 @@
     <Compile Include="Context_Menus\Read_Only_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Context_Menus\Record_Type_Context_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Context_Menus\Top_Package_Writable_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -167,9 +170,9 @@
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
+      <LastGenOutput>Resources.Designer.vb</LastGenOutput>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
@@ -195,16 +198,10 @@
     <None Include="Icons\Basic_Type.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Enumeral.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Icons\Enumerated_Type.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Package.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\Structured_Type.ico" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
@@ -216,7 +213,12 @@
   <ItemGroup>
     <None Include="Icons\Fixed_Point_Type.ico" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Icons\Field.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Record_Type.ico" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
