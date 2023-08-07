@@ -76,12 +76,8 @@ Public MustInherit Class Basic_Type
         Return Software_Element.Read_Only_Context_Menu
     End Function
 
-
     Public Overrides Function Get_SVG_File_Path() As String
-        Dim svg_folder As String = Path.GetTempPath()
-        Dim svg_file_full_path As String
-        svg_file_full_path = svg_folder & Path.DirectorySeparatorChar & Me.Name & ".svg"
-        Return svg_file_full_path
+        Return Path.GetTempPath() & Me.Name & ".svg"
     End Function
 
 

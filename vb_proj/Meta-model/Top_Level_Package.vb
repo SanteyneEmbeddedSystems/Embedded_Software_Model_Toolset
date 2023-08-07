@@ -249,10 +249,7 @@ Public Class Top_Level_Package
 
     Public Overrides Function Get_SVG_File_Path() As String
         If Me.Status = E_PACKAGE_STATUS.LOCKED Then
-            Dim svg_folder As String = Path.GetTempPath()
-            Dim svg_file_full_path As String
-            svg_file_full_path = svg_folder & Path.DirectorySeparatorChar & Me.Name & ".svg"
-            Return svg_file_full_path
+            Return Path.GetTempPath() & Me.Name & ".svg"
         Else
             Return MyBase.Get_SVG_File_Path()
         End If
