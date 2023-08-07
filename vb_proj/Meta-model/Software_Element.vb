@@ -90,7 +90,13 @@ Public MustInherit Class Software_Element
         Return Nothing
     End Function
 
-    Protected MustOverride Sub Create_Node()
+    Protected Overridable Sub Create_Node()
+        Me.Node = New TreeNode(Me.Name) With {
+            .ImageKey = Me.Get_Metaclass_Name(),
+            .SelectedImageKey = Me.Get_Metaclass_Name(),
+            .ContextMenuStrip = Software_Element.Leaf_Context_Menu,
+            .Tag = Me}
+    End Sub
 
     Protected Sub Post_Treat_After_Deserialization(parent_node As TreeNode)
         Me.Create_Node()

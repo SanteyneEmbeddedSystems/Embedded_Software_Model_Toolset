@@ -26,6 +26,7 @@ Public MustInherit Class Type
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
+
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Dim is_allowed As Boolean = False
         If parent.GetType() = GetType(Top_Level_Package) _
@@ -189,14 +190,6 @@ Public Class Array_Type
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
-
-    Protected Overrides Sub Create_Node()
-        Me.Node = New TreeNode(Me.Name) With {
-            .ImageKey = "Array_Type",
-            .SelectedImageKey = "Array_Type",
-            .ContextMenuStrip = Software_Element.Leaf_Context_Menu,
-            .Tag = Me}
-    End Sub
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Array_Type.Metaclass_Name
@@ -429,14 +422,6 @@ Public Class Enumerated_Type
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
-
-    Protected Overrides Sub Create_Node()
-        Me.Node = New TreeNode(Me.Name) With {
-            .ImageKey = "Enumerated_Type",
-            .SelectedImageKey = "Enumerated_Type",
-            .ContextMenuStrip = Software_Element.Leaf_Context_Menu,
-            .Tag = Me}
-    End Sub
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Enumerated_Type.Metaclass_Name
@@ -682,14 +667,6 @@ Public Class Fixed_Point_Type
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Sub Create_Node()
-        Me.Node = New TreeNode(Me.Name) With {
-            .ImageKey = "Fixed_Point_Type",
-            .SelectedImageKey = "Fixed_Point_Type",
-            .ContextMenuStrip = Software_Element.Leaf_Context_Menu,
-            .Tag = Me}
-    End Sub
-
     Public Overrides Function Get_Metaclass_Name() As String
         Return Fixed_Point_Type.Metaclass_Name
     End Function
@@ -750,7 +727,6 @@ Public Class Fixed_Point_Type
     End Sub
 
     Public Overrides Sub View()
-
 
         Dim view_form As New Fixed_Point_Type_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,

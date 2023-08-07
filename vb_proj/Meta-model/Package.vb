@@ -54,11 +54,8 @@ Public Class Package
     End Function
 
     Protected Overrides Sub Create_Node()
-        Me.Node = New TreeNode(Me.Name) With {
-            .ImageKey = "Package",
-            .SelectedImageKey = "Package",
-            .ContextMenuStrip = Package.Context_Menu,
-            .Tag = Me}
+        MyBase.Create_Node()
+        Me.Node.ContextMenuStrip = Package.Context_Menu
     End Sub
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean

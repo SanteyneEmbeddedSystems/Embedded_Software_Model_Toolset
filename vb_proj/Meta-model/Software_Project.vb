@@ -50,11 +50,8 @@ Public Class Software_Project
     ' -------------------------------------------------------------------------------------------- '
 
     Protected Overrides Sub Create_Node()
-        Me.Node = New TreeNode(Me.Name) With {
-            .ImageKey = "Project",
-            .SelectedImageKey = "Project",
-            .ContextMenuStrip = Software_Project.Context_Menu,
-            .Tag = Me}
+        MyBase.Create_Node()
+        Me.Node.ContextMenuStrip = Software_Project.Context_Menu
     End Sub
 
     Protected Overrides Function Get_Children() As List(Of Software_Element)
