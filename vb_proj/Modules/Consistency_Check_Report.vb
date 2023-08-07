@@ -10,10 +10,11 @@ End Enum
 
 Public Class Consistency_Check_Report
 
-    Private Model_Name As String
+    Private ReadOnly Model_Name As String
 
     ' Dictionary of ( dictionary of Report_Item by rule ID) by elment ID
-    Private Items As New Dictionary(Of Guid, Dictionary(Of String, Consistency_Check_Report_Item))
+    Private ReadOnly Items As _
+        New Dictionary(Of Guid, Dictionary(Of String, Consistency_Check_Report_Item))
 
 
     Public Sub New(name As String)
@@ -89,7 +90,7 @@ Public Class Consistency_Check_Report
         Dim file_name As String = Me.Model_Name & "_Consistency_Check_Report_" & date_str & ".html"
         Dim file_path As String = directory & "\" & file_name
 
-        Dim html_report As XmlDocument = New XmlDocument
+        Dim html_report As New XmlDocument
 
         Dim html_root As XmlElement = html_report.CreateElement("html")
         html_report.AppendChild(html_root)
@@ -149,7 +150,7 @@ Public Class Consistency_Check_Report
         Next
 
         ' Genrate HTML file
-        Dim ser As XmlSerializer = New XmlSerializer(GetType(XmlNode))
+        Dim ser As New XmlSerializer(GetType(XmlNode))
         Dim writer As TextWriter = New StreamWriter(file_path)
         ser.Serialize(writer, html_report)
         writer.Close()
@@ -169,8 +170,8 @@ Public Class Consistency_Check_Report
             items_by_rule = Me.Items(elmt_id)
             items_by_rule.Add(rule_id, report_item)
         Else
-            items_by_rule = New Dictionary(Of String, Consistency_Check_Report_Item)
-            items_by_rule.Add(rule_id, report_item)
+            items_by_rule = New Dictionary(Of String, Consistency_Check_Report_Item) From {
+                {rule_id, report_item}}
             Me.Items.Add(elmt_id, items_by_rule)
         End If
 
@@ -201,8 +202,8 @@ End Class
 
 Public Class Modeling_Rule
 
-    Private Identifier As String
-    Private Description As String
+    Private ReadOnly Identifier As String
+    Private ReadOnly Description As String
 
 
     Public Sub New(id As String, desc As String)
@@ -223,8 +224,8 @@ End Class
 
 Public Class Consistency_Check_Report_Item
 
-    Private Element As Software_Element
-    Private Rule As Modeling_Rule
+    Private ReadOnly Element As Software_Element
+    Private ReadOnly Rule As Modeling_Rule
     Private Rule_Complied As Boolean
     Private Message As String
 

@@ -21,7 +21,7 @@ Public MustInherit Class Software_Element
     Protected Shared Leaf_Context_Menu As New Leaf_Context_Menu
 
 
-    Private Shared Name_Rule As New Modeling_Rule(
+    Private Shared ReadOnly Name_Rule As New Modeling_Rule(
         "Name_Pattern",
         "Name shall match " & Valid_Symbol_Regex)
 
@@ -354,7 +354,7 @@ End Class
 Public MustInherit Class Must_Describe_Software_Element
     Inherits Software_Element
 
-    Private Shared Desc_Rule As New Modeling_Rule(
+    Private Shared ReadOnly Desc_Rule As New Modeling_Rule(
         "Description_Mandatory",
         "Description is mandatory.")
 

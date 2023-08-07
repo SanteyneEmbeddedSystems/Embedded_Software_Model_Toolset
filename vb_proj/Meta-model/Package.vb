@@ -14,11 +14,11 @@ Public Class Package
      XmlArray("Types")>
     Public Types As New List(Of Type)
 
-    Private Shared Context_Menu As New Package_Context_Menu()
+    Private Shared ReadOnly Context_Menu As New Package_Context_Menu()
 
     Public Shared ReadOnly Metaclass_Name As String = "Package"
 
-    Private Shared Package_Not_Empty As New Modeling_Rule(
+    Private Shared ReadOnly Package_Not_Empty As New Modeling_Rule(
         "Package_Not_Empty",
         "Shall aggregate a least one element.")
 
@@ -136,7 +136,7 @@ Public Class Package
         If creation_form_result = DialogResult.OK Then
 
             ' Get the type referenced by the array
-            Dim ref_type As Software_Element = Nothing
+            Dim ref_type As Software_Element
             ref_type = type_by_path_dict(creation_form.Get_Ref_Rerenced_Element_Path())
 
             ' Create the array type

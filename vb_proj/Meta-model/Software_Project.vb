@@ -11,13 +11,13 @@ Public Class Software_Project
     Public Packages_References_List As List(Of Package_Reference)
 
     Private Xml_File_Path As String
-    Private Top_Level_Packages_List As New List(Of Top_Level_Package)
+    Private ReadOnly Top_Level_Packages_List As New List(Of Top_Level_Package)
 
     Public Shared ReadOnly Project_File_Extension As String = ".prjx"
 
-    Private Shared Context_Menu As New Project_Context_Menu
+    Private Shared ReadOnly Context_Menu As New Project_Context_Menu
 
-    Private Shared Project_Serializer As New XmlSerializer(GetType(Software_Project))
+    Private Shared ReadOnly Project_Serializer As New XmlSerializer(GetType(Software_Project))
 
     Public Shared ReadOnly Metaclass_Name As String = "Project"
 
@@ -124,7 +124,7 @@ Public Class Software_Project
             ' Load the top level Packages aggregated by the project
             Environment.CurrentDirectory = Path.GetDirectoryName(project_file_path)
             For Each pkg_ref In new_sw_proj.Packages_References_List
-                Dim new_pkg As Top_Level_Package = Nothing
+                Dim new_pkg As Top_Level_Package
 
                 ' Compute full file path of the package to be loaded
                 Dim new_pkg_path As String
@@ -294,8 +294,7 @@ Public Class Software_Project
             Dim pkg_file_path As String = pkg_creation_form.Get_File_Full_Path()
 
             ' Create the new package
-            Dim created_pkg As Top_Level_Package = Nothing
-            created_pkg = New Top_Level_Package(
+            Dim created_pkg As New Top_Level_Package(
                 pkg_creation_form.Get_Element_Name(),
                 pkg_creation_form.Get_Element_Description(),
                 Me,

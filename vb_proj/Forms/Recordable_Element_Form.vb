@@ -6,9 +6,9 @@ Public Class Recordable_Element_Form
 
     Private Directory_TextBox As TextBox
     Private WithEvents Directory_Button As Button
-    Private File_Name_TextBox As TextBox
+    Private ReadOnly File_Name_TextBox As TextBox
 
-    Private Element_File_Extension As String
+    Private ReadOnly Element_File_Extension As String
 
     Public Sub New(
             form_kind As E_Form_Kind,

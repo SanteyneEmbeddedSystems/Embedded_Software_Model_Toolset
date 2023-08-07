@@ -10,12 +10,12 @@
 
     Protected Kind As E_Form_Kind
 
-    Private UUID_TextBox As TextBox
+    Private ReadOnly UUID_TextBox As TextBox
     Protected WithEvents Name_TextBox As TextBox
-    Private Description_TextBox As RichTextBox
+    Private ReadOnly Description_TextBox As RichTextBox
     Protected WithEvents Main_Button As Button
 
-    Private Forbidden_Names As List(Of String)
+    Private ReadOnly Forbidden_Names As List(Of String)
 
     Protected Checks_List As New List(Of Func(Of Boolean))
 

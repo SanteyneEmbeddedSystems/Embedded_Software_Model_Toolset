@@ -2,7 +2,7 @@
 
     Inherits Form
 
-    Private My_Application As ESMT_Application ' bidirectional association
+    Private ReadOnly My_Application As ESMT_Application ' bidirectional association
 
     Private WithEvents Model_Browser As New TreeView
     Private WithEvents Diagram_Page As New WebBrowser

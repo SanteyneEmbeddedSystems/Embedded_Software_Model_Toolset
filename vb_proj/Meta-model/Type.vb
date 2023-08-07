@@ -152,13 +152,13 @@ Public Class Array_Type
 
     Public Shared ReadOnly Multiplicity_Minimum_Value As UInteger = 2
 
-    Private Shared Multiplicity_Rule As New Modeling_Rule(
+    Private Shared ReadOnly Multiplicity_Rule As New Modeling_Rule(
         "Array_Multiplicity",
         "Multiplicity shall be strictly greater than 1.")
-    Private Shared Base_Type_Rule As New Modeling_Rule(
+    Private Shared ReadOnly Base_Type_Rule As New Modeling_Rule(
         "Base_Type_Defined",
         "Shall reference a base Data_Type.")
-    Private Shared Base_Not_Self_Rule As New Modeling_Rule(
+    Private Shared ReadOnly Base_Not_Self_Rule As New Modeling_Rule(
         "Array_Base_Not_Self",
         "Shall not reference itself.")
 
@@ -232,7 +232,7 @@ Public Class Array_Type
         If edition_form_result = DialogResult.OK Then
 
             ' Get the type referenced by the array
-            Dim new_referenced_type As Software_Element = Nothing
+            Dim new_referenced_type As Software_Element
             new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
 
             ' Update the array type
@@ -294,9 +294,6 @@ Public Class Array_Type
             Type.SVG_COLOR,
             desc_rect_height)
 
-        Dim attr_lines As New List(Of String)
-        attr_lines.Add("Multiplicity : " & Me.Multiplicity)
-
         ' Build the list of possible referenced type
         Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
         Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
@@ -307,7 +304,10 @@ Public Class Array_Type
         If type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref) Then
             referenced_type_name = type_by_uuid_dict(Me.Base_Type_Ref).Name
         End If
-        attr_lines.Add("Base : " & referenced_type_name)
+
+        Dim attr_lines As New List(Of String) From {
+            "Multiplicity : " & Me.Multiplicity,
+            "Base : " & referenced_type_name}
 
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
@@ -353,11 +353,11 @@ Public Class Enumerated_Type
 
     Public Shared ReadOnly Metaclass_Name As String = "Enumerated_Type"
 
-    Private Shared Nb_Enumerals As New Modeling_Rule(
+    Private Shared ReadOnly Nb_Enumerals As New Modeling_Rule(
         "Number_Of_Enumerals",
         "Shall aggregate at least two Enumerals.")
 
-    Private Shared Unique_Enumeral_Name As New Modeling_Rule(
+    Private Shared ReadOnly Unique_Enumeral_Name As New Modeling_Rule(
         "Unique_Enumeral_Name",
         "Name of Enulerals shall be unique.")
 
@@ -770,11 +770,11 @@ Public Class Fixed_Point_Type
             desc_rect_height)
 
 
-        Dim attr_lines As New List(Of String)
-        attr_lines.Add("Base : " & Get_Referenced_Type(False))
-        attr_lines.Add("Unit : " & Me.Unit)
-        attr_lines.Add("Resolution : " & Me.Resolution)
-        attr_lines.Add("Offset : " & Me.Offset)
+        Dim attr_lines As New List(Of String) From {
+            "Base : " & Get_Referenced_Type(False),
+            "Unit : " & Me.Unit,
+            "Resolution : " & Me.Resolution,
+            "Offset : " & Me.Offset}
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,

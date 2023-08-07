@@ -18,11 +18,11 @@ Public Class Top_Level_Package
     Private Xml_File_Path As String
     Private Status As E_PACKAGE_STATUS = E_PACKAGE_STATUS.WRITABLE
 
-    Private Shared Writable_Context_Menu As New Top_Package_Writable_Context_Menu
-    Private Shared Readable_Context_Menu As New Top_Package_Readable_Context_Menu
-    Private Shared Unloaded_Context_Menu As New Top_Package_Unloaded_Context_Menu
+    Private Shared ReadOnly Writable_Context_Menu As New Top_Package_Writable_Context_Menu
+    Private Shared ReadOnly Readable_Context_Menu As New Top_Package_Readable_Context_Menu
+    Private Shared ReadOnly Unloaded_Context_Menu As New Top_Package_Unloaded_Context_Menu
 
-    Private Shared Pkg_Serializer As XmlSerializer = New XmlSerializer(GetType(Top_Level_Package))
+    Private Shared ReadOnly Pkg_Serializer As New XmlSerializer(GetType(Top_Level_Package))
 
     Public Shared ReadOnly Package_File_Extension As String = ".pkgx"
 
@@ -160,7 +160,7 @@ Public Class Top_Level_Package
     Public Shared Function Load_Basic_Types(
             parent_project As Software_Project,
             parent_node As TreeNode) As Top_Level_Package
-        Dim pkg As Top_Level_Package = Nothing
+        Dim pkg As Top_Level_Package
         Dim exe_assembly As Assembly = Assembly.GetExecutingAssembly()
         Dim ressource_name As String = "Embedded_Software_Model_Toolset.Basic_Types.pkgx"
         Dim file_stream As Stream = exe_assembly.GetManifestResourceStream(ressource_name)
