@@ -538,7 +538,17 @@ Public Class Enumerated_Type
         Dim enum_name_check As New _
             Consistency_Check_Report_Item(Me, Enumerated_Type.Unique_Enumeral_Name)
         report.Add_Item(enum_name_check)
-        enum_name_check.Set_Compliance(False) ' TODO
+        Dim is_compliant As Boolean = True
+        Dim enumeral_name_list As New List(Of String)
+        For Each enumeral In Me.Enumerals
+            If Not enumeral_name_list.Contains(enumeral.Name) Then
+                enumeral_name_list.Add(enumeral.Name)
+            Else
+                is_compliant = False
+                Exit For
+            End If
+        Next
+        enum_name_check.Set_Compliance(is_compliant)
 
     End Sub
 
