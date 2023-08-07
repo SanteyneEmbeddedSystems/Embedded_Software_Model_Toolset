@@ -14,6 +14,11 @@ Public MustInherit Class ESMT_Form
     Protected Const Label_Height As Integer = Item_Height
     Protected Shared Label_Size As New Size(Label_Width, Label_Height)
 
+    Protected Const Field_Label_Witdh As Integer = CInt(Panel_Width / 3 - Marge)
+    Protected Shared Field_Label_Size As New Size(Field_Label_Witdh, Label_Height)
+    Protected Const Field_Value_Witdh As Integer = CInt(Panel_Width * 2 / 3 - Marge)
+    Protected Shared Field_Value_Size As New Size(Field_Value_Witdh, Label_Height)
+
     Protected Const Path_Button_Width As Integer = 30
     Protected Const Path_Button_Height As Integer = Item_Height
     Protected Shared Path_Button_Size As New Size(Path_Button_Width, Path_Button_Height)

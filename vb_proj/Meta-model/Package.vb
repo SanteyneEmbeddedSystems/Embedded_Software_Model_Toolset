@@ -10,6 +10,7 @@ Public Class Package
      XmlArrayItemAttribute(GetType(Basic_Floating_Point_Type)),
      XmlArrayItemAttribute(GetType(Array_Type)),
      XmlArrayItemAttribute(GetType(Enumerated_Type)),
+     XmlArrayItemAttribute(GetType(Fixed_Point_Type)),
      XmlArray("Types")>
     Public Types As New List(Of Type)
 
@@ -190,6 +191,50 @@ Public Class Package
         End If
     End Sub
 
+    Public Sub Add_Fixed_Point_Type()
+
+        ' Build the list of possible referenced type
+        Dim basic_int_list As List(Of Type) = Get_Basic_Integer_Type_List_From_Project()
+        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
+        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(basic_int_list)
+
+        Dim creation_form As New Fixed_Point_Type_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            Fixed_Point_Type.Metaclass_Name,
+            "",
+            Fixed_Point_Type.Metaclass_Name,
+            "",
+            Me.Get_Children_Name(),
+            type_by_path_dict.Keys(0),
+            type_by_path_dict.Keys.ToList(),
+            "-",
+            "1",
+            "0")
+
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+
+            ' Get the type referenced by the fixed point type
+            Dim ref_type As Software_Element
+            ref_type = type_by_path_dict(creation_form.Get_Ref_Rerenced_Element_Path())
+
+            Dim new_fixed_point As New Fixed_Point_Type(
+                    creation_form.Get_Element_Name(),
+                    creation_form.Get_Element_Description(),
+                    Me,
+                    Me.Node,
+                    ref_type.Identifier,
+                    creation_form.Get_Unit(),
+                    creation_form.Get_Resolution(),
+                    creation_form.Get_Offset())
+
+            ' Add fixed point type to its package
+            Me.Types.Add(new_fixed_point)
+            Me.Children.Add(new_fixed_point)
+            Me.Display_Package_Modified()
+
+        End If
+    End Sub
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for model management

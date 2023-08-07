@@ -1,4 +1,5 @@
 ﻿Imports System.IO
+Imports System.Text.RegularExpressions
 
 
 Public MustInherit Class Type
@@ -559,4 +560,275 @@ Public Class Enumerated_Type
         enum_name_check.Set_Compliance(False) ' TODO
 
     End Sub
+
+End Class
+
+
+Public Class Fixed_Point_Type
+    Inherits Type
+
+    Public Base_Type_Ref As Guid
+
+    Public Unit As String
+    Public Resolution As String
+    Public Offset As String
+
+    Public Shared ReadOnly Metaclass_Name As String = "Fixed_Point_Type"
+
+    Private Shared ReadOnly Zero_Decimal_Regex_Str As String = "^0+[,|.]?0*$"
+    Private Shared ReadOnly Valid_Decimal_Regex_Str As String = "\d+[.|,]?\d*"
+    Private Shared ReadOnly Valid_FPT_Attr_Regex As New _
+        Regex("^(?<Num>" & Valid_Decimal_Regex_Str &
+            ")(\/(?<Den>" & Valid_Decimal_Regex_Str & "))?$")
+
+    Private Shared ReadOnly Unit_Rule As New Modeling_Rule(
+        "Unit_Mandatory",
+        "Unit shall be set.")
+    Private Shared ReadOnly Base_Type_Rule As New Modeling_Rule(
+        "Base_Type_Is_Integer",
+        "Referenced type shall be a Basic_Integer_Type.")
+    Private Shared ReadOnly Resol_Positive_Dec As New Modeling_Rule(
+        "Resolution_Strictly_Positive",
+        "Resolution shall be a positive decimal value.")
+    Private Shared ReadOnly Offset_Dec As New Modeling_Rule(
+        "Offset_Decimal",
+        "Offset shall be a decimal value.")
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode,
+            base_type_ref As Guid,
+            Unit As String,
+            resolution As String,
+            offset As String)
+        MyBase.New(name, description, owner, parent_node)
+        Me.Base_Type_Ref = base_type_ref
+        Me.Unit = Unit
+        Me.Resolution = resolution
+        Me.Offset = offset
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Specific methods 
+    ' -------------------------------------------------------------------------------------------- '
+
+    Private Function Get_Referenced_Type(get_full_path As Boolean) As String
+        ' Build the list of possible referenced type
+        Dim basic_int_list As List(Of Type) = Get_Basic_Integer_Type_List_From_Project()
+        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
+        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(basic_int_list)
+
+        ' Get referenced type path or name
+        Dim result As String = "unresolved"
+        If type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref) Then
+            If get_full_path = True Then
+                result = type_by_uuid_dict(Me.Base_Type_Ref).Get_Path()
+            Else
+                result = type_by_uuid_dict(Me.Base_Type_Ref).Name
+            End If
+        End If
+
+        Return result
+    End Function
+
+    Public Shared Function Is_Resolution_Valid(resolution_str As String) As Boolean
+        Dim result As Boolean = False
+        Dim regex_match As Match
+        regex_match = Fixed_Point_Type.Valid_FPT_Attr_Regex.Match(resolution_str)
+        If regex_match.Success = True Then
+            Dim num_str As String = regex_match.Groups.Item("Num").Value
+            If Not Regex.IsMatch(num_str, Fixed_Point_Type.Zero_Decimal_Regex_Str) Then
+                result = True
+            End If
+            If Not IsNothing(regex_match.Groups.Item("Den")) Then
+                Dim den_str As String = regex_match.Groups.Item("Den").Value
+                If Regex.IsMatch(den_str, Fixed_Point_Type.Zero_Decimal_Regex_Str) Then
+                    result = False
+                End If
+            End If
+        End If
+        Return result
+    End Function
+
+    Public Shared Function Is_Offset_Valid(offset_str As String) As Boolean
+        Dim result As Boolean = False
+        Dim regex_match As Match
+        regex_match = Fixed_Point_Type.Valid_FPT_Attr_Regex.Match(offset_str)
+        If regex_match.Success = True Then
+            result = True
+            If Not IsNothing(regex_match.Groups.Item("Den")) Then
+                Dim den_str As String = regex_match.Groups.Item("Den").Value
+                If Regex.IsMatch(den_str, Fixed_Point_Type.Zero_Decimal_Regex_Str) Then
+                    result = False
+                End If
+            End If
+        End If
+        Return result
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Create_Node()
+        Me.Node = New TreeNode(Me.Name) With {
+            .ImageKey = "Fixed_Point_Type",
+            .SelectedImageKey = "Fixed_Point_Type",
+            .ContextMenuStrip = Software_Element.Leaf_Context_Menu,
+            .Tag = Me}
+    End Sub
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Fixed_Point_Type.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for contextual menu
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Sub Edit()
+
+        ' Build the list of possible referenced type
+        Dim basic_int_list As List(Of Type) = Get_Basic_Integer_Type_List_From_Project()
+        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
+        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(basic_int_list)
+        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
+        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(basic_int_list)
+
+        Dim current_referenced_type_path As String = "unresolved"
+        If type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref) Then
+            current_referenced_type_path = type_by_uuid_dict(Me.Base_Type_Ref).Get_Path()
+        End If
+
+        Dim forbidden_name_list As List(Of String)
+        forbidden_name_list = Me.Owner.Get_Children_Name()
+        forbidden_name_list.Remove(Me.Name)
+
+        Dim edition_form As New Fixed_Point_Type_Form(
+            Element_Form.E_Form_Kind.EDITION_FORM,
+            Fixed_Point_Type.Metaclass_Name,
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            forbidden_name_list,
+            current_referenced_type_path,
+            type_by_path_dict.Keys.ToList(),
+            Me.Unit,
+            Me.Resolution,
+            Me.Offset)
+
+        Dim edition_form_result As DialogResult = edition_form.ShowDialog()
+        If edition_form_result = DialogResult.OK Then
+
+            ' Update the fixed point type
+            Me.Name = edition_form.Get_Element_Name()
+            Me.Node.Text = Me.Name
+            Me.Description = edition_form.Get_Element_Description()
+            Dim new_referenced_type As Software_Element
+            new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
+            Me.Base_Type_Ref = new_referenced_type.Identifier
+            Me.Unit = edition_form.Get_Unit()
+            Me.Resolution = edition_form.Get_Resolution()
+            Me.Offset = edition_form.Get_Offset()
+
+            Me.Display_Package_Modified()
+
+        End If
+    End Sub
+
+    Public Overrides Sub View()
+
+
+        Dim view_form As New Fixed_Point_Type_Form(
+            Element_Form.E_Form_Kind.VIEW_FORM,
+            Fixed_Point_Type.Metaclass_Name,
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            Nothing, ' Forbidden name list, useless for View
+            Get_Referenced_Type(True),
+            Nothing, ' Useless for View
+            Me.Unit,
+            Me.Resolution,
+            Me.Offset)
+        view_form.ShowDialog()
+
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
+        Dim svg_content As String
+
+        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name, Type.SVG_COLOR, "fixed_point")
+
+        Dim desc_rect_height As Integer = 0
+        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT,
+            split_description,
+            Type.SVG_COLOR,
+            desc_rect_height)
+
+
+        Dim attr_lines As New List(Of String)
+        attr_lines.Add("Base : " & Get_Referenced_Type(False))
+        attr_lines.Add("Unit : " & Me.Unit)
+        attr_lines.Add("Resolution : " & Me.Resolution)
+        attr_lines.Add("Offset : " & Me.Offset)
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            attr_lines,
+            Type.SVG_COLOR)
+
+        Return svg_content
+    End Function
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+
+        Dim unit_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Unit_Rule)
+        report.Add_Item(unit_check)
+        unit_check.Set_Compliance(Me.Unit <> "")
+
+        Dim base_type_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Base_Type_Rule)
+        report.Add_Item(base_type_check)
+        Dim basic_int_list As List(Of Type) = Get_Basic_Integer_Type_List_From_Project()
+        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
+        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(basic_int_list)
+        base_type_check.Set_Compliance(type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref))
+
+        Dim resol_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Resol_Positive_Dec)
+        report.Add_Item(resol_check)
+        resol_check.Set_Compliance(Fixed_Point_Type.Is_Resolution_Valid(Me.Resolution))
+
+        Dim offset_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Offset_Dec)
+        report.Add_Item(offset_check)
+        offset_check.Set_Compliance(Fixed_Point_Type.Is_Offset_Valid(Me.Offset))
+
+    End Sub
+
 End Class

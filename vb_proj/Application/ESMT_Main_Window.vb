@@ -75,6 +75,7 @@
             .Add("Basic_Type", My.Resources.Basic_Type)
             .Add("Array_Type", My.Resources.Array_Type)
             .Add("Enumerated_Type", My.Resources.Enumerated_Type)
+            .Add("Fixed_Point_Type", My.Resources.Fixed_Point_Type)
         End With
 
 

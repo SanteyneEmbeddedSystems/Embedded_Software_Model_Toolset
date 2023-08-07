@@ -133,11 +133,11 @@
   <data name="Enumerated_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Enumerated_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Fixed_Point_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Fixed_Point_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Package" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Package.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Physical_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Physical_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Project" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Project.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

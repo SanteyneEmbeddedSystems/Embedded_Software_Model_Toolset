@@ -209,6 +209,18 @@ Public MustInherit Class Software_Element
         Return Get_Project().Get_Type_List()
     End Function
 
+    Protected Function Get_Basic_Integer_Type_List_From_Project() As List(Of Type)
+        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
+        Dim basic_int_list As New List(Of Type)
+        For Each type In type_list
+            If type.GetType = GetType(Basic_Integer_Type) Then
+                basic_int_list.Add(type)
+            End If
+        Next
+        Return basic_int_list
+    End Function
+
+
     Public MustOverride Function Get_Metaclass_Name() As String
 
     Protected Function Get_Top_Package_Folder() As String

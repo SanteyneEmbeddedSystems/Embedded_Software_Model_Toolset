@@ -5,7 +5,7 @@
     Protected WithEvents Menu_Add_Package As New ToolStripMenuItem("Add Package")
     Protected WithEvents Menu_Add_Array_Type As New ToolStripMenuItem("Add Array_Type")
     Protected WithEvents Menu_Add_Enumerated_Type As New ToolStripMenuItem("Add Enumerated_Type")
-
+    Protected WithEvents Menu_Add_Fixed_Point_Type As New ToolStripMenuItem("Add Fixed_Point_Type")
 
     Public Sub New()
         Me.Items.AddRange(New ToolStripItem() {
@@ -15,7 +15,8 @@
             New ToolStripSeparator,
             Me.Menu_Add_Package,
             Me.Menu_Add_Array_Type,
-            Me.Menu_Add_Enumerated_Type})
+            Me.Menu_Add_Enumerated_Type,
+            Me.Menu_Add_Fixed_Point_Type})
     End Sub
 
     Private Sub Add_Package(
@@ -37,6 +38,13 @@
             ByVal e As EventArgs) Handles Menu_Add_Enumerated_Type.Click
         Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
         pkg.Add_Enumerated_Type()
+    End Sub
+
+    Private Sub Add_Fixed_Point_Type(
+            ByVal sender As Object,
+            ByVal e As EventArgs) Handles Menu_Add_Fixed_Point_Type.Click
+        Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
+        pkg.Add_Fixed_Point_Type()
     End Sub
 
 End Class

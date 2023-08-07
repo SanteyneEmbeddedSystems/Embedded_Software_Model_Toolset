@@ -113,9 +113,9 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
-        Friend ReadOnly Property Package() As System.Drawing.Icon
+        Friend ReadOnly Property Fixed_Point_Type() As System.Drawing.Icon
             Get
-                Dim obj As Object = ResourceManager.GetObject("Package", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("Fixed_Point_Type", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property
@@ -123,9 +123,9 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
-        Friend ReadOnly Property Physical_Type() As System.Drawing.Icon
+        Friend ReadOnly Property Package() As System.Drawing.Icon
             Get
-                Dim obj As Object = ResourceManager.GetObject("Physical_Type", resourceCulture)
+                Dim obj As Object = ResourceManager.GetObject("Package", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property

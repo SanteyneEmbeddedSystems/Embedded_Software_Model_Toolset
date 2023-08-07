@@ -127,6 +127,9 @@
     <Compile Include="Forms\Element_With_Ref_Form.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Fixed_Point_Type_Form.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Meta-model\Type.vb" />
     <Compile Include="Modules\Consistency_Check_Report.vb" />
     <Compile Include="Modules\SVG.vb" />
@@ -201,21 +204,20 @@
     <None Include="Icons\Package.ico" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Physical_Type.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Icons\Structured_Type.ico" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\Diagram.ico" />
-  </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Fixed_Point_Type.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
