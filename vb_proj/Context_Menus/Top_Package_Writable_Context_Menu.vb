@@ -4,13 +4,10 @@
 
     Private WithEvents Menu_Save As New ToolStripMenuItem("Save")
     Private WithEvents Menu_Make_Read_Only As New ToolStripMenuItem("Make read-only")
-    Protected WithEvents Menu_Add_Package As New ToolStripMenuItem("Add Package")
-    Protected WithEvents Menu_Add_Array_Type As New ToolStripMenuItem("Add Array_Type")
-    Protected WithEvents Menu_Add_Enumerated_Type As New ToolStripMenuItem("Add Enumerated_Type")
-    Protected WithEvents Menu_Add_Fixed_Point_Type As New ToolStripMenuItem("Add Fixed_Point_Type")
-    Protected WithEvents Menu_Add_Record_Type As New ToolStripMenuItem("Add Record_Type")
+
 
     Public Sub New()
+        Me.Items.Clear()
         Me.Items.AddRange(New ToolStripItem() {
             Me.Menu_Save,
             Me.Menu_Remove_Top,
@@ -38,42 +35,6 @@
             ByVal e As EventArgs) Handles Menu_Make_Read_Only.Click
         Dim pkg_name As String = Get_Top_Package(sender).Name
         Get_Project(sender).Make_Package_Read_Only(pkg_name)
-    End Sub
-
-    Private Sub Add_Package(
-            ByVal sender As Object,
-            ByVal e As EventArgs) Handles Menu_Add_Package.Click
-        Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
-        pkg.Add_Package()
-    End Sub
-
-
-    Private Sub Add_Array_Type(
-        ByVal sender As Object,
-        ByVal e As EventArgs) Handles Menu_Add_Array_Type.Click
-        Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
-        pkg.Add_Array_Type()
-    End Sub
-
-    Private Sub Add_Enumerated_Type(
-            ByVal sender As Object,
-            ByVal e As EventArgs) Handles Menu_Add_Enumerated_Type.Click
-        Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
-        pkg.Add_Enumerated_Type()
-    End Sub
-
-    Private Sub Add_Fixed_Point_Type(
-            ByVal sender As Object,
-            ByVal e As EventArgs) Handles Menu_Add_Fixed_Point_Type.Click
-        Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
-        pkg.Add_Fixed_Point_Type()
-    End Sub
-
-    Private Sub Add_Record_Type(
-            ByVal sender As Object,
-            ByVal e As EventArgs) Handles Menu_Add_Record_Type.Click
-        Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
-        pkg.Add_Record_Type()
     End Sub
 
 End Class

@@ -1,6 +1,6 @@
 ﻿Public MustInherit Class Top_Package_Context_Menu
 
-    Inherits Element_Context_Menu
+    Inherits Package_Context_Menu
 
     Protected WithEvents Menu_Remove_Top As New ToolStripMenuItem("Remove from project")
     Protected WithEvents Menu_Display_Path As New ToolStripMenuItem("Display file path")

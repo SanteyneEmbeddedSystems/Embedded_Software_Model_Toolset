@@ -5,6 +5,7 @@
     Private WithEvents Menu_Make_Writable As New ToolStripMenuItem("Make writable")
 
     Public Sub New()
+        Me.Items.Clear()
         Me.Items.AddRange(New ToolStripItem() {
             Me.Menu_Remove_Top,
             Me.Menu_Display_Path,
