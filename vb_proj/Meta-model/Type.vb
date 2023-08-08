@@ -1055,7 +1055,7 @@ Public Class Record_Field
 
         Dim edition_form As New Element_With_Ref_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
-            Array_Type.Metaclass_Name,
+            Record_Field.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
@@ -1098,7 +1098,7 @@ Public Class Record_Field
 
         Dim elmt_view_form As New Element_With_Ref_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
-            Array_Type.Metaclass_Name,
+            Record_Field.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
