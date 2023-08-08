@@ -85,7 +85,7 @@ Public Class Top_Level_Package
         Dim pkg As Top_Level_Package
 
         If Not File.Exists(file_path) Then
-            pkg = Top_Level_Package.Create_Not_Found_Package(default_name, parent_node)
+            pkg = Top_Level_Package.Create_Not_Found_Package(parent_project, default_name, parent_node)
             MsgBox("Package file not found : " & vbCrLf & file_path,
                 MsgBoxStyle.Critical)
         Else
@@ -106,7 +106,7 @@ Public Class Top_Level_Package
                     pkg.Node.ContextMenuStrip = Top_Level_Package.Readable_Context_Menu
                 End If
             Catch
-                pkg = Top_Level_Package.Create_Corrupted_Package(default_name, parent_node)
+                pkg = Top_Level_Package.Create_Corrupted_Package(parent_project, default_name, parent_node)
                 MsgBox("Package file content is invalid : " & vbCrLf & file_path,
                     MsgBoxStyle.Critical)
             End Try
@@ -120,6 +120,7 @@ Public Class Top_Level_Package
     End Function
 
     Private Shared Function Create_Corrupted_Package(
+            parent_project As Software_Project,
             pkg_name As String,
             parent_node As TreeNode) As Top_Level_Package
 
@@ -130,6 +131,7 @@ Public Class Top_Level_Package
 
         With pkg
             .Name = pkg_name
+            .Owner = parent_project
             .Node.ContextMenuStrip = Top_Level_Package.Unloaded_Context_Menu
             .Status = E_PACKAGE_STATUS.CORRUPTED
         End With
@@ -139,6 +141,7 @@ Public Class Top_Level_Package
     End Function
 
     Private Shared Function Create_Not_Found_Package(
+            parent_project As Software_Project,
             pkg_name As String,
             parent_node As TreeNode) As Top_Level_Package
 
@@ -149,6 +152,7 @@ Public Class Top_Level_Package
 
         With pkg
             .Name = pkg_name
+            .Owner = parent_project
             .Node.ContextMenuStrip = Top_Level_Package.Unloaded_Context_Menu
             .Status = E_PACKAGE_STATUS.NOT_FOUND
         End With
@@ -248,7 +252,7 @@ Public Class Top_Level_Package
     End Function
 
     Public Overrides Function Get_SVG_File_Path() As String
-        If Me.Status = E_PACKAGE_STATUS.LOCKED Then
+        If Me.Status <> E_PACKAGE_STATUS.WRITABLE Then
             Return Path.GetTempPath() & Me.Name & ".svg"
         Else
             Return MyBase.Get_SVG_File_Path()
