@@ -93,6 +93,26 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
+        Friend ReadOnly Property CS_Interface() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("CS_Interface", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
+        Friend ReadOnly Property CS_Operation() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("CS_Operation", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
         Friend ReadOnly Property Enumerated_Type() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("Enumerated_Type", resourceCulture)
@@ -106,6 +126,16 @@ Namespace My.Resources
         Friend ReadOnly Property Fixed_Point_Type() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("Fixed_Point_Type", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
+        Friend ReadOnly Property Operation_Parameter() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Operation_Parameter", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property

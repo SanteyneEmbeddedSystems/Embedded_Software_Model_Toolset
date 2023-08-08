@@ -16,7 +16,8 @@
             y_pos As Integer,
             element_name As String,
             color As String,
-            Optional stereotype_name As String = "") As String
+            Optional stereotype_name As String = "",
+            Optional is_interface As Boolean = False) As String
 
         Dim svg_content As String
 
@@ -37,8 +38,12 @@
         End If
 
         ' Add Name
+        Dim font_style As String = ""
+        If is_interface = True Then
+            font_style = "font-style:italic;"
+        End If
         svg_content &=
-            "  <text style=""text-anchor:middle;font-weight:bold;"" " &
+            "  <text style=""text-anchor:middle;font-weight:bold;" & font_style & """ " &
                 "x=""" & x_pos + SVG_BOX_WIDTH / 2 & "px"" " &
                 "y=""" & y_pos + SVG_STROKE_WIDTH + SVG_TEXT_LINE_HEIGHT * 2 - 3 & "px"">" &
                 element_name & "</text>" & vbCrLf

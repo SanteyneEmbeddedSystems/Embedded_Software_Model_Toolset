@@ -15,6 +15,10 @@ Public Class Package
      XmlArray("Types")>
     Public Types As New List(Of Type)
 
+    <XmlArrayItemAttribute(GetType(Client_Server_Interface)),
+     XmlArray("Interfaces")>
+    Public Interfaces As New List(Of Software_Interface)
+
     Private Shared ReadOnly Context_Menu As New Package_Context_Menu()
 
     Public Shared ReadOnly Metaclass_Name As String = "Package"
@@ -49,6 +53,7 @@ Public Class Package
             Me.Children_Is_Computed = True
             Me.Children.AddRange(Me.Packages)
             Me.Children.AddRange(Me.Types)
+            Me.Children.AddRange(Me.Interfaces)
         End If
         Return Me.Children
     End Function
@@ -250,6 +255,27 @@ Public Class Package
                 Me.Node)
             Me.Types.Add(new_record)
             Me.Children.Add(new_record)
+            Me.Display_Package_Modified()
+        End If
+    End Sub
+
+    Public Sub Add_Client_Server_Interface()
+        Dim creation_form As New Element_Form(
+             Element_Form.E_Form_Kind.CREATION_FORM,
+             Client_Server_Interface.Metaclass_Name,
+             "",
+             Client_Server_Interface.Metaclass_Name,
+             "",
+             Me.Get_Children_Name())
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_cs_if As New Client_Server_Interface(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node)
+            Me.Interfaces.Add(new_cs_if)
+            Me.Children.Add(new_cs_if)
             Me.Display_Package_Modified()
         End If
     End Sub

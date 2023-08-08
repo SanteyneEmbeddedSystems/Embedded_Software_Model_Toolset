@@ -20,7 +20,8 @@
             Me.Menu_Add_Array_Type,
             Me.Menu_Add_Enumerated_Type,
             Me.Menu_Add_Fixed_Point_Type,
-            Me.Menu_Add_Record_Type})
+            Me.Menu_Add_Record_Type,
+            Me.Menu_Add_CS_Interface})
     End Sub
 
     Private Sub Save(

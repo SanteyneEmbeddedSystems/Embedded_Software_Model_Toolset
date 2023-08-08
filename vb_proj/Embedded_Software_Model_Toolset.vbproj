@@ -87,6 +87,12 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Context_Menus\Client_Server_Interface_Context_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Context_Menus\Client_Server_Operation_Context_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Context_Menus\Element_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -133,6 +139,10 @@
     <Compile Include="Forms\Fixed_Point_Type_Form.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Operation_Parameter_Form.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Meta-model\Software_Interface.vb" />
     <Compile Include="Meta-model\Type.vb" />
     <Compile Include="Modules\Consistency_Check_Report.vb" />
     <Compile Include="Modules\SVG.vb" />
@@ -218,6 +228,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Record_Type.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\CS_Interface.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\CS_Operation.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Operation_Parameter.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

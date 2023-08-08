@@ -71,6 +71,9 @@
             .Add("Fixed_Point_Type", My.Resources.Fixed_Point_Type)
             .Add("Record_Type", My.Resources.Record_Type)
             .Add("Record_Field", My.Resources.Record_Field)
+            .Add("Client_Server_Interface", My.Resources.CS_Interface)
+            .Add("Client_Server_Operation", My.Resources.CS_Operation)
+            .Add("Operation_Parameter", My.Resources.Operation_Parameter)
         End With
 
 
