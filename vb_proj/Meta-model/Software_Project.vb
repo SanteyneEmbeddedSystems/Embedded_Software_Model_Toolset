@@ -340,25 +340,36 @@ Public Class Software_Project
     End Function
 
     Public Sub Remove_Package(pkg_name As String)
-        ' Remove from packages list
-        For Each pkg In Me.Top_Level_Packages_List
-            If pkg.Name = pkg_name Then
-                ' Remove node
-                pkg.Delete()
-                Me.Top_Level_Packages_List.Remove(pkg)
-                Exit For
-            End If
-        Next
 
-        ' Remove from package references list
-        For Each ref In Me.Packages_References_List
-            If ref.Last_Known_Name = pkg_name Then
-                Packages_References_List.Remove(ref)
-                Exit For
-            End If
-        Next
+        ' Ask for confirmation
+        Dim confirmation_result As MsgBoxResult
+        confirmation_result = MsgBox(
+            "Do you confirm removal of the package ?",
+            MsgBoxStyle.OkCancel)
 
-        Me.Display_Modified()
+        If confirmation_result = MsgBoxResult.Ok Then
+
+            ' Remove from packages list
+            For Each pkg In Me.Top_Level_Packages_List
+                If pkg.Name = pkg_name Then
+                    ' Remove node
+                    pkg.Delete()
+                    Me.Top_Level_Packages_List.Remove(pkg)
+                    Exit For
+                End If
+            Next
+
+            ' Remove from package references list
+            For Each ref In Me.Packages_References_List
+                If ref.Last_Known_Name = pkg_name Then
+                    Packages_References_List.Remove(ref)
+                    Exit For
+                End If
+            Next
+
+            Me.Display_Modified()
+
+        End If
 
     End Sub
 
