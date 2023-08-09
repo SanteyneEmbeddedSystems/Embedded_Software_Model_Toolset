@@ -131,7 +131,6 @@ Public Class Package
             Array_Type.Metaclass_Name,
             "",
             Me.Get_Children_Name(),
-            "Base Type",
             type_by_path_dict.Keys(0),
             type_by_path_dict.Keys.ToList(),
             Array_Type.Multiplicity_Minimum_Value.ToString())

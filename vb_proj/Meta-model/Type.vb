@@ -222,7 +222,6 @@ Public Class Array_Type
             Me.Name,
             Me.Description,
             forbidden_name_list,
-            "Base Type",
             current_referenced_type_path,
             type_by_path_dict.Keys.ToList(),
             Me.Multiplicity.ToString())
@@ -267,7 +266,6 @@ Public Class Array_Type
             Me.Name,
             Me.Description,
             Nothing, ' Forbidden name list, useless for View
-            "Base Type",
             referenced_type_path,
             Nothing, ' Useless for View
             Me.Multiplicity.ToString())
