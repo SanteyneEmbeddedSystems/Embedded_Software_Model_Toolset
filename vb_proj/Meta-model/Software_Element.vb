@@ -131,9 +131,16 @@ Public MustInherit Class Software_Element
         Return top_pkg
     End Function
 
-    Public Sub Display_Package_Modified()
+    Private Sub Display_Package_Modified()
+        ' Display, in the tree view, that top package is modified (not saved)
         Dim owner_pkg As Top_Level_Package = Me.Get_Top_Package()
         owner_pkg.Display_Modified()
+    End Sub
+
+    Public Sub Update_Views()
+        Me.Display_Package_Modified()
+        ' Refresh Diagram view
+        Me.Get_Project().Update_Diagram(Me)
     End Sub
 
     Public Function Get_Children_Name() As List(Of String)
@@ -235,7 +242,6 @@ Public MustInherit Class Software_Element
     End Function
 
 
-
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
     ' -------------------------------------------------------------------------------------------- '
@@ -260,7 +266,7 @@ Public MustInherit Class Software_Element
             Me.Name = edit_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
 
     End Sub

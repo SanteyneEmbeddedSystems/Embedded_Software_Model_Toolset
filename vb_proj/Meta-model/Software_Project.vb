@@ -21,6 +21,8 @@ Public Class Software_Project
 
     Public Shared ReadOnly Metaclass_Name As String = "Project"
 
+    Private Diagram_Viewer As WebBrowser
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -34,14 +36,16 @@ Public Class Software_Project
             name As String,
             desc As String,
             file_path As String,
-            browser As TreeView)
+            model_browser As TreeView,
+            diagram_viewer As WebBrowser)
         Me.Name = name
         Me.Description = desc
         Me.Identifier = Guid.NewGuid()
         Me.Create_Node()
-        browser.Nodes.Add(Me.Node)
+        model_browser.Nodes.Add(Me.Node)
         Me.Xml_File_Path = file_path
         Me.Packages_References_List = New List(Of Package_Reference)
+        Me.Diagram_Viewer = diagram_viewer
     End Sub
 
 
@@ -97,7 +101,8 @@ Public Class Software_Project
 
     Public Shared Function Load(
             project_file_path As String,
-            browser As TreeView) As Software_Project
+            model_browser As TreeView,
+            diagram_viewer As WebBrowser) As Software_Project
 
         Dim new_sw_proj As Software_Project = Nothing
 
@@ -116,10 +121,11 @@ Public Class Software_Project
 
             ' Add project in browser
             new_sw_proj.Create_Node()
-            browser.Nodes.Add(new_sw_proj.Node)
+            model_browser.Nodes.Add(new_sw_proj.Node)
 
             ' Set or initialize private attributes
             new_sw_proj.Xml_File_Path = project_file_path
+            new_sw_proj.Diagram_Viewer = diagram_viewer
 
             ' Load the top level Packages aggregated by the project
             Environment.CurrentDirectory = Path.GetDirectoryName(project_file_path)
@@ -183,7 +189,7 @@ Public Class Software_Project
             Me.Name = prj_edit_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = prj_edit_form.Get_Element_Description()
-            Me.Display_Modified()
+            Me.Update_Views()
         End If
 
     End Sub
@@ -421,6 +427,11 @@ Public Class Software_Project
             End If
         Next
         Me.Display_Modified()
+    End Sub
+
+    Public Sub Update_Diagram(sw_elmnt As Software_Element)
+        Dim svg_file_path As String = sw_elmnt.Update_SVG_Diagram()
+        Me.Diagram_Viewer.Navigate(svg_file_path)
     End Sub
 
 

@@ -123,7 +123,7 @@ Public Class Client_Server_Interface
                 Me.Node)
             Me.Operations.Add(new_op)
             Me.Children.Add(new_op)
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
 
     End Sub
@@ -305,7 +305,8 @@ Public Class Client_Server_Operation
 
             Me.Parameters.Add(new_param)
             Me.Children.Add(new_param)
-            Me.Display_Package_Modified()
+
+            Me.Update_Views()
 
         End If
 
@@ -424,7 +425,7 @@ Public Class Operation_Parameter
             Me.Type_Ref = new_referenced_type.Identifier
             [Enum].TryParse(edition_form.Get_Direction(), Me.Direction)
 
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
 
     End Sub

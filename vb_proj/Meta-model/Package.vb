@@ -113,7 +113,7 @@ Public Class Package
                 Me.Node)
             Me.Packages.Add(new_pkg)
             Me.Children.Add(new_pkg)
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
     End Sub
 
@@ -156,7 +156,7 @@ Public Class Package
             Me.Types.Add(new_array_type)
             Me.Children.Add(new_array_type)
 
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
 
     End Sub
@@ -188,7 +188,7 @@ Public Class Package
                     enumerals_table)
             Me.Types.Add(new_enumeration)
             Me.Children.Add(new_enumeration)
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
     End Sub
 
@@ -232,7 +232,8 @@ Public Class Package
             ' Add fixed point type to its package
             Me.Types.Add(new_fixed_point)
             Me.Children.Add(new_fixed_point)
-            Me.Display_Package_Modified()
+
+            Me.Update_Views()
 
         End If
     End Sub
@@ -254,7 +255,7 @@ Public Class Package
                 Me.Node)
             Me.Types.Add(new_record)
             Me.Children.Add(new_record)
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
     End Sub
 
@@ -275,7 +276,7 @@ Public Class Package
                 Me.Node)
             Me.Interfaces.Add(new_cs_if)
             Me.Children.Add(new_cs_if)
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
     End Sub
 

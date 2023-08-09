@@ -94,6 +94,9 @@
         Return Me.Model_Browser
     End Function
 
+    Public Function Get_Diagram_Viewer() As WebBrowser
+        Return Me.Diagram_Page
+    End Function
 
     Public Sub Clear()
         Me.Model_Browser.Nodes.Clear()

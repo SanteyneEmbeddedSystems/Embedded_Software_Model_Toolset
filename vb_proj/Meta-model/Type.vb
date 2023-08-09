@@ -241,7 +241,7 @@ Public Class Array_Type
             Me.Multiplicity = CUInt(edition_form.Get_Multiplicity())
             Me.Base_Type_Ref = new_referenced_type.Identifier
 
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
 
     End Sub
@@ -457,7 +457,7 @@ Public Class Enumerated_Type
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Update_Enumerals(enumerals_table)
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
 
     End Sub
@@ -725,8 +725,7 @@ Public Class Fixed_Point_Type
             Me.Resolution = edition_form.Get_Resolution()
             Me.Offset = edition_form.Get_Offset()
 
-            Me.Display_Package_Modified()
-
+            Me.Update_Views()
         End If
     End Sub
 
@@ -900,7 +899,7 @@ Public Class Record_Type
                 ref_type.Identifier)
             Me.Fields.Add(new_field)
             Me.Children.Add(new_field)
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
     End Sub
 
@@ -1070,13 +1069,13 @@ Public Class Record_Field
             Dim new_referenced_type As Software_Element
             new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
 
-            ' Update the array type
+            ' Update the Record_Field
             Me.Name = edition_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
             Me.Type_Ref = new_referenced_type.Identifier
 
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
 
     End Sub

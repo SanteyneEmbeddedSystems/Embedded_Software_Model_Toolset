@@ -297,7 +297,7 @@ Public Class Top_Level_Package
                 Me.Get_Project().Update_Pkg_Known_Name(previous_name, Me.Name)
             End If
             Me.Description = edit_form.Get_Element_Description()
-            Me.Display_Package_Modified()
+            Me.Update_Views()
         End If
 
     End Sub
