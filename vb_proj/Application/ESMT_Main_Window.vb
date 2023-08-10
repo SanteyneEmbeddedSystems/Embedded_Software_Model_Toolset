@@ -74,6 +74,8 @@
             .Add(Client_Server_Interface.Metaclass_Name, My.Resources.CS_Interface)
             .Add(Client_Server_Operation.Metaclass_Name, My.Resources.CS_Operation)
             .Add(Operation_Parameter.Metaclass_Name, My.Resources.Operation_Parameter)
+            .Add(Event_Interface.Metaclass_Name, My.Resources.Purple_Flash_In_Square)
+            .Add(Event_Parameter.Metaclass_Name, My.Resources.Purple_Triangle)
         End With
 
 

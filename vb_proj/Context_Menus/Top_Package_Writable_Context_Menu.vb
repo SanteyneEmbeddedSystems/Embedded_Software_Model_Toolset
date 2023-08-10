@@ -17,11 +17,14 @@
             Me.Menu_Make_Read_Only,
             New ToolStripSeparator,
             Me.Menu_Add_Package,
+            New ToolStripSeparator,
             Me.Menu_Add_Array_Type,
             Me.Menu_Add_Enumerated_Type,
             Me.Menu_Add_Fixed_Point_Type,
             Me.Menu_Add_Record_Type,
-            Me.Menu_Add_CS_Interface})
+            New ToolStripSeparator,
+            Me.Menu_Add_CS_Interface,
+            Me.Menu_Add_Event_Interface})
     End Sub
 
     Private Sub Save(

@@ -163,6 +163,26 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
+        Friend ReadOnly Property Purple_Flash_In_Square() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Purple_Flash_In_Square", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
+        Friend ReadOnly Property Purple_Triangle() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Purple_Triangle", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
         Friend ReadOnly Property Record_Field() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("Record_Field", resourceCulture)

@@ -96,6 +96,9 @@
     <Compile Include="Context_Menus\Element_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Context_Menus\Event_Interface_Context_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Context_Menus\Leaf_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -237,6 +240,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Operation_Parameter.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Purple_Flash_In_Square.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Purple_Triangle.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

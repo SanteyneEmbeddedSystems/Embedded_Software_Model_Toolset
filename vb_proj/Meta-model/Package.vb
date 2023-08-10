@@ -16,6 +16,7 @@ Public Class Package
     Public Types As New List(Of Type)
 
     <XmlArrayItemAttribute(GetType(Client_Server_Interface)),
+     XmlArrayItemAttribute(GetType(Event_Interface)),
      XmlArray("Interfaces")>
     Public Interfaces As New List(Of Software_Interface)
 
@@ -271,6 +272,27 @@ Public Class Package
                 Me.Node)
             Me.Interfaces.Add(new_cs_if)
             Me.Children.Add(new_cs_if)
+            Me.Update_Views()
+        End If
+    End Sub
+
+    Public Sub Add_Event_Interface()
+        Dim creation_form As New Element_Form(
+             Element_Form.E_Form_Kind.CREATION_FORM,
+             Event_Interface.Metaclass_Name,
+             "",
+             Event_Interface.Metaclass_Name,
+             "",
+             Me.Get_Children_Name())
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_ev_if As New Event_Interface(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node)
+            Me.Interfaces.Add(new_ev_if)
+            Me.Children.Add(new_ev_if)
             Me.Update_Views()
         End If
     End Sub

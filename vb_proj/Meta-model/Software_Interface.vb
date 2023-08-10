@@ -298,8 +298,8 @@ Public Class Client_Server_Operation
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                direction,
-                ref_type.Identifier)
+                ref_type.Identifier,
+                direction)
 
             Me.Parameters.Add(new_param)
             Me.Children.Add(new_param)
@@ -314,10 +314,9 @@ End Class
 
 
 Public Class Operation_Parameter
-    Inherits Must_Describe_Software_Element
+    Inherits Typed_Software_Element
 
     Public Direction As E_DIRECTION
-    Public Type_Ref As Guid
 
     Public Shared ReadOnly Metaclass_Name As String = "Operation_Parameter"
 
@@ -341,11 +340,10 @@ Public Class Operation_Parameter
             description As String,
             owner As Software_Element,
             parent_node As TreeNode,
-            direction As E_DIRECTION,
-            type As Guid)
-        MyBase.New(name, description, owner, parent_node)
+            type As Guid,
+            direction As E_DIRECTION)
+        MyBase.New(name, description, owner, parent_node, type)
         Me.Direction = direction
-        Me.Type_Ref = type
     End Sub
 
 
@@ -474,6 +472,191 @@ Public Class Operation_Parameter
             Case Else
                 Return "IN"
         End Select
+    End Function
+
+End Class
+
+
+Public Class Event_Interface
+    Inherits Software_Interface
+
+    Public Parameters As New List(Of Event_Parameter)
+
+    Public Shared ReadOnly Metaclass_Name As String = "Event_Interface"
+
+    Private Shared ReadOnly Context_Menu As New Event_Interface_Context_Menu()
+
+    Public Shared ReadOnly SVG_COLOR As String = "rgb(163,73,164)"
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode)
+        MyBase.New(name, description, owner, parent_node)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Function Get_Children() As List(Of Software_Element)
+        If Me.Children_Is_Computed = False Then
+            Me.Children_Is_Computed = True
+            Me.Children.AddRange(Me.Parameters)
+        End If
+        Return Me.Children
+    End Function
+
+    Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
+        Return Event_Interface.Context_Menu
+    End Function
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Event_Interface.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for contextual menu
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub Add_Parameter()
+
+        ' Build the list of possible referenced type
+        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
+        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
+        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
+
+        Dim creation_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            Event_Parameter.Metaclass_Name,
+            "",
+            Event_Parameter.Metaclass_Name,
+            "",
+            Me.Get_Children_Name(),
+            "Type",
+            type_by_path_dict.Keys(0),
+            type_by_path_dict.Keys.ToList())
+
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+
+        If creation_form_result = DialogResult.OK Then
+
+            Dim ref_type As Software_Element
+            ref_type = type_by_path_dict(creation_form.Get_Ref_Rerenced_Element_Path())
+
+            Dim new_param As New Event_Parameter(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node,
+                ref_type.Identifier)
+
+            Me.Parameters.Add(new_param)
+            Me.Children.Add(new_param)
+
+            Me.Update_Views()
+
+        End If
+
+    End Sub
+
+
+    Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
+        Dim svg_content As String
+
+        ' Title (Name + stereotype)
+        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
+            Event_Interface.SVG_COLOR, "interface", True)
+
+        ' Description compartment
+        Dim desc_rect_height As Integer = 0
+        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT,
+            split_description,
+            Event_Interface.SVG_COLOR,
+            desc_rect_height)
+
+        ' Parameter compartment
+        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
+        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
+        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
+        Dim param_lines As New List(Of String)
+        For Each param In Me.Parameters
+            Dim type_name As String = "unresolved"
+            If type_by_uuid_dict.ContainsKey(param.Type_Ref) Then
+                type_name = type_by_uuid_dict(param.Type_Ref).Name
+            End If
+            Dim param_line As String = "+ " & param.Name & " : " & type_name
+            param_lines.Add(param_line)
+        Next
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            param_lines,
+            Event_Interface.SVG_COLOR)
+
+        Return svg_content
+
+    End Function
+
+End Class
+
+
+Public Class Event_Parameter
+    Inherits Typed_Software_Element
+
+    Public Shared ReadOnly Metaclass_Name As String = "Event_Parameter"
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode,
+            type As Guid)
+        MyBase.New(name, description, owner, parent_node, type)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Move_Me(new_parent As Software_Element)
+        CType(Me.Owner, Event_Interface).Parameters.Remove(Me)
+        CType(new_parent, Event_Interface).Parameters.Add(Me)
+    End Sub
+
+    Protected Overrides Sub Remove_Me()
+        Dim parent_if As Event_Interface = CType(Me.Owner, Event_Interface)
+        Me.Node.Remove()
+        parent_if.Parameters.Remove(Me)
+    End Sub
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Event_Parameter.Metaclass_Name
+    End Function
+
+    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
+        Return parent.GetType() = GetType(Event_Interface)
     End Function
 
 End Class

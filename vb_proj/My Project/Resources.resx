@@ -148,6 +148,12 @@
   <data name="Project" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Project.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Purple_Flash_In_Square" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Purple_Flash_In_Square.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Purple_Triangle" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Purple_Triangle.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Record_Field" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Field.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

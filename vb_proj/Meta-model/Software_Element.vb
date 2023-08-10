@@ -353,7 +353,6 @@ Public MustInherit Class Software_Element
 End Class
 
 
-
 Public MustInherit Class Must_Describe_Software_Element
     Inherits Software_Element
 
@@ -377,6 +376,7 @@ Public MustInherit Class Must_Describe_Software_Element
         MyBase.New(name, description, owner, parent_node)
     End Sub
 
+
     '----------------------------------------------------------------------------------------------'
     ' Methods for model consistency checking
     '----------------------------------------------------------------------------------------------'
@@ -387,6 +387,137 @@ Public MustInherit Class Must_Describe_Software_Element
             Consistency_Check_Report_Item(Me, Must_Describe_Software_Element.Desc_Rule)
         report.Add_Item(desc_check)
         desc_check.Set_Compliance(Me.Description <> "")
+    End Sub
+
+End Class
+
+
+Public MustInherit Class Typed_Software_Element
+    Inherits Must_Describe_Software_Element
+
+    Public Type_Ref As Guid
+
+    Private Shared ReadOnly Type_Rule As New Modeling_Rule(
+        "Type_Ref",
+        "Shall reference one Type.")
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode,
+            type As Guid)
+        MyBase.New(name, description, owner, parent_node)
+        Me.Type_Ref = type
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+    Protected Overrides Function Get_Path_Separator() As String
+        Return "."
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for contextual menu
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Sub Edit()
+
+        ' Build the list of possible type
+        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
+        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
+        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
+        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
+        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
+
+        Dim current_referenced_type_path As String = "unresolved"
+        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
+            current_referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
+        End If
+
+        Dim forbidden_name_list As List(Of String)
+        forbidden_name_list = Me.Owner.Get_Children_Name()
+        forbidden_name_list.Remove(Me.Name)
+
+        Dim edition_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.EDITION_FORM,
+            Me.Get_Metaclass_Name(),
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            forbidden_name_list,
+            "Type",
+           current_referenced_type_path,
+            type_by_path_dict.Keys.ToList())
+
+        Dim edition_form_result As DialogResult = edition_form.ShowDialog()
+
+        ' Treat edition form result
+        If edition_form_result = DialogResult.OK Then
+
+            ' Get the referenced type
+            Dim new_referenced_type As Software_Element
+            new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
+
+            ' Update Me
+            Me.Name = edition_form.Get_Element_Name()
+            Me.Node.Text = Me.Name
+            Me.Description = edition_form.Get_Element_Description()
+            Me.Type_Ref = new_referenced_type.Identifier
+
+            Me.Update_Views()
+        End If
+
+    End Sub
+
+    Public Overrides Sub View()
+
+        ' Build the list of possible type
+        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
+        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
+        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
+
+        ' Get referenced type path
+        Dim referenced_type_path As String = "unresolved"
+        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
+            referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
+        End If
+
+        Dim elmt_view_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.VIEW_FORM,
+            Me.Get_Metaclass_Name(),
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            Nothing, ' Forbidden name list, useless for View
+            "Type",
+            referenced_type_path,
+            Nothing)
+        elmt_view_form.ShowDialog()
+
+    End Sub
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+        Dim type_check As New Consistency_Check_Report_Item(Me, Typed_Software_Element.Type_Rule)
+        report.Add_Item(type_check)
+        type_check.Set_Compliance(Me.Type_Ref <> Guid.Empty)
     End Sub
 
 End Class

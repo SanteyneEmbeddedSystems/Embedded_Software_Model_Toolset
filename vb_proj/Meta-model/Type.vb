@@ -947,16 +947,9 @@ End Class
 
 
 Public Class Record_Field
-
-    Inherits Software_Element
-
-    Public Type_Ref As Guid
+    Inherits Typed_Software_Element
 
     Public Shared ReadOnly Metaclass_Name As String = "Record_Field"
-
-    Private Shared ReadOnly Base_Type_Rule As New Modeling_Rule(
-        "Record_Field_Type_Ref",
-        "Shall reference a Type.")
 
     Private Shared ReadOnly Type_Ref_Not_Owner_Rule As New Modeling_Rule(
         "Record_Field_Type_Ref_Not_Owner",
@@ -976,8 +969,7 @@ Public Class Record_Field
             owner As Software_Element,
             parent_node As TreeNode,
             base_type_ref As Guid)
-        MyBase.New(name, description, owner, parent_node)
-        Me.Type_Ref = base_type_ref
+        MyBase.New(name, description, owner, parent_node, base_type_ref)
     End Sub
 
 
@@ -1003,87 +995,6 @@ Public Class Record_Field
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return (parent.GetType() = GetType(Record_Type))
     End Function
-
-
-    ' -------------------------------------------------------------------------------------------- '
-    ' Methods for contextual menu
-    ' -------------------------------------------------------------------------------------------- '
-
-    Public Overrides Sub Edit()
-
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        type_list.Remove(CType(Me.Owner, Type))
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        Dim current_referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
-            current_referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
-        End If
-
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Owner.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
-
-        Dim edition_form As New Element_With_Ref_Form(
-            Element_Form.E_Form_Kind.EDITION_FORM,
-            Record_Field.Metaclass_Name,
-            Me.Identifier.ToString,
-            Me.Name,
-            Me.Description,
-            forbidden_name_list,
-            "Type",
-            current_referenced_type_path,
-            type_by_path_dict.Keys.ToList())
-        Dim edition_form_result As DialogResult = edition_form.ShowDialog()
-
-        ' Treat edition form result
-        If edition_form_result = DialogResult.OK Then
-
-            ' Get the type referenced by the field
-            Dim new_referenced_type As Software_Element
-            new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
-
-            ' Update the Record_Field
-            Me.Name = edition_form.Get_Element_Name()
-            Me.Node.Text = Me.Name
-            Me.Description = edition_form.Get_Element_Description()
-            Me.Type_Ref = new_referenced_type.Identifier
-
-            Me.Update_Views()
-        End If
-
-    End Sub
-
-    Public Overrides Sub View()
-
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        ' Get referenced type path
-        Dim referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
-            referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
-        End If
-
-        Dim elmt_view_form As New Element_With_Ref_Form(
-            Element_Form.E_Form_Kind.VIEW_FORM,
-            Record_Field.Metaclass_Name,
-            Me.Identifier.ToString,
-            Me.Name,
-            Me.Description,
-            Nothing, ' Forbidden name list, useless for View
-            "Type",
-            referenced_type_path,
-            Nothing)
-        elmt_view_form.ShowDialog()
-
-    End Sub
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -1134,10 +1045,6 @@ Public Class Record_Field
 
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         MyBase.Check_Own_Consistency(report)
-
-        Dim type_ref_check = New Consistency_Check_Report_Item(Me, Record_Field.Base_Type_Rule)
-        report.Add_Item(type_ref_check)
-        type_ref_check.Set_Compliance(Me.Type_Ref <> Guid.Empty)
 
         Dim type_ref_not_owner_check As New _
             Consistency_Check_Report_Item(Me, Record_Field.Type_Ref_Not_Owner_Rule)

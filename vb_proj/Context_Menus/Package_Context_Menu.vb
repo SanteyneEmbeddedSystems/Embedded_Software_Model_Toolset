@@ -8,6 +8,7 @@
     Protected WithEvents Menu_Add_Fixed_Point_Type As New ToolStripMenuItem("Add Fixed_Point_Type")
     Protected WithEvents Menu_Add_Record_Type As New ToolStripMenuItem("Add Record_Type")
     Protected WithEvents Menu_Add_CS_Interface As New ToolStripMenuItem("Add Client_Server_Interface")
+    Protected WithEvents Menu_Add_Event_Interface As New ToolStripMenuItem("Add Event_Interface")
 
     Public Sub New()
         Me.Items.AddRange(New ToolStripItem() {
@@ -16,10 +17,14 @@
             Me.Menu_Remove,
             New ToolStripSeparator,
             Me.Menu_Add_Package,
+            New ToolStripSeparator,
             Me.Menu_Add_Array_Type,
             Me.Menu_Add_Enumerated_Type,
             Me.Menu_Add_Fixed_Point_Type,
-            Me.Menu_Add_CS_Interface})
+            Me.Menu_Add_Record_Type,
+            New ToolStripSeparator,
+            Me.Menu_Add_CS_Interface,
+            Me.Menu_Add_Event_Interface})
     End Sub
 
     Private Sub Add_Package(
@@ -57,11 +62,18 @@
         pkg.Add_Record_Type()
     End Sub
 
-    Private Sub AddClient_Server_Interface(
+    Private Sub Add_Client_Server_Interface(
             ByVal sender As Object,
             ByVal e As EventArgs) Handles Menu_Add_CS_Interface.Click
         Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
         pkg.Add_Client_Server_Interface()
+    End Sub
+
+    Private Sub Add_Event_Interface(
+        ByVal sender As Object,
+        ByVal e As EventArgs) Handles Menu_Add_Event_Interface.Click
+        Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
+        pkg.Add_Event_Interface()
     End Sub
 
 End Class
