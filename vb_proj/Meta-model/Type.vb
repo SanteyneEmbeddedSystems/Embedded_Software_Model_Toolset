@@ -53,16 +53,15 @@ End Class
 Public MustInherit Class Basic_Type
     Inherits Type
 
+    Public Shared ReadOnly Metaclass_Name As String = "Basic_Type"
+
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
-    Protected Overrides Sub Create_Node()
-        Me.Node = New TreeNode(Me.Name) With {
-            .ImageKey = "Basic_Type",
-            .SelectedImageKey = "Basic_Type",
-            .ContextMenuStrip = Software_Element.Read_Only_Context_Menu,
-            .Tag = Me}
-    End Sub
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Basic_Type.Metaclass_Name
+    End Function
 
     Protected Overrides Sub Move_Me(new_parent As Software_Element)
         Throw New Exception("A Basic Type cannot be moved.")
@@ -108,37 +107,16 @@ End Class
 
 Public Class Basic_Integer_Type
     Inherits Basic_Type
-
-    Public Shared ReadOnly Metaclass_Name As String = "Basic_Integer_Type"
-
-    Public Overrides Function Get_Metaclass_Name() As String
-        Return Basic_Integer_Type.Metaclass_Name
-    End Function
-
 End Class
 
 
 Public Class Basic_Boolean_Type
     Inherits Basic_Type
-
-    Public Shared ReadOnly Metaclass_Name As String = "Basic_Boolean_Type"
-
-    Public Overrides Function Get_Metaclass_Name() As String
-        Return Basic_Boolean_Type.Metaclass_Name
-    End Function
-
 End Class
 
 
 Public Class Basic_Floating_Point_Type
     Inherits Basic_Type
-
-    Public Shared ReadOnly Metaclass_Name As String = "Basic_Floating_Point_Type"
-
-    Public Overrides Function Get_Metaclass_Name() As String
-        Return Basic_Floating_Point_Type.Metaclass_Name
-    End Function
-
 End Class
 
 
@@ -846,13 +824,13 @@ Public Class Record_Type
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Sub Create_Node()
-        MyBase.Create_Node()
-        Me.Node.ContextMenuStrip = Record_Type.Context_Menu
-    End Sub
-
     Public Overrides Function Get_Metaclass_Name() As String
         Return Record_Type.Metaclass_Name
+    End Function
+
+
+    Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
+        Return Record_Type.Context_Menu
     End Function
 
     Protected Overrides Function Get_Children() As List(Of Software_Element)

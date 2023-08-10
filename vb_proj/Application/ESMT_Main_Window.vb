@@ -63,17 +63,17 @@
 
         Me.Model_Browser.ImageList = New ImageList
         With Me.Model_Browser.ImageList.Images
-            .Add("Project", My.Resources.Project)
-            .Add("Package", My.Resources.Package)
-            .Add("Basic_Type", My.Resources.Basic_Type)
-            .Add("Array_Type", My.Resources.Array_Type)
-            .Add("Enumerated_Type", My.Resources.Enumerated_Type)
-            .Add("Fixed_Point_Type", My.Resources.Fixed_Point_Type)
-            .Add("Record_Type", My.Resources.Record_Type)
-            .Add("Record_Field", My.Resources.Record_Field)
-            .Add("Client_Server_Interface", My.Resources.CS_Interface)
-            .Add("Client_Server_Operation", My.Resources.CS_Operation)
-            .Add("Operation_Parameter", My.Resources.Operation_Parameter)
+            .Add(Software_Project.Metaclass_Name, My.Resources.Project)
+            .Add(Package.Metaclass_Name, My.Resources.Package)
+            .Add(Basic_Type.Metaclass_Name, My.Resources.Basic_Type)
+            .Add(Array_Type.Metaclass_Name, My.Resources.Array_Type)
+            .Add(Enumerated_Type.Metaclass_Name, My.Resources.Enumerated_Type)
+            .Add(Fixed_Point_Type.Metaclass_Name, My.Resources.Fixed_Point_Type)
+            .Add(Record_Type.Metaclass_Name, My.Resources.Record_Type)
+            .Add(Record_Field.Metaclass_Name, My.Resources.Record_Field)
+            .Add(Client_Server_Interface.Metaclass_Name, My.Resources.CS_Interface)
+            .Add(Client_Server_Operation.Metaclass_Name, My.Resources.CS_Operation)
+            .Add(Operation_Parameter.Metaclass_Name, My.Resources.Operation_Parameter)
         End With
 
 

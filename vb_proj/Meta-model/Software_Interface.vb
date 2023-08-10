@@ -89,10 +89,9 @@ Public Class Client_Server_Interface
         Return Me.Children
     End Function
 
-    Protected Overrides Sub Create_Node()
-        MyBase.Create_Node()
-        Me.Node.ContextMenuStrip = Client_Server_Interface.Context_Menu
-    End Sub
+    Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
+        Return Client_Server_Interface.Context_Menu
+    End Function
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Client_Server_Interface.Metaclass_Name
@@ -229,10 +228,9 @@ Public Class Client_Server_Operation
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Sub Create_Node()
-        MyBase.Create_Node()
-        Me.Node.ContextMenuStrip = Client_Server_Operation.Context_Menu
-    End Sub
+    Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
+        Return Client_Server_Operation.Context_Menu
+    End Function
 
     Protected Overrides Sub Move_Me(new_parent As Software_Element)
         CType(Me.Owner, Client_Server_Interface).Operations.Remove(Me)
@@ -374,6 +372,10 @@ Public Class Operation_Parameter
         Return Operation_Parameter.Metaclass_Name
     End Function
 
+    Protected Overrides Function Get_Path_Separator() As String
+        Return "."
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
@@ -458,6 +460,10 @@ Public Class Operation_Parameter
 
     End Sub
 
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Specific methods
+    ' -------------------------------------------------------------------------------------------- '
 
     Public Function Get_Short_Direction() As String
         Select Case Me.Direction

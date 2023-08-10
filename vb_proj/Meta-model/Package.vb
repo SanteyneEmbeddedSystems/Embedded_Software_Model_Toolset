@@ -58,11 +58,6 @@ Public Class Package
         Return Me.Children
     End Function
 
-    Protected Overrides Sub Create_Node()
-        MyBase.Create_Node()
-        Me.Node.ContextMenuStrip = Package.Context_Menu
-    End Sub
-
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Dim is_allowed As Boolean = False
         If parent.GetType() = GetType(Top_Level_Package) _

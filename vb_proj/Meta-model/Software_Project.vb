@@ -53,11 +53,6 @@ Public Class Software_Project
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Sub Create_Node()
-        MyBase.Create_Node()
-        Me.Node.ContextMenuStrip = Software_Project.Context_Menu
-    End Sub
-
     Protected Overrides Function Get_Children() As List(Of Software_Element)
         If Me.Children_Is_Computed = False Then
             Me.Children_Is_Computed = True
@@ -77,10 +72,9 @@ Public Class Software_Project
     Protected Overrides Sub Remove_Me()
         ' Currently not needed, a project cannot be removed.
     End Sub
-
+    
     Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
-        Throw New Exception("Project contextual menu shall not be modified.")
-        Return Nothing
+        Return Software_Project.Context_Menu
     End Function
 
     Public Overrides Function Get_Metaclass_Name() As String

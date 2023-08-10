@@ -18,8 +18,7 @@ Public MustInherit Class Software_Element
         "^[a-zA-Z][a-zA-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
 
     Protected Shared Read_Only_Context_Menu As New Read_Only_Context_Menu
-    Protected Shared Leaf_Context_Menu As New Leaf_Context_Menu
-
+    Private Shared ReadOnly Leaf_Context_Menu As New Leaf_Context_Menu
 
     Private Shared ReadOnly Name_Rule As New Modeling_Rule(
         "Name_Pattern",
@@ -52,15 +51,7 @@ Public MustInherit Class Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
     Public Shared Function Is_Symbol_Valid(symbol As String) As Boolean
-        Dim result As Boolean = False
-        If Regex.IsMatch(symbol, Software_Element.Valid_Symbol_Regex) Then
-            result = True
-        End If
-        Return result
-    End Function
-
-    Public Shared Function Get_Default_Description() As String
-        Return "A good description is always useful."
+        Return Regex.IsMatch(symbol, Software_Element.Valid_Symbol_Regex)
     End Function
 
     Public Shared Function Create_Path_Dictionary_From_List(
@@ -86,17 +77,17 @@ Public MustInherit Class Software_Element
     ' Generic methods
     ' -------------------------------------------------------------------------------------------- '
 
+    Public MustOverride Function Get_Metaclass_Name() As String
+
+    ' Shall be overridden by all non-leaf software elements
     Protected Overridable Function Get_Children() As List(Of Software_Element)
         Return Nothing
     End Function
 
-    Protected Overridable Sub Create_Node()
-        Me.Node = New TreeNode(Me.Name) With {
-            .ImageKey = Me.Get_Metaclass_Name(),
-            .SelectedImageKey = Me.Get_Metaclass_Name(),
-            .ContextMenuStrip = Software_Element.Leaf_Context_Menu,
-            .Tag = Me}
-    End Sub
+    ' Shall be overridden by "attribute like" software elements
+    Protected Overridable Function Get_Path_Separator() As String
+        Return "::"
+    End Function
 
     Protected Sub Post_Treat_After_Deserialization(parent_node As TreeNode)
         Me.Create_Node()
@@ -112,6 +103,32 @@ Public MustInherit Class Software_Element
             Next
         End If
     End Sub
+
+    Public Function Get_Children_Name() As List(Of String)
+        Dim children_name As New List(Of String)
+        For Each child In Me.Get_Children
+            children_name.Add(child.Name)
+        Next
+        Return children_name
+    End Function
+
+    Public Function Get_Path() As String
+        Dim my_path As String = Me.Get_Path_Separator() & Me.Name
+        Dim parent As Software_Element = Me.Owner
+        While Not IsNothing(parent.Owner)
+            my_path = parent.Get_Path_Separator() & parent.Name & my_path
+            parent = parent.Owner
+        End While
+        Return my_path
+    End Function
+
+    Protected Function Get_Project() As Software_Project
+        Dim current_element As Software_Element = Me
+        While Not IsNothing(current_element.Owner)
+            current_element = current_element.Owner
+        End While
+        Return CType(current_element, Software_Project)
+    End Function
 
     Public Function Get_Top_Package() As Top_Level_Package
         Dim top_pkg As Top_Level_Package = Nothing
@@ -131,27 +148,54 @@ Public MustInherit Class Software_Element
         Return top_pkg
     End Function
 
+    Protected Function Get_Top_Package_Folder() As String
+        Dim top_pkg As Top_Level_Package = Me.Get_Top_Package()
+        Return top_pkg.Get_Folder()
+    End Function
+
+    Protected Function Get_Type_List_From_Project() As List(Of Type)
+        Return Get_Project().Get_Type_List()
+    End Function
+
+    Protected Function Get_Basic_Integer_Type_List_From_Project() As List(Of Type)
+        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
+        Dim basic_int_list As New List(Of Type)
+        For Each type In type_list
+            If type.GetType = GetType(Basic_Integer_Type) Then
+                basic_int_list.Add(type)
+            End If
+        Next
+        Return basic_int_list
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for tree view management
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public MustOverride Function Is_Allowed_Parent(parent As Software_Element) As Boolean
+
+    Protected MustOverride Sub Move_Me(new_parent As Software_Element)
+
+    Protected MustOverride Sub Remove_Me()
+
+    Protected Overridable Function Get_Writable_Context_Menu() As ContextMenuStrip
+        Return Software_Element.Leaf_Context_Menu
+    End Function
+
+    Protected Sub Create_Node()
+        Me.Node = New TreeNode(Me.Name) With {
+            .ImageKey = Me.Get_Metaclass_Name(),
+            .SelectedImageKey = Me.Get_Metaclass_Name(),
+            .ContextMenuStrip = Get_Writable_Context_Menu(),
+            .Tag = Me}
+    End Sub
+
     Private Sub Display_Package_Modified()
         ' Display, in the tree view, that top package is modified (not saved)
         Dim owner_pkg As Top_Level_Package = Me.Get_Top_Package()
         owner_pkg.Display_Modified()
     End Sub
-
-    Public Sub Update_Views()
-        Me.Display_Package_Modified()
-        ' Refresh Diagram view
-        Me.Get_Project().Update_Diagram(Me)
-    End Sub
-
-    Public Function Get_Children_Name() As List(Of String)
-        Dim children_name As New List(Of String)
-        For Each child In Me.Get_Children
-            children_name.Add(child.Name)
-        Next
-        Return children_name
-    End Function
-
-    Public MustOverride Function Is_Allowed_Parent(parent As Software_Element) As Boolean
 
     Public Sub Move(new_parent As Software_Element)
         ' Manage top level packages
@@ -187,59 +231,6 @@ Public MustInherit Class Software_Element
             Next
         End If
     End Sub
-
-    Protected Overridable Function Get_Writable_Context_Menu() As ContextMenuStrip
-        Return Software_Element.Leaf_Context_Menu
-    End Function
-
-    Protected MustOverride Sub Move_Me(new_parent As Software_Element)
-
-    Protected MustOverride Sub Remove_Me()
-
-    Public Function Get_Path() As String
-        Dim my_path As String = Me.Get_Path_Separator() & Me.Name
-        Dim parent As Software_Element = Me.Owner
-        While Not IsNothing(parent.Owner)
-            my_path = parent.Get_Path_Separator() & parent.Name & my_path
-            parent = parent.Owner
-        End While
-        Return my_path
-    End Function
-
-    Protected Overridable Function Get_Path_Separator() As String
-        Return "::"
-    End Function
-
-    Protected Function Get_Project() As Software_Project
-        Dim current_element As Software_Element = Me
-        While Not IsNothing(current_element.Owner)
-            current_element = current_element.Owner
-        End While
-        Return CType(current_element, Software_Project)
-    End Function
-
-    Protected Function Get_Type_List_From_Project() As List(Of Type)
-        Return Get_Project().Get_Type_List()
-    End Function
-
-    Protected Function Get_Basic_Integer_Type_List_From_Project() As List(Of Type)
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim basic_int_list As New List(Of Type)
-        For Each type In type_list
-            If type.GetType = GetType(Basic_Integer_Type) Then
-                basic_int_list.Add(type)
-            End If
-        Next
-        Return basic_int_list
-    End Function
-
-
-    Public MustOverride Function Get_Metaclass_Name() As String
-
-    Protected Function Get_Top_Package_Folder() As String
-        Dim top_pkg As Top_Level_Package = Me.Get_Top_Package()
-        Return top_pkg.Get_Folder()
-    End Function
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -332,6 +323,12 @@ Public MustInherit Class Software_Element
             "<text x=""" & x_pos & "px"" y=""" & y_pos + 20 & "px"">" & Me.Description & "</text>"
         Return svg_content
     End Function
+
+    Public Sub Update_Views()
+        Me.Display_Package_Modified()
+        ' Refresh Diagram view
+        Me.Get_Project().Update_Diagram(Me)
+    End Sub
 
 
     '----------------------------------------------------------------------------------------------'

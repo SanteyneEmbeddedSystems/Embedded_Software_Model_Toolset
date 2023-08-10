@@ -51,13 +51,6 @@ Public Class Top_Level_Package
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Sub Create_Node()
-        MyBase.Create_Node()
-        ' Set a specific contextual menu for top level packages (recordable file)
-        ' Default choice as 3 kinds of ContextMenuStrip are defined.
-        Me.Node.ContextMenuStrip = Top_Level_Package.Writable_Context_Menu
-    End Sub
-
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return False
     End Function
