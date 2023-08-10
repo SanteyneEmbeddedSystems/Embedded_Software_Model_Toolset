@@ -24,7 +24,9 @@
             Me.Menu_Add_Record_Type,
             New ToolStripSeparator,
             Me.Menu_Add_CS_Interface,
-            Me.Menu_Add_Event_Interface})
+            Me.Menu_Add_Event_Interface,
+            New ToolStripSeparator,
+            Me.Menu_Add_Component_Type})
     End Sub
 
     Private Sub Save(

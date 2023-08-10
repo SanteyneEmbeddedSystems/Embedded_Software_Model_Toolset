@@ -145,6 +145,7 @@
     <Compile Include="Forms\Operation_Parameter_Form.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Meta-model\Component_Type.vb" />
     <Compile Include="Meta-model\Software_Interface.vb" />
     <Compile Include="Meta-model\Type.vb" />
     <Compile Include="Modules\Consistency_Check_Report.vb" />
@@ -246,6 +247,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Purple_Triangle.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Black_Class_With_Ports.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

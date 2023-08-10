@@ -93,6 +93,16 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
+        Friend ReadOnly Property Black_Class_With_Ports() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Black_Class_With_Ports", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
         Friend ReadOnly Property CS_Interface() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("CS_Interface", resourceCulture)

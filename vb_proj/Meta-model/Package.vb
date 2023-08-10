@@ -20,6 +20,8 @@ Public Class Package
      XmlArray("Interfaces")>
     Public Interfaces As New List(Of Software_Interface)
 
+    Public Component_Types As New List(Of Component_Type)
+
     Private Shared ReadOnly Context_Menu As New Package_Context_Menu()
 
     Public Shared ReadOnly Metaclass_Name As String = "Package"
@@ -293,6 +295,27 @@ Public Class Package
                 Me.Node)
             Me.Interfaces.Add(new_ev_if)
             Me.Children.Add(new_ev_if)
+            Me.Update_Views()
+        End If
+    End Sub
+
+    Public Sub Add_Component_Type()
+        Dim creation_form As New Element_Form(
+             Element_Form.E_Form_Kind.CREATION_FORM,
+             Component_Type.Metaclass_Name,
+             "",
+             Component_Type.Metaclass_Name,
+             "",
+             Me.Get_Children_Name())
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_swct As New Component_Type(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node)
+            Me.Component_Types.Add(new_swct)
+            Me.Children.Add(new_swct)
             Me.Update_Views()
         End If
     End Sub

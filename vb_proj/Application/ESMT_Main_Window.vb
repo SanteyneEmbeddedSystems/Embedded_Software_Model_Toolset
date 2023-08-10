@@ -76,6 +76,7 @@
             .Add(Operation_Parameter.Metaclass_Name, My.Resources.Operation_Parameter)
             .Add(Event_Interface.Metaclass_Name, My.Resources.Purple_Flash_In_Square)
             .Add(Event_Parameter.Metaclass_Name, My.Resources.Purple_Triangle)
+            .Add(Component_Type.Metaclass_Name, My.Resources.Black_Class_With_Ports)
         End With
 
 
