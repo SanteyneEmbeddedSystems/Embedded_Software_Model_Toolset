@@ -30,16 +30,22 @@ Module Utilities
 
         Dim remaning_str As String = input_string
         While (remaning_str.Length > nb_char_per_line)
-            If Char.IsWhiteSpace(remaning_str(nb_char_per_line)) Then
-                result.Add(remaning_str.Substring(0, nb_char_per_line))
-                remaning_str = remaning_str.Substring(nb_char_per_line)
+            Dim idx As Integer = remaning_str.Substring(0, nb_char_per_line).IndexOf(vbLf)
+            If idx <> -1 Then
+                result.Add(remaning_str.Substring(0, idx))
+                remaning_str = remaning_str.Substring(idx + 1)
             Else
-                Dim white_space_idx As Integer = nb_char_per_line - 1
-                While Not Char.IsWhiteSpace(remaning_str(white_space_idx))
-                    white_space_idx -= 1
-                End While
-                result.Add(remaning_str.Substring(0, white_space_idx))
-                remaning_str = remaning_str.Substring(white_space_idx + 1)
+                If Char.IsWhiteSpace(remaning_str(nb_char_per_line)) Then
+                    result.Add(remaning_str.Substring(0, nb_char_per_line))
+                    remaning_str = remaning_str.Substring(nb_char_per_line)
+                Else
+                    Dim white_space_idx As Integer = nb_char_per_line - 1
+                    While Not Char.IsWhiteSpace(remaning_str(white_space_idx))
+                        white_space_idx -= 1
+                    End While
+                    result.Add(remaning_str.Substring(0, white_space_idx))
+                    remaning_str = remaning_str.Substring(white_space_idx + 1)
+                End If
             End If
         End While
 
