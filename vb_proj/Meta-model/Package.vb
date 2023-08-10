@@ -57,6 +57,7 @@ Public Class Package
             Me.Children.AddRange(Me.Packages)
             Me.Children.AddRange(Me.Types)
             Me.Children.AddRange(Me.Interfaces)
+            Me.Children.AddRange(Me.Component_Types)
         End If
         Return Me.Children
     End Function
