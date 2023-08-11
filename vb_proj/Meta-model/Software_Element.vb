@@ -332,8 +332,25 @@ Public MustInherit Class Software_Element
 
     Public Overridable Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
-        svg_content = "  <text x=""" & x_pos & "px"" y=""" & y_pos & "px"">" & Me.Name & "</text>" &
-            "<text x=""" & x_pos & "px"" y=""" & y_pos + 20 & "px"">" & Me.Description & "</text>"
+
+        Dim box_width As Integer = Get_Box_Witdh(SVG_MIN_CHAR_PER_LINE)
+
+        ' Add title (Name + stereotype) compartment
+        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
+            "lightblue", box_width, Me.Get_Metaclass_Name)
+
+        ' Add description compartment
+        Dim desc_rect_height As Integer = 0
+        Dim split_description As List(Of String)
+        split_description = Split_String(Me.Description, SVG_MIN_CHAR_PER_LINE)
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT,
+            split_description,
+            "lightblue",
+            box_width,
+            desc_rect_height)
+
         Return svg_content
     End Function
 
