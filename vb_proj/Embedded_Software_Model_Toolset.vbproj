@@ -108,6 +108,9 @@
     <Compile Include="Context_Menus\Record_Type_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Context_Menus\SWCT_Context_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Context_Menus\Top_Package_Writable_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -250,6 +253,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Black_Class_With_Ports.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Black_Gears.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

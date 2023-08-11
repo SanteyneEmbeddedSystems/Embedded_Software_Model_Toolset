@@ -130,6 +130,9 @@
   <data name="Black_Class_With_Ports" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Black_Class_With_Ports.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Black_Gears" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Black_Gears.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="CS_Interface" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\CS_Interface.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
