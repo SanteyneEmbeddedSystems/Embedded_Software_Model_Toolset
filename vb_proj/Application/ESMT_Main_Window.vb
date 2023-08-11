@@ -78,6 +78,7 @@
             .Add(Event_Parameter.Metaclass_Name, My.Resources.Purple_Triangle)
             .Add(Component_Type.Metaclass_Name, My.Resources.Black_Class_With_Ports)
             .Add(Configuration_Parameter.Metaclass_Name, My.Resources.Black_Gears)
+            .Add(OS_Operation.Metaclass_Name, My.Resources.Black_Cross)
         End With
 
 

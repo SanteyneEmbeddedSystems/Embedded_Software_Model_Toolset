@@ -2,6 +2,7 @@
     Inherits Must_Describe_Software_Element
 
     Public Configurations As New List(Of Configuration_Parameter)
+    Public Operations As New List(Of OS_Operation)
 
     Public Const Metaclass_Name As String = "Component_Type"
 
@@ -33,6 +34,7 @@
         If Me.Children_Is_Computed = False Then
             Me.Children_Is_Computed = True
             Me.Children.AddRange(Me.Configurations)
+            Me.Children.AddRange(Me.Operations)
         End If
         Return Me.Children
     End Function
@@ -104,6 +106,28 @@
 
     End Sub
 
+    Public Sub Add_OS_Operation()
+        Dim creation_form As New Element_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            OS_Operation.Metaclass_Name,
+            "",
+            OS_Operation.Metaclass_Name,
+            "",
+            Me.Get_Children_Name())
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_op As New OS_Operation(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node)
+            Me.Operations.Add(new_op)
+            Me.Children.Add(new_op)
+            Me.Get_Project().Add_Element_To_Project(new_op)
+            Me.Update_Views()
+        End If
+    End Sub
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for diagrams
@@ -140,10 +164,25 @@
             desc_rect_height)
 
         ' Add configurations compartement
+        Dim conf_rect_height As Integer = 0
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             config_lines,
+            Component_Type.SVG_COLOR,
+            box_width,
+            conf_rect_height)
+
+        ' Add operations compartement
+        Dim op_lines As New List(Of String)
+        For Each op In Me.Operations
+            Dim op_line As String = "+ " & op.Name & "()"
+            op_lines.Add(op_line)
+        Next
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT + desc_rect_height + conf_rect_height,
+            op_lines,
             Component_Type.SVG_COLOR,
             box_width)
 
@@ -193,6 +232,53 @@ Public Class Configuration_Parameter
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Configuration_Parameter.Metaclass_Name
+    End Function
+
+    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
+        Return TypeOf parent Is Component_Type
+    End Function
+
+End Class
+
+
+Public Class OS_Operation
+    Inherits Must_Describe_Software_Element
+
+    Public Const Metaclass_Name As String = "OS_Operation"
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode)
+        MyBase.New(name, description, owner, parent_node)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Move_Me(new_parent As Software_Element)
+        CType(Me.Owner, Component_Type).Operations.Remove(Me)
+        CType(new_parent, Component_Type).Operations.Add(Me)
+    End Sub
+
+    Protected Overrides Sub Remove_Me()
+        Dim parent_swct As Component_Type = CType(Me.Owner, Component_Type)
+        Me.Node.Remove()
+        parent_swct.Operations.Remove(Me)
+    End Sub
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return OS_Operation.Metaclass_Name
     End Function
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
