@@ -55,4 +55,14 @@ Module Utilities
 
     End Function
 
+    Public Function Get_Max_Nb_Of_Char_Per_Line(
+            lines As List(Of String),
+            minimum_value As Integer) As Integer
+        Dim current_max As Integer = 0
+        For Each line In lines
+            current_max = Math.Max(current_max, line.Length)
+        Next
+        Return Math.Max(current_max, minimum_value)
+    End Function
+
 End Module

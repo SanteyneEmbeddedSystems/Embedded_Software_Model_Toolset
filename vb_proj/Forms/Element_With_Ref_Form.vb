@@ -61,7 +61,7 @@
         ref_panel.Size = New Size(Panel_Width, inner_item_y_pos)
         item_y_pos += ref_panel.Height + ESMT_Form.Marge
 
-        Me.Checks_List.Add(AddressOf Check_Ref_Rerenced_Element_Path)
+        Me.Checks_List.Add(AddressOf Check_Ref_Element_Path)
 
 
         '------------------------------------------------------------------------------------------'
@@ -76,8 +76,7 @@
 
     End Sub
 
-
-    Public Function Get_Ref_Rerenced_Element_Path() As String
+    Public Function Get_Ref_Element_Path() As String
         Return Me.Referenced_Element_ComboBox.Text
     End Function
 
@@ -86,7 +85,7 @@
         Me.Referenced_Element_ComboBox.Enabled = False
     End Sub
 
-    Private Function Check_Ref_Rerenced_Element_Path() As Boolean
+    Private Function Check_Ref_Element_Path() As Boolean
         Dim ref_is_valid As Boolean = True
         Dim used_combobox As ComboBox = Me.Referenced_Element_ComboBox
         If Not used_combobox.Items.Contains(used_combobox.Text) Then

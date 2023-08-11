@@ -13,15 +13,20 @@ Public Class Software_Project
     Private Xml_File_Path As String
     Private ReadOnly Top_Level_Packages_List As New List(Of Top_Level_Package)
 
-    Public Shared ReadOnly Project_File_Extension As String = ".prjx"
+    Public Const Project_File_Extension As String = ".prjx"
 
     Private Shared ReadOnly Context_Menu As New Project_Context_Menu
 
     Private Shared ReadOnly Project_Serializer As New XmlSerializer(GetType(Software_Project))
 
-    Public Shared ReadOnly Metaclass_Name As String = "Project"
+    Public Const Metaclass_Name As String = "Project"
 
     Private Diagram_Viewer As WebBrowser
+
+    Private ReadOnly Elements As New Dictionary(Of Guid, Software_Element)
+    Private ReadOnly Types As New Dictionary(Of String, Type)
+    Private ReadOnly Basic_Integer_Types As New Dictionary(Of String, Basic_Integer_Type)
+    Private ReadOnly Interfaces As New Dictionary(Of String, Software_Interface)
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -180,7 +185,9 @@ Public Class Software_Project
         Dim edit_result As DialogResult
         edit_result = prj_edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
+            Dim old_name As String = Me.Name
             Me.Name = prj_edit_form.Get_Element_Name()
+            Update_Project(old_name)
             Me.Node.Text = Me.Name
             Me.Description = prj_edit_form.Get_Element_Description()
             Me.Update_Views()
@@ -272,19 +279,14 @@ Public Class Software_Project
 
     Public Sub Create_Package()
 
-        Dim proposed_directory As String = Path.GetDirectoryName(Me.Xml_File_Path)
-
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Get_Children_Name()
-
         Dim pkg_creation_form As New Recordable_Element_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
             Package.Metaclass_Name,
             "",
             Package.Metaclass_Name,
             "A good description is always useful.",
-            forbidden_name_list,
-            proposed_directory,
+            Me.Get_Children_Name(),
+            Path.GetDirectoryName(Me.Xml_File_Path),
             Package.Metaclass_Name,
             Top_Level_Package.Package_File_Extension)
 
@@ -331,13 +333,93 @@ Public Class Software_Project
     ' Methods for model management
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Function Get_Type_List() As List(Of Type)
-        Dim type_list As New List(Of Type)
-        For Each pkg In Me.Top_Level_Packages_List
-            pkg.Complete_Type_List(type_list)
-        Next
-        Return type_list
+    Public Sub Add_Element_To_Project(element As Software_Element)
+        Me.Elements.Add(element.Identifier, element)
+        If TypeOf element Is Type Then
+            Me.Types.Add(element.Get_Path, CType(element, Type))
+            If TypeOf element Is Basic_Integer_Type Then
+                Me.Basic_Integer_Types.Add(element.Get_Path, CType(element, Basic_Integer_Type))
+            End If
+        ElseIf TypeOf element Is Software_Interface Then
+            Me.Interfaces.Add(element.Get_Path, CType(element, Software_Interface))
+        End If
+    End Sub
+
+    Public Sub Remove_Element_From_Project(element As Software_Element)
+        Me.Elements.Remove(element.Identifier)
+        If TypeOf element Is Type Then
+            Me.Types.Remove(element.Get_Path)
+            If TypeOf element Is Basic_Integer_Type Then
+                Me.Basic_Integer_Types.Remove(element.Get_Path)
+            End If
+        ElseIf TypeOf element Is Software_Interface Then
+            Me.Interfaces.Remove(element.Get_Path)
+        End If
+    End Sub
+
+    Public Sub Move_Element_In_Project(old_path As String, new_path As String)
+        Dim elmt As Software_Element
+        If Me.Types.ContainsKey(old_path) Then
+            elmt = Me.Types(old_path)
+            Me.Types.Remove(old_path)
+            Me.Types.Add(new_path, CType(elmt, Type))
+        ElseIf Me.Basic_Integer_Types.ContainsKey(old_path) Then
+            elmt = Me.Basic_Integer_Types(old_path)
+            Me.Basic_Integer_Types.Remove(old_path)
+            Me.Basic_Integer_Types.Add(new_path, CType(elmt, Basic_Integer_Type))
+        ElseIf Me.Interfaces.ContainsKey(old_path) Then
+            elmt = Me.Interfaces(old_path)
+            Me.Interfaces.Remove(old_path)
+            Me.Interfaces.Add(new_path, CType(elmt, Software_Interface))
+        End If
+    End Sub
+
+
+    Public Function Get_Element_By_Identifier(id As Guid) As Software_Element
+        If Me.Elements.ContainsKey(id) Then
+            Return Me.Elements(id)
+        Else
+            Return Nothing
+        End If
     End Function
+
+    Public Function Get_Type_By_Path(path As String) As Type
+        If Me.Types.ContainsKey(path) Then
+            Return Me.Types(path)
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Function Get_All_Types_Path() As List(Of String)
+        Return Me.Types.Keys.ToList
+    End Function
+
+    Public Function Get_Basic_Integer_Type_By_Path(path As String) As Basic_Integer_Type
+        If Me.Basic_Integer_Types.ContainsKey(path) Then
+            Return Me.Basic_Integer_Types(path)
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Function Get_All_Basic_Integer_Types_Path() As List(Of String)
+        Return Me.Basic_Integer_Types.Keys.ToList
+    End Function
+
+
+    Public Function Get_Interface_By_Path(path As String) As Software_Interface
+        If Me.Interfaces.ContainsKey(path) Then
+            Return Me.Interfaces(path)
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Function Get_All_Interfaces_Path() As List(Of String)
+        Return Me.Interfaces.Keys.ToList
+    End Function
+
 
     Public Sub Remove_Package(pkg_name As String)
 

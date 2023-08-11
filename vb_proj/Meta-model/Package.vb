@@ -24,7 +24,7 @@ Public Class Package
 
     Private Shared ReadOnly Context_Menu As New Package_Context_Menu()
 
-    Public Shared ReadOnly Metaclass_Name As String = "Package"
+    Public Const Metaclass_Name As String = "Package"
 
     Private Shared ReadOnly Package_Not_Empty As New Modeling_Rule(
         "Package_Not_Empty",
@@ -112,15 +112,12 @@ Public Class Package
                 Me.Node)
             Me.Packages.Add(new_pkg)
             Me.Children.Add(new_pkg)
+            Me.Get_Project().Add_Element_To_Project(new_pkg)
             Me.Update_Views()
         End If
     End Sub
 
     Public Sub Add_Array_Type()
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
 
         ' Display a creation form
         Dim creation_form As New Array_Type_Form(
@@ -130,32 +127,30 @@ Public Class Package
             Array_Type.Metaclass_Name,
             "",
             Me.Get_Children_Name(),
-            type_by_path_dict.Keys(0),
-            type_by_path_dict.Keys.ToList(),
+            "",
+            Me.Get_All_Types_Path_From_Project(),
             Array_Type.Multiplicity_Minimum_Value.ToString())
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
         ' Treat creation form result
         If creation_form_result = DialogResult.OK Then
 
-            ' Get the type referenced by the array
-            Dim ref_type As Software_Element
-            ref_type = type_by_path_dict(creation_form.Get_Ref_Rerenced_Element_Path())
-
             ' Create the array type
             Dim new_array_type As New Array_Type(
-                    creation_form.Get_Element_Name(),
-                    creation_form.Get_Element_Description(),
-                    Me,
-                    Me.Node,
-                    CUInt(creation_form.Get_Multiplicity()),
-                    ref_type.Identifier)
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node,
+                CUInt(creation_form.Get_Multiplicity()),
+                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier)
 
-            ' Add array type to its package
+            ' Add array type to its package and project
             Me.Types.Add(new_array_type)
             Me.Children.Add(new_array_type)
+            Me.Get_Project().Add_Element_To_Project(new_array_type)
 
             Me.Update_Views()
+
         End If
 
     End Sub
@@ -187,16 +182,12 @@ Public Class Package
                     enumerals_table)
             Me.Types.Add(new_enumeration)
             Me.Children.Add(new_enumeration)
+            Me.Get_Project().Add_Element_To_Project(new_enumeration)
             Me.Update_Views()
         End If
     End Sub
 
     Public Sub Add_Fixed_Point_Type()
-
-        ' Build the list of possible referenced type
-        Dim basic_int_list As List(Of Type) = Get_Basic_Integer_Type_List_From_Project()
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(basic_int_list)
 
         Dim creation_form As New Fixed_Point_Type_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
@@ -205,33 +196,30 @@ Public Class Package
             Fixed_Point_Type.Metaclass_Name,
             "",
             Me.Get_Children_Name(),
-            type_by_path_dict.Keys(0),
-            type_by_path_dict.Keys.ToList(),
+            "",
+            Me.Get_All_Basic_Int_Path_From_Project(),
             "-",
             "1",
             "0")
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+
         If creation_form_result = DialogResult.OK Then
 
-            ' Get the type referenced by the fixed point type
-            Dim ref_type As Software_Element
-            ref_type = type_by_path_dict(creation_form.Get_Ref_Rerenced_Element_Path())
-
             Dim new_fixed_point As New Fixed_Point_Type(
-                    creation_form.Get_Element_Name(),
-                    creation_form.Get_Element_Description(),
-                    Me,
-                    Me.Node,
-                    ref_type.Identifier,
-                    creation_form.Get_Unit(),
-                    creation_form.Get_Resolution(),
-                    creation_form.Get_Offset())
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node,
+                Me.Get_Basic_Int_From_Proj_By_Path(creation_form.Get_Ref_Element_Path()).Identifier,
+                creation_form.Get_Unit(),
+                creation_form.Get_Resolution(),
+                creation_form.Get_Offset())
 
-            ' Add fixed point type to its package
+            ' Add fixed point type to its package and project
             Me.Types.Add(new_fixed_point)
             Me.Children.Add(new_fixed_point)
-
+            Me.Get_Project().Add_Element_To_Project(new_fixed_point)
             Me.Update_Views()
 
         End If
@@ -254,6 +242,7 @@ Public Class Package
                 Me.Node)
             Me.Types.Add(new_record)
             Me.Children.Add(new_record)
+            Me.Get_Project().Add_Element_To_Project(new_record)
             Me.Update_Views()
         End If
     End Sub
@@ -275,6 +264,7 @@ Public Class Package
                 Me.Node)
             Me.Interfaces.Add(new_cs_if)
             Me.Children.Add(new_cs_if)
+            Me.Get_Project().Add_Element_To_Project(new_cs_if)
             Me.Update_Views()
         End If
     End Sub
@@ -296,6 +286,7 @@ Public Class Package
                 Me.Node)
             Me.Interfaces.Add(new_ev_if)
             Me.Children.Add(new_ev_if)
+            Me.Get_Project().Add_Element_To_Project(new_ev_if)
             Me.Update_Views()
         End If
     End Sub
@@ -319,18 +310,6 @@ Public Class Package
             Me.Children.Add(new_swct)
             Me.Update_Views()
         End If
-    End Sub
-
-
-    ' -------------------------------------------------------------------------------------------- '
-    ' Methods for model management
-    ' -------------------------------------------------------------------------------------------- '
-
-    Public Sub Complete_Type_List(ByRef type_list As List(Of Type))
-        type_list.AddRange(Me.Types)
-        For Each pkg In Me.Packages
-            pkg.Complete_Type_List(type_list)
-        Next
     End Sub
 
 

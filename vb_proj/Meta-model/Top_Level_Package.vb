@@ -24,7 +24,7 @@ Public Class Top_Level_Package
 
     Private Shared ReadOnly Pkg_Serializer As New XmlSerializer(GetType(Top_Level_Package))
 
-    Public Shared ReadOnly Package_File_Extension As String = ".pkgx"
+    Public Const Package_File_Extension As String = ".pkgx"
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -266,17 +266,13 @@ Public Class Top_Level_Package
 
         Dim previous_name As String = Me.Name
 
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Owner.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
-
         Dim edit_form As New Recordable_Element_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Package.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            forbidden_name_list,
+            Me.Get_Forbidden_Name_List(),
             my_directory,
             my_file_name,
             Top_Level_Package.Package_File_Extension)
@@ -284,7 +280,9 @@ Public Class Top_Level_Package
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
+            Dim old_name As String = Me.Name
             Me.Name = edit_form.Get_Element_Name()
+            Update_Project(old_name)
             Me.Node.Text = Me.Name
             If previous_name <> Me.Name Then
                 Me.Get_Project().Update_Pkg_Known_Name(previous_name, Me.Name)

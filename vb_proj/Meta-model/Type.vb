@@ -5,7 +5,7 @@ Imports System.Text.RegularExpressions
 Public MustInherit Class Type
     Inherits Must_Describe_Software_Element
 
-    Public Shared ReadOnly SVG_COLOR As String = "rgb(136,0,21)"
+    Public Const SVG_COLOR As String = "rgb(136,0,21)"
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -53,7 +53,7 @@ End Class
 Public MustInherit Class Basic_Type
     Inherits Type
 
-    Public Shared ReadOnly Metaclass_Name As String = "Basic_Type"
+    Public Const Metaclass_Name As String = "Basic_Type"
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Software_Element
@@ -87,16 +87,21 @@ Public MustInherit Class Basic_Type
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
+        Dim box_width As Integer = Get_Box_Witdh(SVG_MIN_CHAR_PER_LINE)
+
         ' Title (Name + stereotype)
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name, Type.SVG_COLOR, "basic_type")
+        svg_content = Get_Title_Rectangle(
+            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, "basic_type")
 
         ' Description compartment
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        Dim split_description As List(Of String) = Split_String(
+            Me.Description, SVG_MIN_CHAR_PER_LINE)
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
-            Type.SVG_COLOR)
+            Type.SVG_COLOR,
+            box_width)
 
         Return svg_content
 
@@ -126,9 +131,9 @@ Public Class Array_Type
     Public Multiplicity As UInteger
     Public Base_Type_Ref As Guid
 
-    Public Shared ReadOnly Metaclass_Name As String = "Array_Type"
+    Public Const Metaclass_Name As String = "Array_Type"
 
-    Public Shared ReadOnly Multiplicity_Minimum_Value As UInteger = 2
+    Public Const Multiplicity_Minimum_Value As UInteger = 2
 
     Private Shared ReadOnly Multiplicity_Rule As New Modeling_Rule(
         "Array_Multiplicity",
@@ -177,21 +182,14 @@ Public Class Array_Type
     Public Overrides Sub Edit()
 
         ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        type_list.Remove(Me)
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
+        Dim type_path_list As List(Of String) = Me.Get_All_Types_Path_From_Project()
+        type_path_list.Remove(Me.Get_Path())
 
         Dim current_referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref) Then
-            current_referenced_type_path = type_by_uuid_dict(Me.Base_Type_Ref).Get_Path()
+        Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
+        If Not IsNothing(type) Then
+            current_referenced_type_path = type.Get_Path()
         End If
-
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Owner.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
 
         Dim edition_form As New Array_Type_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
@@ -199,25 +197,24 @@ Public Class Array_Type
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            forbidden_name_list,
+            Me.Get_Forbidden_Name_List(),
             current_referenced_type_path,
-            type_by_path_dict.Keys.ToList(),
+            type_path_list,
             Me.Multiplicity.ToString())
         Dim edition_form_result As DialogResult = edition_form.ShowDialog()
 
         ' Treat edition form result
         If edition_form_result = DialogResult.OK Then
 
-            ' Get the type referenced by the array
-            Dim new_referenced_type As Software_Element
-            new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
-
             ' Update the array type
+            Dim old_name As String = Me.Name
             Me.Name = edition_form.Get_Element_Name()
+            Update_Project(old_name)
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
             Me.Multiplicity = CUInt(edition_form.Get_Multiplicity())
-            Me.Base_Type_Ref = new_referenced_type.Identifier
+            Me.Base_Type_Ref =
+                Me.Get_Type_From_Project_By_Path(edition_form.Get_Ref_Element_Path()).Identifier
 
             Me.Update_Views()
         End If
@@ -226,15 +223,10 @@ Public Class Array_Type
 
     Public Overrides Sub View()
 
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        ' Get referenced type path
         Dim referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref) Then
-            referenced_type_path = type_by_uuid_dict(Me.Base_Type_Ref).Get_Path()
+        Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
+        If Not IsNothing(type) Then
+            referenced_type_path = type.Get_Path()
         End If
 
         Dim elmt_view_form As New Array_Type_Form(
@@ -259,37 +251,46 @@ Public Class Array_Type
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name, Type.SVG_COLOR, "array")
-
-        Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
-        svg_content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
-            split_description,
-            Type.SVG_COLOR,
-            desc_rect_height)
-
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        ' Get referenced type path
+        ' Compute Box width (it depends on the longuest line of the attributes compartment)
+        ' Build the lines of the attributes compartment
         Dim referenced_type_name As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref) Then
-            referenced_type_name = type_by_uuid_dict(Me.Base_Type_Ref).Name
+        Dim referenced_type As Software_Element
+        referenced_type = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
+        If Not IsNothing(referenced_type) Then
+            referenced_type_name = referenced_type.Name
         End If
 
         Dim attr_lines As New List(Of String) From {
             "Multiplicity : " & Me.Multiplicity,
             "Base : " & referenced_type_name}
 
+        Dim nb_max_char_per_line As Integer
+        nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(attr_lines, SVG_MIN_CHAR_PER_LINE)
+        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+
+        ' Add title (Name + stereotype) compartment
+        svg_content = Get_Title_Rectangle(
+            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, Array_Type.Metaclass_Name)
+
+        ' Add description compartment
+        Dim desc_rect_height As Integer = 0
+        Dim split_description As List(Of String) =
+            Split_String(Me.Description, nb_max_char_per_line)
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT,
+            split_description,
+            Type.SVG_COLOR,
+            box_width,
+            desc_rect_height)
+
+        ' Add attributes compartment
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             attr_lines,
-            Type.SVG_COLOR)
+            Type.SVG_COLOR,
+            box_width)
 
         Return svg_content
     End Function
@@ -327,7 +328,7 @@ Public Class Enumerated_Type
 
     Public Enumerals As New List(Of Enumeral)
 
-    Public Shared ReadOnly Metaclass_Name As String = "Enumerated_Type"
+    Public Const Metaclass_Name As String = "Enumerated_Type"
 
     Private Shared ReadOnly Nb_Enumerals As New Modeling_Rule(
         "Number_Of_Enumerals",
@@ -406,10 +407,6 @@ Public Class Enumerated_Type
 
     Public Overrides Sub Edit()
 
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Owner.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
-
         Dim enumerals_table As New DataTable
         With enumerals_table
             .Columns.Add("Name", GetType(String))
@@ -425,13 +422,15 @@ Public Class Enumerated_Type
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
-            forbidden_name_list,
+            Me.Get_Forbidden_Name_List(),
             enumerals_table)
 
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
+            Dim old_name As String = Me.Name
             Me.Name = edit_form.Get_Element_Name()
+            Update_Project(old_name)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Update_Enumerals(enumerals_table)
@@ -470,20 +469,25 @@ Public Class Enumerated_Type
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
-        ' Title (Name + stereotype)
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name, Type.SVG_COLOR, "enumeration")
+        Dim box_witdh As Integer = Get_Box_Witdh(SVG_MIN_CHAR_PER_LINE)
 
-        ' Description compartment
+        ' Add title (Name + stereotype) compartment
+        svg_content = Get_Title_Rectangle(
+            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_witdh, Metaclass_Name)
+
+        ' Add description compartment
         Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        Dim split_description As List(Of String) =
+            Split_String(Me.Description, SVG_MIN_CHAR_PER_LINE)
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
+            box_witdh,
             desc_rect_height)
 
-        ' Enumerals compartment
+        ' Add enumerals compartment
         Dim enumeral_lines As New List(Of String)
         For Each enumeral In Me.Enumerals
             enumeral_lines.Add(enumeral.Name)
@@ -492,7 +496,8 @@ Public Class Enumerated_Type
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             enumeral_lines,
-            Type.SVG_COLOR)
+            Type.SVG_COLOR,
+            box_witdh)
 
         Return svg_content
 
@@ -540,10 +545,10 @@ Public Class Fixed_Point_Type
     Public Resolution As String
     Public Offset As String
 
-    Public Shared ReadOnly Metaclass_Name As String = "Fixed_Point_Type"
+    Public Const Metaclass_Name As String = "Fixed_Point_Type"
 
-    Private Shared ReadOnly Zero_Decimal_Regex_Str As String = "^0+[,|.]?0*$"
-    Private Shared ReadOnly Valid_Decimal_Regex_Str As String = "\d+[.|,]?\d*"
+    Private Const Zero_Decimal_Regex_Str As String = "^0+[,|.]?0*$"
+    Private Const Valid_Decimal_Regex_Str As String = "\d+[.|,]?\d*"
     Private Shared ReadOnly Valid_FPT_Attr_Regex As New _
         Regex("^(?<Num>" & Valid_Decimal_Regex_Str &
             ")(\/(?<Den>" & Valid_Decimal_Regex_Str & "))?$")
@@ -591,21 +596,16 @@ Public Class Fixed_Point_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Private Function Get_Referenced_Type(get_full_path As Boolean) As String
-        ' Build the list of possible referenced type
-        Dim basic_int_list As List(Of Type) = Get_Basic_Integer_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(basic_int_list)
-
-        ' Get referenced type path or name
         Dim result As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref) Then
+        Dim referenced_type As Software_Element
+        referenced_type = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
+        If Not IsNothing(referenced_type) Then
             If get_full_path = True Then
-                result = type_by_uuid_dict(Me.Base_Type_Ref).Get_Path()
+                result = referenced_type.Get_Path()
             Else
-                result = type_by_uuid_dict(Me.Base_Type_Ref).Name
+                result = referenced_type.Name
             End If
         End If
-
         Return result
     End Function
 
@@ -660,48 +660,33 @@ Public Class Fixed_Point_Type
 
     Public Overrides Sub Edit()
 
-        ' Build the list of possible referenced type
-        Dim basic_int_list As List(Of Type) = Get_Basic_Integer_Type_List_From_Project()
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(basic_int_list)
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(basic_int_list)
-
-        Dim current_referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref) Then
-            current_referenced_type_path = type_by_uuid_dict(Me.Base_Type_Ref).Get_Path()
-        End If
-
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Owner.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
-
-        Dim edition_form As New Fixed_Point_Type_Form(
+        Dim edit_form As New Fixed_Point_Type_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Fixed_Point_Type.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            forbidden_name_list,
-            current_referenced_type_path,
-            type_by_path_dict.Keys.ToList(),
+            Me.Get_Forbidden_Name_List(),
+            Me.Get_Referenced_Type(True),
+            Me.Get_All_Basic_Int_Path_From_Project(),
             Me.Unit,
             Me.Resolution,
             Me.Offset)
 
-        Dim edition_form_result As DialogResult = edition_form.ShowDialog()
+        Dim edition_form_result As DialogResult = edit_form.ShowDialog()
         If edition_form_result = DialogResult.OK Then
 
             ' Update the fixed point type
-            Me.Name = edition_form.Get_Element_Name()
+            Dim old_name As String = Me.Name
+            Me.Name = edit_form.Get_Element_Name()
+            Update_Project(old_name)
             Me.Node.Text = Me.Name
-            Me.Description = edition_form.Get_Element_Description()
-            Dim new_referenced_type As Software_Element
-            new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
-            Me.Base_Type_Ref = new_referenced_type.Identifier
-            Me.Unit = edition_form.Get_Unit()
-            Me.Resolution = edition_form.Get_Resolution()
-            Me.Offset = edition_form.Get_Offset()
+            Me.Description = edit_form.Get_Element_Description()
+            Me.Base_Type_Ref =
+                Me.Get_Basic_Int_From_Proj_By_Path(edit_form.Get_Ref_Element_Path()).Identifier
+            Me.Unit = edit_form.Get_Unit()
+            Me.Resolution = edit_form.Get_Resolution()
+            Me.Offset = edit_form.Get_Offset()
 
             Me.Update_Views()
         End If
@@ -733,28 +718,41 @@ Public Class Fixed_Point_Type
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name, Type.SVG_COLOR, "fixed_point")
-
-        Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
-        svg_content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
-            split_description,
-            Type.SVG_COLOR,
-            desc_rect_height)
-
-
+        ' Compute Box width (it depends on the longuest line of the attributes compartment)
+        ' Build the lines of the attributes compartment
         Dim attr_lines As New List(Of String) From {
             "Base : " & Get_Referenced_Type(False),
             "Unit : " & Me.Unit,
             "Resolution : " & Me.Resolution,
             "Offset : " & Me.Offset}
+
+        Dim nb_max_char_per_line As Integer
+        nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(attr_lines, SVG_MIN_CHAR_PER_LINE)
+        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+
+        ' Add title (Name + stereotype) compartment
+        svg_content = Get_Title_Rectangle(
+            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, Metaclass_Name)
+
+        ' Add description compartment
+        Dim desc_rect_height As Integer = 0
+        Dim split_description As List(Of String) =
+            Split_String(Me.Description, nb_max_char_per_line)
+        svg_content &= Get_Multi_Line_Rectangle(
+            x_pos,
+            y_pos + SVG_TITLE_HEIGHT,
+            split_description,
+            Type.SVG_COLOR,
+            box_width,
+            desc_rect_height)
+
+        ' Add attributes compartment
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             attr_lines,
-            Type.SVG_COLOR)
+            Type.SVG_COLOR,
+            box_width)
 
         Return svg_content
     End Function
@@ -773,10 +771,9 @@ Public Class Fixed_Point_Type
 
         Dim base_type_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Base_Type_Rule)
         report.Add_Item(base_type_check)
-        Dim basic_int_list As List(Of Type) = Get_Basic_Integer_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(basic_int_list)
-        base_type_check.Set_Compliance(type_by_uuid_dict.ContainsKey(Me.Base_Type_Ref))
+        Dim basic_type As Software_Element =
+            Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
+        base_type_check.Set_Compliance(TypeOf basic_type Is Basic_Type)
 
         Dim resol_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Resol_Positive_Dec)
         report.Add_Item(resol_check)
@@ -796,7 +793,7 @@ Public Class Record_Type
 
     Public Fields As New List(Of Record_Field)
 
-    Public Shared ReadOnly Metaclass_Name As String = "Record_Type"
+    Public Const Metaclass_Name As String = "Record_Type"
 
     Private Shared ReadOnly Context_Menu As New Record_Type_Context_Menu()
 
@@ -847,11 +844,6 @@ Public Class Record_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Sub Add_Field()
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        type_list.Remove(Me)
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
 
         Dim creation_form As New Element_With_Ref_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
@@ -861,24 +853,24 @@ Public Class Record_Type
             "",
             Me.Get_Children_Name(),
             "Type",
-            type_by_path_dict.Keys(0),
-            type_by_path_dict.Keys.ToList())
-        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
-        If creation_form_result = DialogResult.OK Then
-            ' Get the type referenced by the field
-            Dim ref_type As Software_Element
-            ref_type = type_by_path_dict(creation_form.Get_Ref_Rerenced_Element_Path())
+            "",
+            Me.Get_All_Types_Path_From_Project())
 
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+
+        If creation_form_result = DialogResult.OK Then
             Dim new_field As New Record_Field(
                 creation_form.Get_Element_Name(),
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                ref_type.Identifier)
+                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier)
             Me.Fields.Add(new_field)
             Me.Children.Add(new_field)
+            Me.Get_Project().Add_Element_To_Project(new_field)
             Me.Update_Views()
         End If
+
     End Sub
 
 
@@ -889,41 +881,41 @@ Public Class Record_Type
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
-        ' Title (Name + stereotype)
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name, Type.SVG_COLOR, "record")
+        ' Compute Box width (it depends on the longuest line of the fields compartment)
+        ' Build the lines of the fields compartment
+        Dim fields_lines As New List(Of String)
+        For Each field In Me.Fields
+            Dim referenced_type_name As String = field.Get_Type_Name()
+            fields_lines.Add("+ " & field.Name & " : " & referenced_type_name)
+        Next
 
-        ' Description compartment
+        Dim nb_max_char_per_line As Integer
+        nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(fields_lines, SVG_MIN_CHAR_PER_LINE)
+        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+
+        ' Add title (Name + stereotype) compartment
+        svg_content = Get_Title_Rectangle(
+            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, Metaclass_Name)
+
+        ' Add description compartment
         Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        Dim split_description As List(Of String) =
+            Split_String(Me.Description, nb_max_char_per_line)
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
+            box_width,
             desc_rect_height)
 
-        ' Fields compartment
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        ' Get referenced type path
-
-
-        Dim fields_lines As New List(Of String)
-        For Each field In Me.Fields
-            Dim referenced_type_name As String = "unresolved"
-            If type_by_uuid_dict.ContainsKey(field.Type_Ref) Then
-                referenced_type_name = type_by_uuid_dict(field.Type_Ref).Name
-            End If
-            fields_lines.Add("+ " & field.Name & " : " & referenced_type_name)
-        Next
+        ' Add fields compartment
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             fields_lines,
-            Type.SVG_COLOR)
+            Type.SVG_COLOR,
+            box_width)
 
         Return svg_content
 
@@ -949,7 +941,7 @@ End Class
 Public Class Record_Field
     Inherits Typed_Software_Element
 
-    Public Shared ReadOnly Metaclass_Name As String = "Record_Field"
+    Public Const Metaclass_Name As String = "Record_Field"
 
     Private Shared ReadOnly Type_Ref_Not_Owner_Rule As New Modeling_Rule(
         "Record_Field_Type_Ref_Not_Owner",
@@ -1004,36 +996,33 @@ Public Class Record_Field
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name, Type.SVG_COLOR, "field")
+        Dim attr_lines As New List(Of String) From {
+            "Base : " & Me.Get_Type_Path()}
+
+        Dim nb_max_char_per_line As Integer
+        nb_max_char_per_line = Math.Max(attr_lines(0).Length, SVG_MIN_CHAR_PER_LINE)
+        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+
+        svg_content = Get_Title_Rectangle(
+            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, "field")
 
         Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        Dim split_description As List(Of String)
+        split_description = Split_String(Me.Description, nb_max_char_per_line)
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
+            box_width,
             desc_rect_height)
-
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        ' Get referenced type path
-        Dim referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
-            referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
-        End If
-
-        Dim attr_lines As New List(Of String) From {
-            "Base : " & referenced_type_path}
 
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             attr_lines,
-            Type.SVG_COLOR)
+            Type.SVG_COLOR,
+            box_width)
 
         Return svg_content
     End Function

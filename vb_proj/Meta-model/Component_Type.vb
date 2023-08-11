@@ -1,9 +1,9 @@
 ﻿Public Class Component_Type
     Inherits Must_Describe_Software_Element
 
-    Public Shared ReadOnly Metaclass_Name As String = "Component_Type"
+    Public Const Metaclass_Name As String = "Component_Type"
 
-    Public Shared ReadOnly SVG_COLOR As String = "rgb(0,0,0)"
+    Public Const SVG_COLOR As String = "rgb(0,0,0)"
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -57,18 +57,23 @@
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
-        ' Title (Name + stereotype)
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
-            Component_Type.SVG_COLOR, "component_type")
+        ' Compute Box width
+        Dim box_width As Integer = Get_Box_Witdh(SVG_MIN_CHAR_PER_LINE)
 
-        ' Description compartment
+        ' Add title (Name + stereotype) compartment
+        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
+            Component_Type.SVG_COLOR, box_width, Metaclass_Name)
+
+        ' Add description compartment
         Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        Dim split_description As List(Of String)
+        split_description = Split_String(Me.Description, SVG_MIN_CHAR_PER_LINE)
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
             Component_Type.SVG_COLOR,
+            box_width,
             desc_rect_height)
 
         Return svg_content

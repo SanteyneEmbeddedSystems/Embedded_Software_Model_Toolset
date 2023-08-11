@@ -13,17 +13,18 @@ Public MustInherit Class Software_Element
     Protected Children As New List(Of Software_Element)
     Protected Children_Is_Computed As Boolean = False
 
-    Public Shared NB_CHARS_MAX_FOR_SYMBOL As Integer = 32
+    Public Const NB_CHARS_MAX_FOR_SYMBOL As Integer = 32
     Protected Shared Valid_Symbol_Regex As String =
         "^[a-zA-Z][a-zA-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
 
-    Protected Shared Read_Only_Context_Menu As New Read_Only_Context_Menu
+    Protected Shared ReadOnly Read_Only_Context_Menu As New Read_Only_Context_Menu
     Private Shared ReadOnly Leaf_Context_Menu As New Leaf_Context_Menu
 
     Private Shared ReadOnly Name_Rule As New Modeling_Rule(
         "Name_Pattern",
         "Name shall match " & Valid_Symbol_Regex)
 
+    Protected Const SVG_MIN_CHAR_PER_LINE As Integer = 32
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -54,24 +55,6 @@ Public MustInherit Class Software_Element
         Return Regex.IsMatch(symbol, Software_Element.Valid_Symbol_Regex)
     End Function
 
-    Public Shared Function Create_Path_Dictionary_From_List(
-            elmt_list As IEnumerable(Of Software_Element)) As Dictionary(Of String, Software_Element)
-        Dim dico As New Dictionary(Of String, Software_Element)
-        For Each elmt In elmt_list
-            dico.Add(elmt.Get_Path(), elmt)
-        Next
-        Return dico
-    End Function
-
-    Public Shared Function Create_UUID_Dictionary_From_List(
-            elmt_list As IEnumerable(Of Software_Element)) As Dictionary(Of Guid, Software_Element)
-        Dim dico As New Dictionary(Of Guid, Software_Element)
-        For Each elmt In elmt_list
-            dico.Add(elmt.Identifier, elmt)
-        Next
-        Return dico
-    End Function
-
 
     ' -------------------------------------------------------------------------------------------- '
     ' Generic methods
@@ -95,6 +78,7 @@ Public MustInherit Class Software_Element
         If Not Me.Get_Top_Package().Is_Writable() Then
             Me.Node.ContextMenuStrip = Software_Element.Read_Only_Context_Menu
         End If
+        Me.Get_Project().Add_Element_To_Project(Me)
         Dim children As List(Of Software_Element) = Me.Get_Children()
         If Not IsNothing(children) Then
             For Each child In children
@@ -110,6 +94,13 @@ Public MustInherit Class Software_Element
             children_name.Add(child.Name)
         Next
         Return children_name
+    End Function
+
+    Public Function Get_Forbidden_Name_List() As List(Of String)
+        Dim forbidden_name_list As List(Of String)
+        forbidden_name_list = Me.Owner.Get_Children_Name()
+        forbidden_name_list.Remove(Me.Name)
+        Return forbidden_name_list
     End Function
 
     Public Function Get_Path() As String
@@ -153,19 +144,32 @@ Public MustInherit Class Software_Element
         Return top_pkg.Get_Folder()
     End Function
 
-    Protected Function Get_Type_List_From_Project() As List(Of Type)
-        Return Get_Project().Get_Type_List()
+    Protected Function Get_Element_From_Project_By_Identifier(id As Guid) As Software_Element
+        Return Me.Get_Project().Get_Element_By_Identifier(id)
     End Function
 
-    Protected Function Get_Basic_Integer_Type_List_From_Project() As List(Of Type)
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim basic_int_list As New List(Of Type)
-        For Each type In type_list
-            If type.GetType = GetType(Basic_Integer_Type) Then
-                basic_int_list.Add(type)
-            End If
-        Next
-        Return basic_int_list
+    Protected Function Get_All_Types_Path_From_Project() As List(Of String)
+        Return Me.Get_Project().Get_All_Types_Path()
+    End Function
+
+    Protected Function Get_Type_From_Project_By_Path(path As String) As Type
+        Return Me.Get_Project().Get_Type_By_Path(path)
+    End Function
+
+    Protected Function Get_All_Basic_Int_Path_From_Project() As List(Of String)
+        Return Me.Get_Project().Get_All_Basic_Integer_Types_Path()
+    End Function
+
+    Protected Function Get_Basic_Int_From_Proj_By_Path(path As String) As Basic_Type
+        Return Me.Get_Project().Get_Basic_Integer_Type_By_Path(path)
+    End Function
+
+    Protected Function Get_All_Interfaces_Path_From_Project() As List(Of String)
+        Return Me.Get_Project().Get_All_Interfaces_Path()
+    End Function
+
+    Protected Function Get_Interface_From_Project_By_Path(path As String) As Software_Interface
+        Return Me.Get_Project().Get_Interface_By_Path(path)
     End Function
 
 
@@ -198,6 +202,8 @@ Public MustInherit Class Software_Element
     End Sub
 
     Public Sub Move(new_parent As Software_Element)
+        Dim old_path = Me.Get_Path()
+
         ' Manage top level packages
         Me.Display_Package_Modified()
         new_parent.Display_Package_Modified()
@@ -207,10 +213,13 @@ Public MustInherit Class Software_Element
         Me.Owner.Children.Remove(Me)
         Me.Owner = new_parent
         new_parent.Children.Add(Me)
+        Dim new_path = Me.Get_Path()
 
         ' Manage TreeNode
         Me.Node.Remove()
         new_parent.Node.Nodes.Add(Me.Node)
+
+        Me.Get_Project().Move_Element_In_Project(old_path, new_path)
 
     End Sub
 
@@ -238,28 +247,23 @@ Public MustInherit Class Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overridable Sub Edit()
-
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Owner.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
-
         Dim edit_form As New Element_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Me.Get_Metaclass_Name(),
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
-            forbidden_name_list)
-
+            Me.Get_Forbidden_Name_List())
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
+            Dim old_name As String = Me.Name
             Me.Name = edit_form.Get_Element_Name()
+            Update_Project(old_name)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Update_Views()
         End If
-
     End Sub
 
     Public Sub Remove()
@@ -269,6 +273,7 @@ Public MustInherit Class Software_Element
              MsgBoxStyle.OkCancel,
             "Remove element")
         If remove_dialog_result = MsgBoxResult.Ok Then
+            Me.Get_Project().Remove_Element_From_Project(Me)
             Me.Remove_Me()
             Me.Owner.Children.Remove(Me)
             Me.Display_Package_Modified()
@@ -284,6 +289,14 @@ Public MustInherit Class Software_Element
             Me.Description,
             Nothing) ' forbidden name list
         view_form.ShowDialog()
+    End Sub
+
+    ' Shall be called in Edit() sub to update dictionaries of Project.
+    Protected Sub Update_Project(old_name As String)
+        Dim new_path As String = Me.Get_Path()
+        Dim old_path As String
+        old_path = new_path.Substring(0, new_path.Length - 1 - Me.Name.Length) & old_name
+        Me.Get_Project().Move_Element_In_Project(old_path, new_path)
     End Sub
 
 
@@ -434,47 +447,29 @@ Public MustInherit Class Typed_Software_Element
 
     Public Overrides Sub Edit()
 
-        ' Build the list of possible type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        Dim current_referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
-            current_referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
-        End If
-
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Owner.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
-
-        Dim edition_form As New Element_With_Ref_Form(
+        Dim edit_form As New Element_With_Ref_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Me.Get_Metaclass_Name(),
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            forbidden_name_list,
+            Me.Get_Forbidden_Name_List(),
             "Type",
-           current_referenced_type_path,
-            type_by_path_dict.Keys.ToList())
+            Me.Get_Type_Path(),
+            Me.Get_All_Types_Path_From_Project())
 
-        Dim edition_form_result As DialogResult = edition_form.ShowDialog()
+        Dim edition_form_result As DialogResult = edit_form.ShowDialog()
 
         ' Treat edition form result
         If edition_form_result = DialogResult.OK Then
 
-            ' Get the referenced type
-            Dim new_referenced_type As Software_Element
-            new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
-
             ' Update Me
-            Me.Name = edition_form.Get_Element_Name()
+            Dim old_name As String = Me.Name
+            Me.Name = edit_form.Get_Element_Name()
+            Update_Project(old_name)
             Me.Node.Text = Me.Name
-            Me.Description = edition_form.Get_Element_Description()
-            Me.Type_Ref = new_referenced_type.Identifier
+            Me.Description = edit_form.Get_Element_Description()
+            Me.Type_Ref = Get_Type_From_Project_By_Path(edit_form.Get_Ref_Element_Path()).Identifier
 
             Me.Update_Views()
         End If
@@ -482,18 +477,6 @@ Public MustInherit Class Typed_Software_Element
     End Sub
 
     Public Overrides Sub View()
-
-        ' Build the list of possible type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        ' Get referenced type path
-        Dim referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
-            referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
-        End If
-
         Dim elmt_view_form As New Element_With_Ref_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
             Me.Get_Metaclass_Name(),
@@ -502,10 +485,9 @@ Public MustInherit Class Typed_Software_Element
             Me.Description,
             Nothing, ' Forbidden name list, useless for View
             "Type",
-            referenced_type_path,
+            Me.Get_Type_Path(),
             Nothing)
         elmt_view_form.ShowDialog()
-
     End Sub
 
 
@@ -519,5 +501,28 @@ Public MustInherit Class Typed_Software_Element
         report.Add_Item(type_check)
         type_check.Set_Compliance(Me.Type_Ref <> Guid.Empty)
     End Sub
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Specific methods
+    '----------------------------------------------------------------------------------------------'
+
+    Public Function Get_Type_Name() As String
+        Dim type_name As String = "unresolved"
+        Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Type_Ref)
+        If Not IsNothing(type) Then
+            type_name = type.Name
+        End If
+        Return type_name
+    End Function
+
+    Public Function Get_Type_Path() As String
+        Dim type_path As String = "unresolved"
+        Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Type_Ref)
+        If Not IsNothing(type) Then
+            type_path = type.Get_Path()
+        End If
+        Return type_path
+    End Function
 
 End Class

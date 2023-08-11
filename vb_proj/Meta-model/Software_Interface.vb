@@ -50,15 +50,17 @@ Public Class Client_Server_Interface
 
     Public Operations As New List(Of Client_Server_Operation)
 
-    Public Shared ReadOnly Metaclass_Name As String = "Client_Server_Interface"
+    Public Const Metaclass_Name As String = "Client_Server_Interface"
 
     Private Shared ReadOnly Context_Menu As New Client_Server_Interface_Context_Menu()
 
-    Public Shared ReadOnly SVG_COLOR As String = "rgb(34,177,76)"
+    Public Const SVG_COLOR As String = "rgb(34,177,76)"
 
     Private Shared ReadOnly Nb_Operation_Rule As New Modeling_Rule(
         "Number_Of_Operations",
         "Shall aggregate at least one Operation.")
+
+    Private Const MAX_NB_OF_CHAR_FOR_OPERATION_LINE As Integer = 77
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -122,6 +124,7 @@ Public Class Client_Server_Interface
                 Me.Node)
             Me.Operations.Add(new_op)
             Me.Children.Add(new_op)
+            Me.Get_Project().Add_Element_To_Project(new_op)
             Me.Update_Views()
         End If
 
@@ -135,47 +138,86 @@ Public Class Client_Server_Interface
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
-        ' Title (Name + stereotype)
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
-            Client_Server_Interface.SVG_COLOR, "interface", True)
+        ' Compute Box width (it depends on the longuest line of the operations compartment)
+        ' Build the lines of the operations compartment
+        Dim op_lines As New List(Of String)
+        Dim indent_used As Boolean = False
+        For Each op In Me.Operations
+            Dim op_line As String
+            If op.Parameters.Count = 0 Then
+                op_line = "+ " & op.Name & "()"
+                op_lines.Add(op_line)
+            ElseIf op.Parameters.Count = 1 Then
+                Dim param As Operation_Parameter = op.Parameters(0)
+                Dim type_name As String = param.Get_Type_Name()
+                op_line = "+ " & op.Name & "( " & param.Get_Short_Direction() & " " &
+                        param.Name & ":" & type_name & " )"
+                If op_line.Length <= MAX_NB_OF_CHAR_FOR_OPERATION_LINE Then
+                    op_lines.Add(op_line)
+                Else
+                    op_line = "+ " & op.Name & "("
+                    op_lines.Add(op_line)
+                    op_line = "&#160;&#160;&#160;&#160;&#160;&#160;" &
+                        param.Get_Short_Direction() & " " &
+                        param.Name & ":" & type_name & " )"
+                    indent_used = True
+                    op_lines.Add(op_line)
+                End If
+            Else
+                ' op.Parameters.Count >= 2
+                op_line = "+ " & op.Name & "("
+                op_lines.Add(op_line)
+                For Each param In op.Parameters
+                    Dim type_name As String = param.Get_Type_Name()
+                    op_line = "&#160;&#160;&#160;&#160;&#160;&#160;" &
+                        param.Get_Short_Direction() & " " &
+                        param.Name & ":" & type_name
+                    indent_used = True
+                    If param Is op.Parameters.Last Then
+                        op_line &= " )"
+                    Else
+                        op_line &= ","
+                    End If
+                    op_lines.Add(op_line)
+                Next
+            End If
+        Next
+        ' Get the longuest line
+        Dim nb_max_char_per_line As Integer = 0
+        For Each line In op_lines
+            nb_max_char_per_line = Math.Max(nb_max_char_per_line, line.Length)
+        Next
+        If indent_used = True Then
+            ' -30 to not count &#160;&#160;&#160;&#160;&#160;&#160; = 36 char but add 6 real spaces
+            nb_max_char_per_line = Math.Max(nb_max_char_per_line - 30, SVG_MIN_CHAR_PER_LINE)
+        Else
+            nb_max_char_per_line = Math.Max(nb_max_char_per_line, SVG_MIN_CHAR_PER_LINE)
+        End If
+        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
 
-        ' Description compartment
+        ' Add title (Name + stereotype) compartment
+        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
+            Client_Server_Interface.SVG_COLOR, box_width, Metaclass_Name, True)
+
+        ' Add description compartment
         Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        Dim split_description As List(Of String)
+        split_description = Split_String(Me.Description, nb_max_char_per_line)
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
             Client_Server_Interface.SVG_COLOR,
+            box_width,
             desc_rect_height)
 
-        ' Operation compartment
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-        Dim op_lines As New List(Of String)
-        For Each op In Me.Operations
-            Dim op_line As String = "+ " & op.Name & "("
-            For Each param In op.Parameters
-                Dim type_name As String = "unresolved"
-                If type_by_uuid_dict.ContainsKey(param.Type_Ref) Then
-                    type_name = type_by_uuid_dict(param.Type_Ref).Name
-                End If
-                op_line &= " " & param.Get_Short_Direction() & " " & param.Name & " : "
-                op_line &= type_name & ","
-            Next
-            If op.Parameters.Count > 0 Then
-                op_line = op_line.Substring(0, op_line.Length - 1)
-                op_line &= " "
-            End If
-            op_line &= ")"
-            op_lines.Add(op_line)
-        Next
+        ' Add operation compartment
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             op_lines,
-            Client_Server_Interface.SVG_COLOR)
+            Client_Server_Interface.SVG_COLOR,
+            box_width)
 
         Return svg_content
 
@@ -204,7 +246,7 @@ Public Class Client_Server_Operation
 
     Public Parameters As New List(Of Operation_Parameter)
 
-    Public Shared ReadOnly Metaclass_Name As String = "Client_Server_Operation"
+    Public Const Metaclass_Name As String = "Client_Server_Operation"
 
     Private Shared ReadOnly Context_Menu As New Client_Server_Operation_Context_Menu()
 
@@ -266,11 +308,6 @@ Public Class Client_Server_Operation
 
     Public Sub Add_Parameter()
 
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
-
         Dim creation_form As New Operation_Parameter_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
             Operation_Parameter.Metaclass_Name,
@@ -278,17 +315,14 @@ Public Class Client_Server_Operation
             Operation_Parameter.Metaclass_Name,
             "",
             Me.Get_Children_Name(),
-            type_by_path_dict.Keys(0),
-            type_by_path_dict.Keys.ToList(),
+            "",
+            Me.Get_All_Types_Path_From_Project(),
             Operation_Parameter.Directions,
             Operation_Parameter.Directions(0))
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
         If creation_form_result = DialogResult.OK Then
-
-            Dim ref_type As Software_Element
-            ref_type = type_by_path_dict(creation_form.Get_Ref_Rerenced_Element_Path())
 
             Dim direction As Operation_Parameter.E_DIRECTION
             [Enum].TryParse(creation_form.Get_Direction(), direction)
@@ -298,11 +332,12 @@ Public Class Client_Server_Operation
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                ref_type.Identifier,
+                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier,
                 direction)
 
             Me.Parameters.Add(new_param)
             Me.Children.Add(new_param)
+            Me.Get_Project().Add_Element_To_Project(new_param)
 
             Me.Update_Views()
 
@@ -318,7 +353,7 @@ Public Class Operation_Parameter
 
     Public Direction As E_DIRECTION
 
-    Public Shared ReadOnly Metaclass_Name As String = "Operation_Parameter"
+    Public Const Metaclass_Name As String = "Operation_Parameter"
 
     Public Shared ReadOnly Directions As String() =
         [Enum].GetNames(GetType(Operation_Parameter.E_DIRECTION))
@@ -381,31 +416,15 @@ Public Class Operation_Parameter
 
     Public Overrides Sub Edit()
 
-        ' Build the list of possible type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        Dim current_referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
-            current_referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
-        End If
-
-        Dim forbidden_name_list As List(Of String)
-        forbidden_name_list = Me.Owner.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
-
         Dim edition_form As New Operation_Parameter_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Operation_Parameter.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            forbidden_name_list,
-            current_referenced_type_path,
-            type_by_path_dict.Keys.ToList(),
+            Me.Get_Forbidden_Name_List(),
+            Me.Get_Type_Path(),
+            Me.Get_All_Types_Path_From_Project(),
             Operation_Parameter.Directions,
             Operation_Parameter.Directions(0))
 
@@ -414,15 +433,14 @@ Public Class Operation_Parameter
         ' Treat edition form result
         If edition_form_result = DialogResult.OK Then
 
-            ' Get the referenced type
-            Dim new_referenced_type As Software_Element
-            new_referenced_type = type_by_path_dict(edition_form.Get_Ref_Rerenced_Element_Path())
-
             ' Update Me
+            Dim old_name As String = Me.Name
             Me.Name = edition_form.Get_Element_Name()
+            Update_Project(old_name)
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
-            Me.Type_Ref = new_referenced_type.Identifier
+            Me.Type_Ref = Me.Get_Type_From_Project_By_Path(edition_form.Get_Ref_Element_Path()) _
+                .Identifier
             [Enum].TryParse(edition_form.Get_Direction(), Me.Direction)
 
             Me.Update_Views()
@@ -431,18 +449,6 @@ Public Class Operation_Parameter
     End Sub
 
     Public Overrides Sub View()
-
-        ' Build the list of possible type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-
-        ' Get referenced type path
-        Dim referenced_type_path As String = "unresolved"
-        If type_by_uuid_dict.ContainsKey(Me.Type_Ref) Then
-            referenced_type_path = type_by_uuid_dict(Me.Type_Ref).Get_Path()
-        End If
-
         Dim elmt_view_form As New Operation_Parameter_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
             Operation_Parameter.Metaclass_Name,
@@ -450,12 +456,11 @@ Public Class Operation_Parameter
             Me.Name,
             Me.Description,
             Nothing, ' Forbidden name list, useless for View
-            referenced_type_path,
+            Me.Get_Type_Path(),
             Nothing,
             Operation_Parameter.Directions,
             Me.Direction.ToString())
         elmt_view_form.ShowDialog()
-
     End Sub
 
 
@@ -482,11 +487,11 @@ Public Class Event_Interface
 
     Public Parameters As New List(Of Event_Parameter)
 
-    Public Shared ReadOnly Metaclass_Name As String = "Event_Interface"
+    Public Const Metaclass_Name As String = "Event_Interface"
 
     Private Shared ReadOnly Context_Menu As New Event_Interface_Context_Menu()
 
-    Public Shared ReadOnly SVG_COLOR As String = "rgb(163,73,164)"
+    Public Const SVG_COLOR As String = "rgb(163,73,164)"
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -520,6 +525,7 @@ Public Class Event_Interface
     Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
         Return Event_Interface.Context_Menu
     End Function
+
     Public Overrides Function Get_Metaclass_Name() As String
         Return Event_Interface.Metaclass_Name
     End Function
@@ -531,11 +537,6 @@ Public Class Event_Interface
 
     Public Sub Add_Parameter()
 
-        ' Build the list of possible referenced type
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_path_dict As Dictionary(Of String, Software_Element)
-        type_by_path_dict = Software_Element.Create_Path_Dictionary_From_List(type_list)
-
         Dim creation_form As New Element_With_Ref_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
             Event_Parameter.Metaclass_Name,
@@ -544,25 +545,23 @@ Public Class Event_Interface
             "",
             Me.Get_Children_Name(),
             "Type",
-            type_by_path_dict.Keys(0),
-            type_by_path_dict.Keys.ToList())
+            "",
+            Me.Get_All_Types_Path_From_Project())
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
         If creation_form_result = DialogResult.OK Then
-
-            Dim ref_type As Software_Element
-            ref_type = type_by_path_dict(creation_form.Get_Ref_Rerenced_Element_Path())
 
             Dim new_param As New Event_Parameter(
                 creation_form.Get_Element_Name(),
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                ref_type.Identifier)
+                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier)
 
             Me.Parameters.Add(new_param)
             Me.Children.Add(new_param)
+            Me.Get_Project().Add_Element_To_Project(new_param)
 
             Me.Update_Views()
 
@@ -570,42 +569,44 @@ Public Class Event_Interface
 
     End Sub
 
-
     Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
         Dim svg_content As String
 
-        ' Title (Name + stereotype)
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
-            Event_Interface.SVG_COLOR, "interface", True)
+        ' Compute Box width (it depends on the longuest line of the parameters compartment)
+        ' Build the lines of the parameters compartment
+        Dim param_lines As New List(Of String)
+        For Each param In Me.Parameters
+            Dim type_name As String = param.Get_Type_Name()
+            Dim param_line As String = "+ " & param.Name & " : " & type_name
+            param_lines.Add(param_line)
+        Next
+        Dim nb_max_char_per_line As Integer
+        nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(param_lines, SVG_MIN_CHAR_PER_LINE)
+        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
 
-        ' Description compartment
+        ' Add title (Name + stereotype) compartment
+        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
+            Event_Interface.SVG_COLOR, box_width, Metaclass_Name, True)
+
+        ' Add description compartment
         Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String) = Split_String(Me.Description, NB_CHARS_PER_LINE)
+        Dim split_description As List(Of String)
+        split_description = Split_String(Me.Description, nb_max_char_per_line)
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
             Event_Interface.SVG_COLOR,
+            box_width,
             desc_rect_height)
 
-        ' Parameter compartment
-        Dim type_list As List(Of Type) = Me.Get_Type_List_From_Project()
-        Dim type_by_uuid_dict As Dictionary(Of Guid, Software_Element)
-        type_by_uuid_dict = Software_Element.Create_UUID_Dictionary_From_List(type_list)
-        Dim param_lines As New List(Of String)
-        For Each param In Me.Parameters
-            Dim type_name As String = "unresolved"
-            If type_by_uuid_dict.ContainsKey(param.Type_Ref) Then
-                type_name = type_by_uuid_dict(param.Type_Ref).Name
-            End If
-            Dim param_line As String = "+ " & param.Name & " : " & type_name
-            param_lines.Add(param_line)
-        Next
+        ' Add parameters compartments
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             param_lines,
-            Event_Interface.SVG_COLOR)
+            Event_Interface.SVG_COLOR,
+            box_width)
 
         Return svg_content
 
