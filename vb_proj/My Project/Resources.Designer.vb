@@ -193,6 +193,16 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
+        Friend ReadOnly Property Provider_Port() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Provider_Port", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
         Friend ReadOnly Property Purple_Flash_In_Square() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("Purple_Flash_In_Square", resourceCulture)
@@ -226,6 +236,16 @@ Namespace My.Resources
         Friend ReadOnly Property Record_Type() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("Record_Type", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
+        Friend ReadOnly Property Requirer_Port() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Requirer_Port", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property

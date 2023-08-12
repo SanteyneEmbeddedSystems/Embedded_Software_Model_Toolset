@@ -1,7 +1,7 @@
 ﻿Module SVG
 
     Public Const SVG_STROKE_WIDTH As Integer = 1
-    Public Const SVG_VERTICAL_MARGIN As Integer = 1
+    Public Const SVG_VERTICAL_MARGIN As Integer = 3
     Public Const SVG_FONT_SIZE As Integer = 12
     Public Const SVG_TEXT_LINE_HEIGHT As Integer = SVG_FONT_SIZE + SVG_VERTICAL_MARGIN
     Public Const SVG_TEXT_MARGIN As Integer = 10

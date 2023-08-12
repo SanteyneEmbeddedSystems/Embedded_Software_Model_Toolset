@@ -157,6 +157,9 @@
   <data name="Project" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Project.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Provider_Port" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Provider_Port.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Purple_Flash_In_Square" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Purple_Flash_In_Square.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -168,5 +171,8 @@
   </data>
   <data name="Record_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Record_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Requirer_Port" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Requirer_Port.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

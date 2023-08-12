@@ -3,6 +3,8 @@
 
     Public Configurations As New List(Of Configuration_Parameter)
     Public Operations As New List(Of OS_Operation)
+    Public Provider_Ports As List(Of Provider_Port)
+    Public Requirer_Ports As List(Of Requirer_Port)
 
     Public Const Metaclass_Name As String = "Component_Type"
 
@@ -35,6 +37,8 @@
             Me.Children_Is_Computed = True
             Me.Children.AddRange(Me.Configurations)
             Me.Children.AddRange(Me.Operations)
+            Me.Children.AddRange(Me.Provider_Ports)
+            Me.Children.AddRange(Me.Requirer_Ports)
         End If
         Return Me.Children
     End Function
@@ -128,6 +132,68 @@
         End If
     End Sub
 
+    Public Sub Add_Provider_Port()
+
+        Dim creation_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            Provider_Port.Metaclass_Name,
+            "",
+            Provider_Port.Metaclass_Name,
+            "",
+            Me.Get_Children_Name(),
+            "Interface",
+            "",
+            Me.Get_All_Interfaces_Path_From_Project())
+
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+
+        If creation_form_result = DialogResult.OK Then
+            Dim new_port As New Provider_Port(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node,
+                Me.Get_Interface_From_Project_By_Path(creation_form.Get_Ref_Element_Path()) _
+                    .Identifier)
+            Me.Provider_Ports.Add(new_port)
+            Me.Children.Add(new_port)
+            Me.Get_Project().Add_Element_To_Project(new_port)
+            Me.Update_Views()
+        End If
+
+    End Sub
+
+    Public Sub Add_Requirer_Port()
+
+        Dim creation_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            Requirer_Port.Metaclass_Name,
+            "",
+            Requirer_Port.Metaclass_Name,
+            "",
+            Me.Get_Children_Name(),
+            "Interface",
+            "",
+            Me.Get_All_Interfaces_Path_From_Project())
+
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+
+        If creation_form_result = DialogResult.OK Then
+            Dim new_port As New Requirer_Port(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node,
+                Me.Get_Interface_From_Project_By_Path(creation_form.Get_Ref_Element_Path()) _
+                    .Identifier)
+            Me.Requirer_Ports.Add(new_port)
+            Me.Children.Add(new_port)
+            Me.Get_Project().Add_Element_To_Project(new_port)
+            Me.Update_Views()
+        End If
+
+    End Sub
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for diagrams
@@ -154,7 +220,7 @@
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String)
-        split_description = Split_String(Me.Description, SVG_MIN_CHAR_PER_LINE)
+        split_description = Split_String(Me.Description, nb_max_char_per_line)
         svg_content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
@@ -283,6 +349,197 @@ Public Class OS_Operation
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return TypeOf parent Is Component_Type
+    End Function
+
+End Class
+
+
+Public MustInherit Class Port
+    Inherits Software_Element
+
+    Public Interface_Ref As Guid
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode,
+            interface_ref As Guid)
+        MyBase.New(name, description, owner, parent_node)
+        Me.Interface_Ref = interface_ref
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
+        Return TypeOf parent Is Component_Type
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for contextual menu
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Sub Edit()
+        Dim edit_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.EDITION_FORM,
+            Me.Get_Metaclass_Name(),
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            Me.Get_Forbidden_Name_List(),
+            "Interface",
+            Me.Get_Interface_Path(),
+            Me.Get_All_Interfaces_Path_From_Project())
+        Dim edition_form_result As DialogResult = edit_form.ShowDialog()
+        If edition_form_result = DialogResult.OK Then
+            Dim old_name As String = Me.Name
+            Me.Name = edit_form.Get_Element_Name()
+            Update_Project(old_name)
+            Me.Node.Text = Me.Name
+            Me.Description = edit_form.Get_Element_Description()
+            Me.Interface_Ref =
+                Get_Interface_From_Project_By_Path(edit_form.Get_Ref_Element_Path()).Identifier
+            Me.Update_Views()
+        End If
+
+    End Sub
+
+    Public Overrides Sub View()
+        Dim elmt_view_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.VIEW_FORM,
+            Me.Get_Metaclass_Name(),
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            Nothing, ' Forbidden name list, useless for View
+            "Interface",
+            Me.Get_Interface_Path(),
+            Nothing)
+        elmt_view_form.ShowDialog()
+    End Sub
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Specific methods
+    '----------------------------------------------------------------------------------------------'
+
+    Public Function Get_Interface_Name() As String
+        Dim if_name As String = "unresolved"
+        Dim sw_if As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Interface_Ref)
+        If Not IsNothing(sw_if) Then
+            if_name = sw_if.Name
+        End If
+        Return if_name
+    End Function
+
+    Public Function Get_Interface_Path() As String
+        Dim if_path As String = "unresolved"
+        Dim sw_if As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Interface_Ref)
+        If Not IsNothing(sw_if) Then
+            if_path = sw_if.Get_Path()
+        End If
+        Return if_path
+    End Function
+
+End Class
+
+
+Public Class Provider_Port
+    Inherits Port
+
+    Public Const Metaclass_Name As String = "Provider_Port"
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode,
+            interface_ref As Guid)
+        MyBase.New(name, description, owner, parent_node, interface_ref)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Move_Me(new_parent As Software_Element)
+        CType(Me.Owner, Component_Type).Provider_Ports.Remove(Me)
+        CType(new_parent, Component_Type).Provider_Ports.Add(Me)
+    End Sub
+
+    Protected Overrides Sub Remove_Me()
+        Dim parent_swct As Component_Type = CType(Me.Owner, Component_Type)
+        Me.Node.Remove()
+        parent_swct.Provider_Ports.Remove(Me)
+    End Sub
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Provider_Port.Metaclass_Name
+    End Function
+
+End Class
+
+
+Public Class Requirer_Port
+    Inherits Port
+
+    Public Const Metaclass_Name As String = "Requirer_Port"
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode,
+            interface_ref As Guid)
+        MyBase.New(name, description, owner, parent_node, interface_ref)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Move_Me(new_parent As Software_Element)
+        CType(Me.Owner, Component_Type).Requirer_Ports.Remove(Me)
+        CType(new_parent, Component_Type).Requirer_Ports.Add(Me)
+    End Sub
+
+    Protected Overrides Sub Remove_Me()
+        Dim parent_swct As Component_Type = CType(Me.Owner, Component_Type)
+        Me.Node.Remove()
+        parent_swct.Requirer_Ports.Remove(Me)
+    End Sub
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Requirer_Port.Metaclass_Name
     End Function
 
 End Class
