@@ -221,7 +221,7 @@
         End Select
         Dim svg_content As String =
             "  <text style=""font-size:" & font_size & "px;" &
-                text_anchor & font_weight & font_style & """ " &
+                text_anchor & font_weight & font_style & """" &
                 " x=""" & x_pos & "px""" &
                 " y=""" & y_pos & "px"">" &
                 text & "</text>" & vbCrLf

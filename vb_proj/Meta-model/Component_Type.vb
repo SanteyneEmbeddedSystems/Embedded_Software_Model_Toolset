@@ -203,7 +203,9 @@
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
+    Public Overrides Function Compute_SVG_Content() As String
+        Dim x_pos As Integer = 0
+        Dim y_pos As Integer = 0
 
         ' ---------------------------------------------------------------------------------------- '
         ' Compute Box width (it depends on the longuest line of the configurations compartment)
@@ -249,13 +251,14 @@
 
         ' ---------------------------------------------------------------------------------------- '
         ' Add compartments and ports
-        Dim svg_content As String
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
         Dim rectangle_x_pos As Integer = x_pos
         If nb_char_offset <> 0 Then
             rectangle_x_pos += Get_Text_Witdh(nb_char_offset) + SVG_TEXT_MARGIN
         End If
         ' Add title (Name + stereotype) compartment
-        svg_content = Get_Title_Rectangle(rectangle_x_pos, y_pos, Me.Name,
+        Me.SVG_Content &= Get_Title_Rectangle(rectangle_x_pos, y_pos, Me.Name,
             Component_Type.SVG_COLOR, box_width, Metaclass_Name)
 
         ' Add description compartment
@@ -265,7 +268,7 @@
                 + (port_box_height - text_box_height)
         End If
 
-        svg_content &= Get_Multi_Line_Rectangle(
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
             rectangle_x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
@@ -275,7 +278,7 @@
 
         ' Add configurations compartement
         Dim conf_rect_height As Integer = 0
-        svg_content &= Get_Multi_Line_Rectangle(
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
             rectangle_x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             config_lines,
@@ -284,7 +287,7 @@
             conf_rect_height)
 
         ' Add operations compartement
-        svg_content &= Get_Multi_Line_Rectangle(
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
             rectangle_x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height + conf_rect_height,
             op_lines,
@@ -297,7 +300,7 @@
         For Each pp In Me.Provider_Ports
             Dim port_y_pos As Integer = y_pos + PORT_SPACE \ 2 + port_idx * PORT_SPACE
 
-            svg_content &= Get_SVG_Rectangle(
+            Me.SVG_Content &= Get_SVG_Rectangle(
                 port_rect_x_pos,
                 port_y_pos,
                 PORT_SIDE,
@@ -306,20 +309,20 @@
                 "0.6")
 
             Dim line_y_pos As Integer = port_y_pos + PORT_SIDE \ 2
-            svg_content &= Get_SVG_Horizontal_Line(
+            Me.SVG_Content &= Get_SVG_Horizontal_Line(
                 port_rect_x_pos - PORT_LINE_LENGTH,
                 line_y_pos,
                 PORT_LINE_LENGTH,
                 Component_Type.SVG_COLOR)
 
-            svg_content &= Get_SVG_Circle(
+            Me.SVG_Content &= Get_SVG_Circle(
                 port_rect_x_pos - PORT_LINE_LENGTH - LOLLIPOP_RADIUS,
                 line_y_pos,
                 LOLLIPOP_RADIUS,
                 Component_Type.SVG_COLOR,
                 "0.6")
 
-            svg_content &= Get_SVG_Text(
+            Me.SVG_Content &= Get_SVG_Text(
                 rectangle_x_pos - SVG_TEXT_MARGIN,
                 port_y_pos - SVG_VERTICAL_MARGIN,
                 pp.Name & ":" & pp.Get_Interface_Name(),
@@ -336,7 +339,7 @@
         For Each rp In Me.Requirer_Ports
             Dim port_y_pos As Integer = y_pos + PORT_SPACE \ 2 + port_idx * PORT_SPACE
 
-            svg_content &= Get_SVG_Rectangle(
+            Me.SVG_Content &= Get_SVG_Rectangle(
                 port_rect_x_pos,
                 port_y_pos,
                 PORT_SIDE,
@@ -345,19 +348,19 @@
                 "0.6")
 
             Dim line_y_pos As Integer = port_y_pos + PORT_SIDE \ 2
-            svg_content &= Get_SVG_Horizontal_Line(
+            Me.SVG_Content &= Get_SVG_Horizontal_Line(
                 port_rect_x_pos + PORT_SIDE,
                 line_y_pos,
                 PORT_LINE_LENGTH,
                 Component_Type.SVG_COLOR)
 
-            svg_content &= Get_SVG_Haf_Moon(
+            Me.SVG_Content &= Get_SVG_Haf_Moon(
                 port_rect_x_pos + PORT_SIDE + PORT_LINE_LENGTH,
                 line_y_pos,
                 LOLLIPOP_RADIUS,
                 Component_Type.SVG_COLOR)
 
-            svg_content &= Get_SVG_Text(
+            Me.SVG_Content &= Get_SVG_Text(
                 port_rect_x_pos + SVG_TEXT_MARGIN,
                 port_y_pos - SVG_VERTICAL_MARGIN,
                 rp.Name & ":" & rp.Get_Interface_Name(),
@@ -368,7 +371,8 @@
             port_idx += 1
         Next
 
-        Return svg_content
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Return Me.SVG_Content
 
     End Function
 

@@ -26,6 +26,8 @@ Public MustInherit Class Software_Element
 
     Protected Const SVG_MIN_CHAR_PER_LINE As Integer = 32
 
+    Protected SVG_Content As String = ""
+
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
     ' -------------------------------------------------------------------------------------------- '
@@ -304,8 +306,29 @@ Public MustInherit Class Software_Element
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
+    Protected Function Get_SVG_Id() As String
+        Dim my_svg_id As String = Me.Name
+        Dim parent As Software_Element = Me.Owner
+        If Not IsNothing(parent) Then
+            While Not IsNothing(parent.Owner)
+            my_svg_id = parent.Name & "__" & my_svg_id
+            parent = parent.Owner
+            End While
+        End If
+        Return my_svg_id
+    End Function
+
+    Protected Function Get_SVG_Def_Group_Header() As String
+        Return "  <defs>" & vbCrLf &
+              "  <g id=""" & Me.Get_SVG_Id & """>" & vbCrLf
+    End Function
+
+    Protected Shared Function Get_SVG_Def_Group_Footer() As String
+        Return "  </g>" & vbCrLf & "  </defs>"
+    End Function
+
     Public Overridable Function Get_SVG_File_Path() As String
-        Return Me.Get_Top_Package_Folder() & Path.DirectorySeparatorChar & Me.Name & ".svg"
+        Return Me.Get_Top_Package_Folder() & Path.DirectorySeparatorChar & Me.Get_SVG_Id() & ".svg"
     End Function
 
     Public Overridable Function Update_SVG_Diagram() As String
@@ -314,36 +337,39 @@ Public MustInherit Class Software_Element
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
 
         file_stream.WriteLine("<?xml version=""1.0"" encoding=""UTF-8""?>")
-        file_stream.WriteLine()
         file_stream.WriteLine("<svg")
         file_stream.WriteLine("  Version=""1.1""")
         file_stream.WriteLine("  xmlns=""http://www.w3.org/2000/svg""")
+        file_stream.WriteLine("  xmlns:xlink=""http://www.w3.org/1999/xlink""")
         file_stream.WriteLine("  xmlns:svg=""http://www.w3.org/2000/svg"">")
         file_stream.WriteLine("  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
          "px;font-family:Consolas;fill:black;text-anchor:start;}</style>")
-        file_stream.WriteLine(Me.Get_SVG_Content(10, 10))
+        file_stream.WriteLine(Me.Compute_SVG_Content())
+        file_stream.WriteLine("  <use xlink:href=""#" &
+                              Me.Get_SVG_Id() &
+                              """ transform=""translate(100,100)"" />")
         file_stream.WriteLine("</svg>")
-
         file_stream.Close()
-
         Return svg_file_full_path
 
     End Function
 
-    Public Overridable Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
-        Dim svg_content As String
-
+    Public Overridable Function Compute_SVG_Content() As String
+        Dim x_pos As Integer = 0
+        Dim y_pos As Integer = 0
         Dim box_width As Integer = Get_Box_Witdh(SVG_MIN_CHAR_PER_LINE)
 
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
         ' Add title (Name + stereotype) compartment
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
+        Me.SVG_Content &= Get_Title_Rectangle(x_pos, y_pos, Me.Name,
             "lightblue", box_width, Me.Get_Metaclass_Name)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String)
         split_description = Split_String(Me.Description, SVG_MIN_CHAR_PER_LINE)
-        svg_content &= Get_Multi_Line_Rectangle(
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
@@ -351,7 +377,13 @@ Public MustInherit Class Software_Element
             box_width,
             desc_rect_height)
 
-        Return svg_content
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Return Me.SVG_Content
+
+    End Function
+
+    Public Function Get_SVG_Content() As String
+        Return Me.SVG_Content
     End Function
 
     Public Sub Update_Views()

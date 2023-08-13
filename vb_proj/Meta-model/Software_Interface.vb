@@ -135,8 +135,9 @@ Public Class Client_Server_Interface
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
-        Dim svg_content As String
+    Public Overrides Function Compute_SVG_Content() As String
+        Dim x_pos As Integer = 0
+        Dim y_pos As Integer = 0
 
         ' Compute Box width (it depends on the longuest line of the operations compartment)
         ' Build the lines of the operations compartment
@@ -195,15 +196,17 @@ Public Class Client_Server_Interface
         End If
         Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
 
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
         ' Add title (Name + stereotype) compartment
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
+        Me.SVG_Content &= Get_Title_Rectangle(x_pos, y_pos, Me.Name,
             Client_Server_Interface.SVG_COLOR, box_width, Metaclass_Name, True)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String)
         split_description = Split_String(Me.Description, nb_max_char_per_line)
-        svg_content &= Get_Multi_Line_Rectangle(
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
@@ -212,14 +215,15 @@ Public Class Client_Server_Interface
             desc_rect_height)
 
         ' Add operation compartment
-        svg_content &= Get_Multi_Line_Rectangle(
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             op_lines,
             Client_Server_Interface.SVG_COLOR,
             box_width)
 
-        Return svg_content
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Return Me.SVG_Content
 
     End Function
 
@@ -569,8 +573,9 @@ Public Class Event_Interface
 
     End Sub
 
-    Public Overrides Function Get_SVG_Content(x_pos As Integer, y_pos As Integer) As String
-        Dim svg_content As String
+    Public Overrides Function Compute_SVG_Content() As String
+        Dim x_pos As Integer = 0
+        Dim y_pos As Integer = 0
 
         ' Compute Box width (it depends on the longuest line of the parameters compartment)
         ' Build the lines of the parameters compartment
@@ -584,15 +589,17 @@ Public Class Event_Interface
         nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(param_lines, SVG_MIN_CHAR_PER_LINE)
         Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
 
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
         ' Add title (Name + stereotype) compartment
-        svg_content = Get_Title_Rectangle(x_pos, y_pos, Me.Name,
+        Me.SVG_Content &= Get_Title_Rectangle(x_pos, y_pos, Me.Name,
             Event_Interface.SVG_COLOR, box_width, Metaclass_Name, True)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String)
         split_description = Split_String(Me.Description, nb_max_char_per_line)
-        svg_content &= Get_Multi_Line_Rectangle(
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT,
             split_description,
@@ -601,14 +608,15 @@ Public Class Event_Interface
             desc_rect_height)
 
         ' Add parameters compartments
-        svg_content &= Get_Multi_Line_Rectangle(
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
             x_pos,
             y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
             param_lines,
             Event_Interface.SVG_COLOR,
             box_width)
 
-        Return svg_content
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Return Me.SVG_Content
 
     End Function
 
