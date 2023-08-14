@@ -28,6 +28,8 @@ Public Class Top_Level_Package
 
     Public Const Package_File_Extension As String = ".pkgx"
 
+    Private Has_Been_Modified_Since_Last_Metrics_Computation As Boolean = True
+
     Private ReadOnly Needed_Elements_List As New List(Of Classifier)
     Private ReadOnly Needed_Top_Packages_List As New List(Of Dependent_Element)
 
@@ -334,6 +336,7 @@ Public Class Top_Level_Package
         writer.Close()
 
         Me.Display_Saved()
+        Me.Has_Been_Modified_Since_Last_Metrics_Computation = True
     End Sub
 
     Public Sub Display_Dependencies()
@@ -355,9 +358,13 @@ Public Class Top_Level_Package
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for Dependent_Element
     ' -------------------------------------------------------------------------------------------- '
+
     Function Get_Needed_Element() As List(Of Dependent_Element) _
         Implements Dependent_Element.Get_Needed_Element
-        Me.Find_Needed_Elements()
+        If Me.Has_Been_Modified_Since_Last_Metrics_Computation = True Then
+            Me.Find_Needed_Elements()
+            Me.Has_Been_Modified_Since_Last_Metrics_Computation = False
+        End If
         Return Me.Needed_Top_Packages_List
     End Function
 
