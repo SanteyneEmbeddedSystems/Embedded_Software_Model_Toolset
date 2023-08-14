@@ -16,6 +16,8 @@
             Me.Menu_View,
             Me.Menu_Make_Read_Only,
             New ToolStripSeparator,
+            Me.Menu_Display_Dependencies,
+            New ToolStripSeparator,
             Me.Menu_Add_Package,
             New ToolStripSeparator,
             Me.Menu_Add_Array_Type,

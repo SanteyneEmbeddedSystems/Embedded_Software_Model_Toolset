@@ -1,5 +1,5 @@
 ﻿Public MustInherit Class Software_Interface
-    Inherits Must_Describe_Software_Element
+    Inherits Classifier
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -32,15 +32,6 @@
         Me.Node.Remove()
         parent_pkg.Interfaces.Remove(Me)
     End Sub
-
-    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
-        Dim is_allowed As Boolean = False
-        If parent.GetType() = GetType(Top_Level_Package) _
-            Or parent.GetType() = GetType(Package) Then
-            is_allowed = True
-        End If
-        Return is_allowed
-    End Function
 
 End Class
 
@@ -97,6 +88,26 @@ Public Class Client_Server_Interface
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Client_Server_Interface.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Classifier
+    ' -------------------------------------------------------------------------------------------- '
+    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Me.Needed_Elements = New List(Of Classifier)
+        For Each op In Me.Operations
+            For Each param In op.Parameters
+                Dim data_type As Type
+                data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Type_Ref), Type)
+                If Not IsNothing(data_type) Then
+                    If Not Me.Needed_Elements.Contains(data_type) Then
+                        Me.Needed_Elements.Add(data_type)
+                    End If
+                End If
+            Next
+        Next
+        Return Me.Needed_Elements
     End Function
 
 
@@ -532,6 +543,25 @@ Public Class Event_Interface
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Event_Interface.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Classifier
+    ' -------------------------------------------------------------------------------------------- '
+    
+    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Me.Needed_Elements = New List(Of Classifier)
+        For Each param In Me.Parameters
+            Dim data_type As Type
+            data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Type_Ref), Type)
+            If Not IsNothing(data_type) Then
+                If Not Me.Needed_Elements.Contains(data_type) Then
+                    Me.Needed_Elements.Add(data_type)
+                End If
+            End If
+        Next
+        Return Me.Needed_Elements
     End Function
 
 

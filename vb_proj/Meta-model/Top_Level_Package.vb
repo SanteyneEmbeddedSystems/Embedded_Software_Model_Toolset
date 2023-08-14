@@ -7,6 +7,8 @@ Imports System.Reflection
 Public Class Top_Level_Package
     Inherits Package
 
+    Implements Dependent_Element
+
     Private Enum E_PACKAGE_STATUS
         LOCKED
         NOT_FOUND
@@ -25,6 +27,9 @@ Public Class Top_Level_Package
     Private Shared ReadOnly Pkg_Serializer As New XmlSerializer(GetType(Top_Level_Package))
 
     Public Const Package_File_Extension As String = ".pkgx"
+
+    Private ReadOnly Needed_Elements_List As New List(Of Classifier)
+    Private ReadOnly Needed_Top_Packages_List As New List(Of Dependent_Element)
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -329,6 +334,65 @@ Public Class Top_Level_Package
         writer.Close()
 
         Me.Display_Saved()
+    End Sub
+
+    Public Sub Display_Dependencies()
+        Me.Find_Needed_Elements()
+        Dim message As String
+        If Me.Needed_Top_Packages_List.Count = 0 Then
+            message = "This package does not depend on any other one."
+        Else
+            message = "This package depends on the following packages :" & vbCrLf
+            For Each pkg In Me.Needed_Top_Packages_List
+                message &= CType(pkg, Top_Level_Package).Name & vbCrLf
+            Next
+        End If
+        MsgBox(message, MsgBoxStyle.OkOnly, "Package dependencies")
+
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for Dependent_Element
+    ' -------------------------------------------------------------------------------------------- '
+    Function Get_Needed_Element() As List(Of Dependent_Element) _
+        Implements Dependent_Element.Get_Needed_Element
+        Me.Find_Needed_Elements()
+        Return Me.Needed_Top_Packages_List
+    End Function
+
+    Private Sub Find_Needed_Elements()
+
+        Dim tmp_needed_elements_list = New List(Of Classifier)
+
+        Dim pkg_list As New List(Of Package) From {Me}
+        Me.Get_All_Sub_Packages(pkg_list)
+
+        ' Parse the list of sub packages + Me
+        Dim pkg As Package
+        For Each pkg In pkg_list
+            For Each swct In pkg.Component_Types
+                tmp_needed_elements_list.AddRange(swct.Find_Needed_Elements())
+            Next
+            For Each sw_if In pkg.Interfaces
+                tmp_needed_elements_list.AddRange(sw_if.Find_Needed_Elements())
+            Next
+            For Each data_type In pkg.Types
+                tmp_needed_elements_list.AddRange(data_type.Find_Needed_Elements())
+            Next
+        Next
+
+        tmp_needed_elements_list = tmp_needed_elements_list.Distinct().ToList
+
+        For Each element In tmp_needed_elements_list
+            Dim owner_pkg As Top_Level_Package = element.Get_Top_Package()
+            If owner_pkg.Identifier <> Me.Identifier Then
+                If Not Me.Needed_Top_Packages_List.Contains(owner_pkg) Then
+                    Me.Needed_Top_Packages_List.Add(owner_pkg)
+                End If
+                Me.Needed_Elements_List.Add(element)
+            End If
+        Next
     End Sub
 
 End Class

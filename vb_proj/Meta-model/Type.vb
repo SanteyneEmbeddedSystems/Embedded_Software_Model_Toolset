@@ -3,9 +3,10 @@ Imports System.Text.RegularExpressions
 
 
 Public MustInherit Class Type
-    Inherits Must_Describe_Software_Element
+    Inherits Classifier
 
     Public Const SVG_COLOR As String = "rgb(136,0,21)"
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -27,15 +28,6 @@ Public MustInherit Class Type
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
-        Dim is_allowed As Boolean = False
-        If parent.GetType() = GetType(Top_Level_Package) _
-            Or parent.GetType() = GetType(Package) Then
-            is_allowed = True
-        End If
-        Return is_allowed
-    End Function
-
     Protected Overrides Sub Move_Me(new_parent As Software_Element)
         CType(Me.Owner, Package).Types.Remove(Me)
         CType(new_parent, Package).Types.Add(Me)
@@ -46,6 +38,16 @@ Public MustInherit Class Type
         Me.Node.Remove()
         parent_pkg.Types.Remove(Me)
     End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Classifier
+    ' -------------------------------------------------------------------------------------------- '
+    
+    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        ' Shall be overriden by Array_Type, Record_Type and Fixed_Point_Type
+        Return Me.Needed_Elements
+    End Function
 
 End Class
 
@@ -77,6 +79,15 @@ Public MustInherit Class Basic_Type
 
     Public Overrides Function Get_SVG_File_Path() As String
         Return Path.GetTempPath() & Me.Name & ".svg"
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Classifier
+    ' -------------------------------------------------------------------------------------------- '
+    
+    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Return Nothing
     End Function
 
 
@@ -175,6 +186,20 @@ Public Class Array_Type
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Array_Type.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Classifier
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Dim data_type As Type
+        data_type = CType(Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref), Type)
+        If Not IsNothing(data_type) Then
+            Me.Needed_Elements.Add(data_type)
+        End If
+        Return Me.Needed_Elements
     End Function
 
 
@@ -665,6 +690,20 @@ Public Class Fixed_Point_Type
 
 
     ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Classifier
+    ' -------------------------------------------------------------------------------------------- '
+    
+    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Dim data_type As Type
+        data_type = CType(Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref), Type)
+        If Not IsNothing(data_type) Then
+            Me.Needed_Elements.Add(data_type)
+        End If
+        Return Me.Needed_Elements
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
     ' -------------------------------------------------------------------------------------------- '
 
@@ -850,6 +889,24 @@ Public Class Record_Type
             Me.Children.AddRange(Me.Fields)
         End If
         Return Me.Children
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Classifier
+    ' -------------------------------------------------------------------------------------------- '
+    
+    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        For Each fd In Me.Fields
+            Dim data_type As Type
+            data_type = CType(Me.Get_Element_From_Project_By_Identifier(fd.Type_Ref), Type)
+            If Not IsNothing(data_type) Then
+                If Not Me.Needed_Elements.Contains(data_type) Then
+                    Me.Needed_Elements.Add(data_type)
+                End If
+            End If
+        Next
+        Return Me.Needed_Elements
     End Function
 
 

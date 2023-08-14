@@ -148,10 +148,12 @@
     <Compile Include="Forms\Operation_Parameter_Form.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Meta-model\Classifier.vb" />
     <Compile Include="Meta-model\Component_Type.vb" />
     <Compile Include="Meta-model\Software_Interface.vb" />
     <Compile Include="Meta-model\Type.vb" />
     <Compile Include="Modules\Consistency_Check_Report.vb" />
+    <Compile Include="Modules\Dependencies_Manager.vb" />
     <Compile Include="Modules\SVG.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">

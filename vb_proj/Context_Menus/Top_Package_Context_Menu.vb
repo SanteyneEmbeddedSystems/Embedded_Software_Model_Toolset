@@ -3,13 +3,20 @@
     Inherits Package_Context_Menu
 
     Protected WithEvents Menu_Remove_Top As New ToolStripMenuItem("Remove from project")
-
+    Protected WithEvents Menu_Display_Dependencies As New ToolStripMenuItem("Display dependencies")
 
     Private Sub Remove(
             ByVal sender As Object,
             ByVal e As EventArgs) Handles Menu_Remove_Top.Click
         Dim pkg_name As String = Get_Top_Package(sender).Name
         Get_Project(sender).Remove_Package(pkg_name)
+    End Sub
+
+    Private Sub Display_Dependencies(
+            ByVal sender As Object,
+            ByVal e As EventArgs) Handles Menu_Display_Dependencies.Click
+        Dim pkg_name As String = Get_Top_Package(sender).Name
+        Get_Top_Package(sender).Display_Dependencies()
     End Sub
 
     Protected Shared Function Get_Top_Package(sender As Object) As Top_Level_Package

@@ -1,5 +1,5 @@
 ﻿Public Class Component_Type
-    Inherits Must_Describe_Software_Element
+    Inherits Classifier
 
     Public Configurations As New List(Of Configuration_Parameter)
     Public Operations As New List(Of OS_Operation)
@@ -62,17 +62,46 @@
         Return Component_Type.Metaclass_Name
     End Function
 
-    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
-        Dim is_allowed As Boolean = False
-        If parent.GetType() = GetType(Top_Level_Package) _
-            Or parent.GetType() = GetType(Package) Then
-            is_allowed = True
-        End If
-        Return is_allowed
-    End Function
-
     Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
         Return Component_Type.Context_Menu
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Classifier
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        For Each port In Me.Provider_Ports
+            Dim sw_if As Software_Interface
+            sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Interface_Ref),
+                Software_Interface)
+            If Not IsNothing(sw_if) Then
+                If Not Me.Needed_Elements.Contains(sw_if) Then
+                    Me.Needed_Elements.Add(sw_if)
+                End If
+            End If
+        Next
+        For Each port In Me.Requirer_Ports
+            Dim sw_if As Software_Interface
+            sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Interface_Ref),
+                Software_Interface)
+            If Not IsNothing(sw_if) Then
+                If Not Me.Needed_Elements.Contains(sw_if) Then
+                    Me.Needed_Elements.Add(sw_if)
+                End If
+            End If
+        Next
+        For Each conf In Me.Configurations
+            Dim data_type As Type
+            data_type = CType(Me.Get_Element_From_Project_By_Identifier(conf.Type_Ref), Type)
+            If Not IsNothing(data_type) Then
+                If Not Me.Needed_Elements.Contains(data_type) Then
+                    Me.Needed_Elements.Add(data_type)
+                End If
+            End If
+        Next
+        Return Me.Needed_Elements
     End Function
 
 

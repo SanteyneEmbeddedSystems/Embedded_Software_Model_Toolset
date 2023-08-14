@@ -10,7 +10,9 @@
             Me.Menu_Remove_Top,
             New ToolStripSeparator,
             Me.Menu_View,
-            Me.Menu_Make_Writable})
+            Me.Menu_Make_Writable,
+            New ToolStripSeparator,
+            Me.Menu_Display_Dependencies})
     End Sub
 
     Private Sub Make_Writable(

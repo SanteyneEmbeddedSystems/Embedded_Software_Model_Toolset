@@ -324,4 +324,16 @@ Public Class Package
         empty_check.Set_Compliance(Me.Children.Count > 0)
     End Sub
 
+
+    '----------------------------------------------------------------------------------------------'
+    ' Specific methods
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Sub Get_All_Sub_Packages(ByRef pkg_list As List(Of Package))
+        For Each pkg In Me.Packages
+            pkg_list.Add(pkg)
+            pkg.Get_All_Sub_Packages(pkg_list)
+        Next
+    End Sub
+
 End Class
