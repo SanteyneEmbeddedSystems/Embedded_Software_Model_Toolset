@@ -30,6 +30,9 @@ Public Class Package
         "Package_Not_Empty",
         "Shall aggregate a least one element.")
 
+    Private Const SVG_COLOR As String = "rgb(0,162,232)"
+    Private Const SVG_NB_CHARS_PKG_DESC As Integer = CInt(1.5 * SVG_MIN_CHAR_PER_LINE)
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -311,6 +314,52 @@ Public Class Package
             Me.Update_Views()
         End If
     End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Compute_SVG_Content() As String
+        Dim box_width As Integer = Get_Box_Witdh(SVG_NB_CHARS_PKG_DESC)
+
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
+        ' Add Name compartment
+        Dim title_rectangle_witdh As Integer = Get_Box_Witdh(Me.Name.Length)
+        Dim title_rectangle_height As Integer = SVG_TEXT_LINE_HEIGHT + SVG_VERTICAL_MARGIN _
+            + 2 * SVG_STROKE_WIDTH
+        Me.SVG_Content &= Get_SVG_Rectangle(
+            0,
+            0,
+            title_rectangle_witdh,
+            title_rectangle_height,
+            Package.SVG_COLOR,
+            "0.5")
+        Me.SVG_Content &= Get_SVG_Text(
+            SVG_TEXT_MARGIN,
+            SVG_STROKE_WIDTH + SVG_TEXT_LINE_HEIGHT - 3,
+            Me.Name,
+            SVG_FONT_SIZE,
+            False,
+            False)
+
+        ' Add description compartment
+        Dim split_description As List(Of String) =
+            Split_String(Me.Description, SVG_NB_CHARS_PKG_DESC)
+        Dim description_rectangle_height =
+            Math.Max(Get_SVG_Retangle_Height(split_description.Count), SVG_TEXT_LINE_HEIGHT * 4)
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
+            0,
+            title_rectangle_height,
+            split_description,
+            Package.SVG_COLOR,
+            box_width,
+            description_rectangle_height)
+
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Return Me.SVG_Content
+    End Function
 
 
     '----------------------------------------------------------------------------------------------'

@@ -24,7 +24,7 @@ Public MustInherit Class Software_Element
         "Name_Pattern",
         "Name shall match " & Valid_Symbol_Regex)
 
-    Protected Const SVG_MIN_CHAR_PER_LINE As Integer = 32
+    Protected Const SVG_MIN_CHAR_PER_LINE As Integer = NB_CHARS_MAX_FOR_SYMBOL
 
     Protected SVG_Content As String = ""
 
