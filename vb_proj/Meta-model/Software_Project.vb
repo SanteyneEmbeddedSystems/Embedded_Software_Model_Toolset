@@ -374,7 +374,6 @@ Public Class Software_Project
         End If
     End Sub
 
-
     Public Function Get_Element_By_Identifier(id As Guid) As Software_Element
         If Me.Elements.ContainsKey(id) Then
             Return Me.Elements(id)
@@ -407,7 +406,6 @@ Public Class Software_Project
         Return Me.Basic_Integer_Types.Keys.ToList
     End Function
 
-
     Public Function Get_Interface_By_Path(path As String) As Software_Interface
         If Me.Interfaces.ContainsKey(path) Then
             Return Me.Interfaces(path)
@@ -419,7 +417,6 @@ Public Class Software_Project
     Public Function Get_All_Interfaces_Path() As List(Of String)
         Return Me.Interfaces.Keys.ToList
     End Function
-
 
     Public Sub Remove_Package(pkg_name As String)
 
@@ -509,6 +506,85 @@ Public Class Software_Project
         Dim svg_file_path As String = sw_elmnt.Update_SVG_Diagram()
         Me.Diagram_Viewer.Navigate(svg_file_path)
     End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Compute_SVG_Content() As String
+        Dim not_sorted_pkgs As New List(Of Top_Level_Package)
+        not_sorted_pkgs.AddRange(Me.Top_Level_Packages_List)
+        Dim sorted_pkgs As New List(Of Top_Level_Package)
+        Dim sorted_pkgs_list As New List(Of List(Of Top_Level_Package))
+
+        While not_sorted_pkgs.Count <> 0
+            Dim not_sorted_pkgs_copy As New List(Of Top_Level_Package)
+            not_sorted_pkgs_copy.AddRange(not_sorted_pkgs)
+            Dim current_sorted_pkg As New List(Of Top_Level_Package)
+            For Each pkg In not_sorted_pkgs_copy
+                Dim all_need_pkg_are_sorted As Boolean = True
+                For Each needed_pkg In pkg.Get_Needed_Element()
+                    If Not sorted_pkgs.Contains(CType(needed_pkg, Top_Level_Package)) Then
+                        all_need_pkg_are_sorted = False
+                        Exit For
+                    End If
+                Next
+                If all_need_pkg_are_sorted = True Then
+                    current_sorted_pkg.Add(pkg)
+                End If
+            Next
+            For Each pkg In current_sorted_pkg
+                not_sorted_pkgs.Remove(pkg)
+                sorted_pkgs.Add(pkg)
+            Next
+            sorted_pkgs_list.Add(current_sorted_pkg)
+        End While
+
+        Dim from_point_dico As New Dictionary(Of Top_Level_Package, SVG_POINT)
+        Dim to_point_dico As New Dictionary(Of Top_Level_Package, SVG_POINT)
+
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+        Dim pkg_list_idx As Integer = 0
+        For Each pkg_list In sorted_pkgs_list
+            Dim pkg_idx As Integer = 0
+            For Each pkg In pkg_list
+                Dim x_pos = pkg_idx * (Package.SVG_PKG_BOX_WIDTH + 20)
+                Dim y_pos = pkg_list_idx * 200
+                Me.SVG_Content &= pkg.Compute_SVG_Content()
+                Me.SVG_Content &= "  <use xlink:href=""#" & pkg.Get_SVG_Id() &
+                                  """ transform=""translate(" & x_pos &
+                                  "," & y_pos & ")"" />" & vbCrLf
+                from_point_dico.Add(
+                    pkg,
+                    New SVG_POINT With {
+                        .X_Pos = x_pos + Package.SVG_PKG_BOX_WIDTH \ 2,
+                        .Y_Pos = y_pos})
+                to_point_dico.Add(
+                    pkg,
+                    New SVG_POINT With {
+                        .X_Pos = x_pos + Package.SVG_PKG_BOX_WIDTH \ 2,
+                        .Y_Pos = y_pos + SVG_TEXT_LINE_HEIGHT * 4})
+                pkg_idx += 1
+            Next
+            pkg_list_idx += 1
+        Next
+
+        For Each pkg In Me.Top_Level_Packages_List
+            For Each need_pkg In pkg.Get_Needed_Element
+                Me.SVG_Content &= Get_SVG_Line(
+                    from_point_dico(pkg).X_Pos,
+                    from_point_dico(pkg).Y_Pos,
+                    to_point_dico(CType(need_pkg, Top_Level_Package)).X_Pos,
+                    to_point_dico(CType(need_pkg, Top_Level_Package)).Y_Pos,
+                    "black")
+            Next
+        Next
+
+
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Return Me.SVG_Content
+    End Function
 
 
     ' -------------------------------------------------------------------------------------------- '

@@ -9,6 +9,11 @@
         SVG_TEXT_LINE_HEIGHT * 2 + SVG_VERTICAL_MARGIN + 2 * SVG_STROKE_WIDTH
 
 
+    Public Structure SVG_POINT
+        Public X_Pos As Integer
+        Public Y_Pos As Integer
+    End Structure
+
     Public Function Get_Box_Witdh(nb_char As Integer) As Integer
         Return Get_Text_Witdh(nb_char) + SVG_TEXT_MARGIN * 2 + SVG_STROKE_WIDTH * 2
     End Function

@@ -32,6 +32,7 @@ Public Class Package
 
     Private Const SVG_COLOR As String = "rgb(0,162,232)"
     Private Const SVG_NB_CHARS_PKG_DESC As Integer = CInt(1.5 * SVG_MIN_CHAR_PER_LINE)
+    Public Shared SVG_PKG_BOX_WIDTH As Integer = Get_Box_Witdh(SVG_NB_CHARS_PKG_DESC)
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -321,8 +322,6 @@ Public Class Package
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim box_width As Integer = Get_Box_Witdh(SVG_NB_CHARS_PKG_DESC)
-
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add Name compartment
@@ -354,7 +353,7 @@ Public Class Package
             title_rectangle_height,
             split_description,
             Package.SVG_COLOR,
-            box_width,
+            SVG_PKG_BOX_WIDTH,
             description_rectangle_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
