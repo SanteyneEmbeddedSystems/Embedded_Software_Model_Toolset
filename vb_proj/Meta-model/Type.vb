@@ -43,7 +43,7 @@ Public MustInherit Class Type
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Classifier
     ' -------------------------------------------------------------------------------------------- '
-    
+
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
         ' Shall be overriden by Array_Type, Record_Type and Fixed_Point_Type
         Return Me.Needed_Elements
@@ -79,15 +79,6 @@ Public MustInherit Class Basic_Type
 
     Public Overrides Function Get_SVG_File_Path() As String
         Return Path.GetTempPath() & Me.Name & ".svg"
-    End Function
-
-
-    ' -------------------------------------------------------------------------------------------- '
-    ' Methods from Classifier
-    ' -------------------------------------------------------------------------------------------- '
-    
-    Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
-        Return Nothing
     End Function
 
 
@@ -692,7 +683,7 @@ Public Class Fixed_Point_Type
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Classifier
     ' -------------------------------------------------------------------------------------------- '
-    
+
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
         Dim data_type As Type
         data_type = CType(Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref), Type)
@@ -895,7 +886,7 @@ Public Class Record_Type
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Classifier
     ' -------------------------------------------------------------------------------------------- '
-    
+
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
         For Each fd In Me.Fields
             Dim data_type As Type
