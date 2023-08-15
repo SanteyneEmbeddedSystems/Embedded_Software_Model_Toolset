@@ -19,6 +19,7 @@ Public Class Top_Level_Package
 
     Private Xml_File_Path As String
     Private Status As E_PACKAGE_STATUS = E_PACKAGE_STATUS.WRITABLE
+    Public Project As Software_Project
 
     Private Shared ReadOnly Writable_Context_Menu As New Top_Package_Writable_Context_Menu
     Private Shared ReadOnly Readable_Context_Menu As New Top_Package_Readable_Context_Menu
@@ -44,10 +45,11 @@ Public Class Top_Level_Package
     Public Sub New(
             name As String,
             description As String,
-            owner As Software_Element,
+            owner As Software_Project,
             parent_node As TreeNode,
             file_path As String)
-        MyBase.New(name, description, owner, parent_node)
+        MyBase.New(name, description, Nothing, parent_node)
+        Me.Project = owner
         Me.Xml_File_Path = file_path
         Me.Status = E_PACKAGE_STATUS.WRITABLE
         Me.Save()
@@ -94,7 +96,8 @@ Public Class Top_Level_Package
                 pkg = CType(Top_Level_Package.Pkg_Serializer.Deserialize(reader), Top_Level_Package)
                 With pkg
                     .Xml_File_Path = file_path
-                    .Owner = parent_project
+                    .Owner = Nothing
+                    .Project = parent_project
                 End With
                 If is_writable = True Then
                     pkg.Status = E_PACKAGE_STATUS.WRITABLE
@@ -131,7 +134,8 @@ Public Class Top_Level_Package
 
         With pkg
             .Name = pkg_name
-            .Owner = parent_project
+            .Owner = Nothing
+            .Project = parent_project
             .Node.ContextMenuStrip = Top_Level_Package.Unloaded_Context_Menu
             .Status = E_PACKAGE_STATUS.CORRUPTED
         End With
@@ -152,7 +156,8 @@ Public Class Top_Level_Package
 
         With pkg
             .Name = pkg_name
-            .Owner = parent_project
+            .Owner = Nothing
+            .Project = parent_project
             .Node.ContextMenuStrip = Top_Level_Package.Unloaded_Context_Menu
             .Status = E_PACKAGE_STATUS.NOT_FOUND
         End With
@@ -173,7 +178,8 @@ Public Class Top_Level_Package
         reader.Close()
         file_stream.Close()
         pkg.Status = E_PACKAGE_STATUS.LOCKED
-        pkg.Owner = parent_project
+        pkg.Owner = Nothing
+        pkg.Project = parent_project
         pkg.Post_Treat_After_Deserialization(parent_node)
         pkg.Update_Display()
         parent_node.Nodes.Remove(pkg.Node)
@@ -273,13 +279,16 @@ Public Class Top_Level_Package
 
         Dim previous_name As String = Me.Name
 
+        Dim forbidden_name_list As List(Of String) = Me.Project.Get_Children_Name()
+        forbidden_name_list.Remove(Me.Name)
+
         Dim edit_form As New Recordable_Element_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Package.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Me.Get_Forbidden_Name_List(),
+            forbidden_name_list,
             my_directory,
             my_file_name,
             Top_Level_Package.Package_File_Extension)

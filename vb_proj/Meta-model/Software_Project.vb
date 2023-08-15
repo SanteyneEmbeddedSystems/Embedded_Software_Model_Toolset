@@ -5,10 +5,14 @@ Imports System.Text
 
 Public Class Software_Project
 
-    Inherits Must_Describe_Software_Element
+    Public Name As String
+    Public Identifier As Guid
+    Public Description As String
 
     <XmlArrayItemAttribute(GetType(Package_Reference)), XmlArray("Packages_References")>
     Public Packages_References_List As List(Of Package_Reference)
+
+    Private Node As TreeNode
 
     Private Xml_File_Path As String
     Private ReadOnly Top_Level_Packages_List As New List(Of Top_Level_Package)
@@ -55,42 +59,23 @@ Public Class Software_Project
 
 
     ' -------------------------------------------------------------------------------------------- '
-    ' Methods from Software_Element
+    ' 
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Function Get_Children() As List(Of Software_Element)
-        If Me.Children_Is_Computed = False Then
-            Me.Children_Is_Computed = True
-            Me.Children.AddRange(Me.Top_Level_Packages_List)
-        End If
-        Return Me.Children
-    End Function
-
-    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
-        Return False
-    End Function
-
-    Protected Overrides Sub Move_Me(new_parent As Software_Element)
-        ' Currently not needed.
+    Protected Sub Create_Node()
+        Me.Node = New TreeNode(Me.Name) With {
+            .ImageKey = Software_Project.Metaclass_Name,
+            .SelectedImageKey = Software_Project.Metaclass_Name,
+            .ContextMenuStrip = Software_Project.Context_Menu,
+            .Tag = Me}
     End Sub
 
-    Protected Overrides Sub Remove_Me()
-        ' Currently not needed, a project cannot be removed.
-    End Sub
-    
-    Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
-        Return Software_Project.Context_Menu
-    End Function
-
-    Public Overrides Function Get_Metaclass_Name() As String
-        Return "Project"
-    End Function
-
-    Public Overrides Function Get_SVG_File_Path() As String
-        Dim svg_folder As String = Path.GetDirectoryName(Me.Xml_File_Path)
-        Dim svg_file_full_path As String
-        svg_file_full_path = svg_folder & Path.DirectorySeparatorChar & Me.Name & ".svg"
-        Return svg_file_full_path
+    Public Function Get_Children_Name() As List(Of String)
+        Dim children_name As New List(Of String)
+        For Each pkg In Me.Top_Level_Packages_List
+            children_name.Add(pkg.Name)
+        Next
+        Return children_name
     End Function
 
 
@@ -164,7 +149,7 @@ Public Class Software_Project
     ' Methods for contextual menu
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Sub Edit()
+    Public Sub Edit()
 
         Dim my_directory As String
         Dim my_file_name As String
@@ -185,17 +170,15 @@ Public Class Software_Project
         Dim edit_result As DialogResult
         edit_result = prj_edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
-            Dim old_name As String = Me.Name
             Me.Name = prj_edit_form.Get_Element_Name()
-            Update_Project(old_name)
             Me.Node.Text = Me.Name
             Me.Description = prj_edit_form.Get_Element_Description()
-            Me.Update_Views()
+
         End If
 
     End Sub
 
-    Public Overrides Sub View()
+    Public Sub View()
 
         Dim my_directory As String
         Dim my_file_name As String
@@ -284,7 +267,7 @@ Public Class Software_Project
             Package.Metaclass_Name,
             "",
             Package.Metaclass_Name,
-            "A good description is always useful.",
+            "",
             Me.Get_Children_Name(),
             Path.GetDirectoryName(Me.Xml_File_Path),
             Package.Metaclass_Name,
@@ -306,7 +289,6 @@ Public Class Software_Project
             ' Add package to project
             Me.Record_Package(created_pkg.Name, pkg_file_path, True)
             Me.Top_Level_Packages_List.Add(created_pkg)
-            Me.Children.Add(created_pkg)
 
             Me.Display_Modified()
 
@@ -510,9 +492,39 @@ Public Class Software_Project
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for diagrams
-    ' -------------------------------------------------------------------------------------------- '
+    ' ------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Function Get_SVG_File_Path() As String
+        Dim svg_folder As String = Path.GetDirectoryName(Me.Xml_File_Path)
+        Dim svg_file_full_path As String
+        svg_file_full_path = svg_folder & Path.DirectorySeparatorChar & Me.Name & ".svg"
+        Return svg_file_full_path
+    End Function
+
+    Public Function Update_SVG_Diagram() As String
+
+        Dim svg_file_full_path As String = Me.Get_SVG_File_Path()
+        Dim file_stream As New StreamWriter(svg_file_full_path, False)
+
+        file_stream.WriteLine("<?xml version=""1.0"" encoding=""UTF-8""?>")
+        file_stream.WriteLine("<svg")
+        file_stream.WriteLine("  Version=""1.1""")
+        file_stream.WriteLine("  xmlns=""http://www.w3.org/2000/svg""")
+        file_stream.WriteLine("  xmlns:xlink=""http://www.w3.org/1999/xlink""")
+        file_stream.WriteLine("  xmlns:svg=""http://www.w3.org/2000/svg""")
+        file_stream.WriteLine("  width=""3000px"" height=""1000px"">")
+        file_stream.WriteLine("  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
+         "px;font-family:Consolas;fill:black;text-anchor:start;}</style>")
+        file_stream.WriteLine(Me.Compute_SVG_Content())
+
+        file_stream.WriteLine("</svg>")
+        file_stream.Close()
+        Return svg_file_full_path
+
+    End Function
+
+    Public Function Compute_SVG_Content() As String
+        Dim svg_content As String = ""
         Dim not_sorted_pkgs As New List(Of Top_Level_Package)
         not_sorted_pkgs.AddRange(Me.Top_Level_Packages_List)
         Dim sorted_pkgs As New List(Of Top_Level_Package)
@@ -544,15 +556,15 @@ Public Class Software_Project
         Dim from_point_dico As New Dictionary(Of Top_Level_Package, SVG_POINT)
         Dim to_point_dico As New Dictionary(Of Top_Level_Package, SVG_POINT)
 
-        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
         Dim pkg_list_idx As Integer = 0
         For Each pkg_list In sorted_pkgs_list
             Dim pkg_idx As Integer = 0
             For Each pkg In pkg_list
                 Dim x_pos = pkg_idx * (Package.SVG_PKG_BOX_WIDTH + 20)
                 Dim y_pos = pkg_list_idx * 200
-                Me.SVG_Content &= pkg.Compute_SVG_Content()
-                Me.SVG_Content &= "  <use xlink:href=""#" & pkg.Get_SVG_Id() &
+                svg_content &= pkg.Compute_SVG_Content()
+                svg_content &= "  <use xlink:href=""#" & pkg.Get_SVG_Id() &
                                   """ transform=""translate(" & x_pos &
                                   "," & y_pos & ")"" />" & vbCrLf
                 from_point_dico.Add(
@@ -572,7 +584,7 @@ Public Class Software_Project
 
         For Each pkg In Me.Top_Level_Packages_List
             For Each need_pkg In pkg.Get_Needed_Element
-                Me.SVG_Content &= Get_SVG_Line(
+                svg_content &= Get_SVG_Line(
                     from_point_dico(pkg).X_Pos,
                     from_point_dico(pkg).Y_Pos,
                     to_point_dico(CType(need_pkg, Top_Level_Package)).X_Pos,
@@ -581,9 +593,7 @@ Public Class Software_Project
             Next
         Next
 
-
-        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
-        Return Me.SVG_Content
+        Return svg_content
     End Function
 
 

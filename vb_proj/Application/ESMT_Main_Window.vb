@@ -257,10 +257,16 @@
             ByVal e As TreeViewEventArgs) _
             Handles Model_Browser.AfterSelect
 
-        ' Update/Create SVG file for selected element
-        Dim sw_elmt As Software_Element = CType(e.Node.Tag, Software_Element)
         Dim diagram_full_path As String
-        diagram_full_path = sw_elmt.Update_SVG_Diagram()
+
+        ' Update/Create SVG file for selected element
+        If TypeOf e.Node.Tag Is Software_Element Then
+            Dim sw_elmt As Software_Element = CType(e.Node.Tag, Software_Element)
+            diagram_full_path = sw_elmt.Update_SVG_Diagram()
+        Else
+            Dim sw_proj As Software_Project = CType(e.Node.Tag, Software_Project)
+            diagram_full_path = sw_proj.Update_SVG_Diagram()
+        End If
 
         ' Update diagram area
         Me.Diagram_Page.Navigate(diagram_full_path)

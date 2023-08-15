@@ -24,7 +24,7 @@
     End Function
 
     Protected Shared Function Get_Project(sender As Object) As Software_Project
-        Return CType(Element_Context_Menu.Get_Selected_Element_Owner(sender), Software_Project)
+        Return Get_Top_Package(sender).Project
     End Function
 
 End Class

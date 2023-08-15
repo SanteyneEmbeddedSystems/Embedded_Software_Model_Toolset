@@ -108,7 +108,7 @@ Public MustInherit Class Software_Element
     Public Function Get_Path() As String
         Dim my_path As String = Me.Get_Path_Separator() & Me.Name
         Dim parent As Software_Element = Me.Owner
-        While Not IsNothing(parent.Owner)
+        While Not IsNothing(parent)
             my_path = parent.Get_Path_Separator() & parent.Name & my_path
             parent = parent.Owner
         End While
@@ -116,29 +116,15 @@ Public MustInherit Class Software_Element
     End Function
 
     Protected Function Get_Project() As Software_Project
+        Return Get_Top_Package().Project
+    End Function
+
+    Public Function Get_Top_Package() As Top_Level_Package
         Dim current_element As Software_Element = Me
         While Not IsNothing(current_element.Owner)
             current_element = current_element.Owner
         End While
-        Return CType(current_element, Software_Project)
-    End Function
-
-    Public Function Get_Top_Package() As Top_Level_Package
-        Dim top_pkg As Top_Level_Package = Nothing
-        Dim current_elmt As Software_Element = Me
-        Dim parent As Software_Element = current_elmt.Owner
-        If Not IsNothing(parent) Then ' parent = Nothing when Me is Software_Project
-            If IsNothing(parent.Owner) Then
-                top_pkg = CType(current_elmt, Top_Level_Package)
-            Else
-                While Not IsNothing(parent.Owner)
-                    current_elmt = parent
-                    parent = current_elmt.Owner
-                End While
-                top_pkg = CType(current_elmt, Top_Level_Package)
-            End If
-        End If
-        Return top_pkg
+        Return CType(current_element, Top_Level_Package)
     End Function
 
     Protected Function Get_Top_Package_Folder() As String
@@ -297,7 +283,7 @@ Public MustInherit Class Software_Element
     Protected Sub Update_Project(old_name As String)
         Dim new_path As String = Me.Get_Path()
         Dim old_path As String
-        old_path = new_path.Substring(0, new_path.Length - 1 - Me.Name.Length) & old_name
+        old_path = new_path.Substring(0, new_path.Length - Me.Name.Length) & old_name
         Me.Get_Project().Move_Element_In_Project(old_path, new_path)
     End Sub
 
@@ -306,16 +292,17 @@ Public MustInherit Class Software_Element
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Function Get_SVG_Id() As String
-        Dim my_svg_id As String = Me.Name
-        Dim parent As Software_Element = Me.Owner
-        If Not IsNothing(parent) Then
-            While Not IsNothing(parent.Owner)
-            my_svg_id = parent.Name & "__" & my_svg_id
-            parent = parent.Owner
-            End While
-        End If
-        Return my_svg_id
+    Public Function Get_SVG_Id() As String
+        'Dim my_svg_id As String = Me.Name
+        'Dim parent As Software_Element = Me.Owner
+        'If Not IsNothing(parent) Then
+        '    While Not IsNothing(parent.Owner)
+        '        my_svg_id = parent.Name & "__" & my_svg_id
+        '        parent = parent.Owner
+        '    End While
+        'End If
+        'Return Me.Get_Metaclass_Name() & "__" & my_svg_id
+        Return Me.Identifier.ToString()
     End Function
 
     Protected Function Get_SVG_Def_Group_Header() As String
@@ -341,13 +328,14 @@ Public MustInherit Class Software_Element
         file_stream.WriteLine("  Version=""1.1""")
         file_stream.WriteLine("  xmlns=""http://www.w3.org/2000/svg""")
         file_stream.WriteLine("  xmlns:xlink=""http://www.w3.org/1999/xlink""")
-        file_stream.WriteLine("  xmlns:svg=""http://www.w3.org/2000/svg"">")
+        file_stream.WriteLine("  xmlns:svg=""http://www.w3.org/2000/svg""")
+        file_stream.WriteLine("  width=""3000px"" height=""1000px"">")
         file_stream.WriteLine("  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
          "px;font-family:Consolas;fill:black;text-anchor:start;}</style>")
         file_stream.WriteLine(Me.Compute_SVG_Content())
         file_stream.WriteLine("  <use xlink:href=""#" &
                               Me.Get_SVG_Id() &
-                              """ transform=""translate(100,100)"" />")
+                              """ transform=""translate(10,10)"" />")
         file_stream.WriteLine("</svg>")
         file_stream.Close()
         Return svg_file_full_path
