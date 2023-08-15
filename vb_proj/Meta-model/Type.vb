@@ -226,9 +226,9 @@ Public Class Array_Type
         If edition_form_result = DialogResult.OK Then
 
             ' Update the array type
-            Dim old_name As String = Me.Name
+            Dim old_path As String = Me.Get_Path()
             Me.Name = edition_form.Get_Element_Name()
-            Update_Project(old_name)
+            Me.Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
             Me.Multiplicity = CUInt(edition_form.Get_Multiplicity())
@@ -451,9 +451,9 @@ Public Class Enumerated_Type
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
-            Dim old_name As String = Me.Name
+            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Update_Project(old_name)
+            Me.Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Update_Enumerals(enumerals_table)
@@ -717,9 +717,9 @@ Public Class Fixed_Point_Type
         If edition_form_result = DialogResult.OK Then
 
             ' Update the fixed point type
-            Dim old_name As String = Me.Name
+            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Update_Project(old_name)
+            Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Base_Type_Ref =

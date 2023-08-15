@@ -449,9 +449,9 @@ Public Class Operation_Parameter
         If edition_form_result = DialogResult.OK Then
 
             ' Update Me
-            Dim old_name As String = Me.Name
+            Dim old_path As String = Me.Get_Path()
             Me.Name = edition_form.Get_Element_Name()
-            Update_Project(old_name)
+            Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
             Me.Type_Ref = Me.Get_Type_From_Project_By_Path(edition_form.Get_Ref_Element_Path()) _

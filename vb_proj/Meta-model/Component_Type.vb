@@ -553,9 +553,9 @@ Public MustInherit Class Port
             Me.Get_All_Interfaces_Path_From_Project())
         Dim edition_form_result As DialogResult = edit_form.ShowDialog()
         If edition_form_result = DialogResult.OK Then
-            Dim old_name As String = Me.Name
+            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Update_Project(old_name)
+            Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Interface_Ref =

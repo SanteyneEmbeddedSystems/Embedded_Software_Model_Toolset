@@ -92,9 +92,12 @@ Public MustInherit Class Software_Element
 
     Public Function Get_Children_Name() As List(Of String)
         Dim children_name As New List(Of String)
-        For Each child In Me.Get_Children
-            children_name.Add(child.Name)
-        Next
+        Dim children As List(Of Software_Element) = Me.Get_Children()
+        If Not IsNothing(children) Then
+            For Each child In children
+                children_name.Add(child.Name)
+            Next
+        End If
         Return children_name
     End Function
 
@@ -207,7 +210,7 @@ Public MustInherit Class Software_Element
         Me.Node.Remove()
         new_parent.Node.Nodes.Add(Me.Node)
 
-        Me.Get_Project().Move_Element_In_Project(old_path, new_path)
+        Me.Update_Project(old_path)
 
     End Sub
 
@@ -245,9 +248,9 @@ Public MustInherit Class Software_Element
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
-            Dim old_name As String = Me.Name
+            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Update_Project(old_name)
+            Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Update_Views()
@@ -280,11 +283,15 @@ Public MustInherit Class Software_Element
     End Sub
 
     ' Shall be called in Edit() sub to update dictionaries of Project.
-    Protected Sub Update_Project(old_name As String)
+    Protected Sub Update_Project(old_path As String)
         Dim new_path As String = Me.Get_Path()
-        Dim old_path As String
-        old_path = new_path.Substring(0, new_path.Length - Me.Name.Length) & old_name
         Me.Get_Project().Move_Element_In_Project(old_path, new_path)
+        Dim children As List(Of Software_Element) = Me.Get_Children()
+        If Not IsNothing(children) Then
+            For Each child In children
+                child.Update_Project(old_path & child.Get_Path_Separator() & child.Name)
+            Next
+        End If
     End Sub
 
 
@@ -501,9 +508,9 @@ Public MustInherit Class Typed_Software_Element
         If edition_form_result = DialogResult.OK Then
 
             ' Update Me
-            Dim old_name As String = Me.Name
+            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Update_Project(old_name)
+            Me.Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Type_Ref = Get_Type_From_Project_By_Path(edit_form.Get_Ref_Element_Path()).Identifier
