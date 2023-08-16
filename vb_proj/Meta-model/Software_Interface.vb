@@ -147,8 +147,6 @@ Public Class Client_Server_Interface
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
 
         ' Compute Box width (it depends on the longuest line of the operations compartment)
         ' Build the lines of the operations compartment
@@ -205,35 +203,38 @@ Public Class Client_Server_Interface
         Else
             nb_max_char_per_line = Math.Max(nb_max_char_per_line, SVG_MIN_CHAR_PER_LINE)
         End If
-        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+        Me.SVG_Width = Get_Box_Width(nb_max_char_per_line)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add title (Name + stereotype) compartment
-        Me.SVG_Content &= Get_Title_Rectangle(x_pos, y_pos, Me.Name,
-            Client_Server_Interface.SVG_COLOR, box_width, Metaclass_Name, True)
+        Me.SVG_Content &= Get_Title_Rectangle(0, 0, Me.Name,
+            Client_Server_Interface.SVG_COLOR, Me.SVG_Width, Metaclass_Name, True)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String)
         split_description = Split_String(Me.Description, nb_max_char_per_line)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             Client_Server_Interface.SVG_COLOR,
-            box_width,
+            Me.SVG_Width,
             desc_rect_height)
 
         ' Add operation compartment
+        Dim op_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
             op_lines,
             Client_Server_Interface.SVG_COLOR,
-            box_width)
+            Me.SVG_Width,
+            op_rect_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height + op_rect_height ' - 2 * stroke width
         Return Me.SVG_Content
 
     End Function
@@ -549,7 +550,7 @@ Public Class Event_Interface
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Classifier
     ' -------------------------------------------------------------------------------------------- '
-    
+
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
         Me.Needed_Elements = New List(Of Classifier)
         For Each param In Me.Parameters
@@ -604,8 +605,6 @@ Public Class Event_Interface
     End Sub
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
 
         ' Compute Box width (it depends on the longuest line of the parameters compartment)
         ' Build the lines of the parameters compartment
@@ -617,35 +616,38 @@ Public Class Event_Interface
         Next
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(param_lines, SVG_MIN_CHAR_PER_LINE)
-        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+        Me.SVG_Width = Get_Box_Width(nb_max_char_per_line)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add title (Name + stereotype) compartment
-        Me.SVG_Content &= Get_Title_Rectangle(x_pos, y_pos, Me.Name,
-            Event_Interface.SVG_COLOR, box_width, Metaclass_Name, True)
+        Me.SVG_Content &= Get_Title_Rectangle(0, 0, Me.Name,
+            Event_Interface.SVG_COLOR, Me.SVG_Width, Metaclass_Name, True)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String)
         split_description = Split_String(Me.Description, nb_max_char_per_line)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             Event_Interface.SVG_COLOR,
-            box_width,
+            Me.SVG_Width,
             desc_rect_height)
 
         ' Add parameters compartments
+        Dim param_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
             param_lines,
             Event_Interface.SVG_COLOR,
-            box_width)
+            Me.SVG_Width,
+            param_rect_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height + param_rect_height ' - 2 * stroke width
         Return Me.SVG_Content
 
     End Function

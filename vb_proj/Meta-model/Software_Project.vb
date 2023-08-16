@@ -570,17 +570,19 @@ Public Class Software_Project
                 from_point_dico.Add(
                     pkg,
                     New SVG_POINT With {
-                        .X_Pos = x_pos + Package.SVG_PKG_BOX_WIDTH \ 2,
+                        .X_Pos = x_pos + pkg.Get_SVG_Width() \ 2,
                         .Y_Pos = y_pos})
                 to_point_dico.Add(
                     pkg,
                     New SVG_POINT With {
-                        .X_Pos = x_pos + Package.SVG_PKG_BOX_WIDTH \ 2,
-                        .Y_Pos = y_pos + SVG_TEXT_LINE_HEIGHT * 4})
+                        .X_Pos = x_pos + pkg.Get_SVG_Width() \ 2,
+                        .Y_Pos = y_pos + pkg.Get_SVG_Height()})
                 pkg_idx += 1
             Next
             pkg_list_idx += 1
         Next
+
+        svg_content &= Get_Open_Arrow_Marker()
 
         For Each pkg In Me.Top_Level_Packages_List
             For Each need_pkg In pkg.Get_Needed_Element
@@ -589,7 +591,9 @@ Public Class Software_Project
                     from_point_dico(pkg).Y_Pos,
                     to_point_dico(CType(need_pkg, Top_Level_Package)).X_Pos,
                     to_point_dico(CType(need_pkg, Top_Level_Package)).Y_Pos,
-                    "black")
+                    "black",
+                    True,
+                    "open_arrow")
             Next
         Next
 

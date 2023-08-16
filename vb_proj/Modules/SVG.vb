@@ -14,14 +14,13 @@
         Public Y_Pos As Integer
     End Structure
 
-    Public Function Get_Box_Witdh(nb_char As Integer) As Integer
-        Return Get_Text_Witdh(nb_char) + SVG_TEXT_MARGIN * 2 + SVG_STROKE_WIDTH * 2
+    Public Function Get_Box_Width(nb_char As Integer) As Integer
+        Return Get_Text_Width(nb_char) + SVG_TEXT_MARGIN * 2 + SVG_STROKE_WIDTH * 2
     End Function
 
-    Public Function Get_Text_Witdh(nb_char As Integer) As Integer
+    Public Function Get_Text_Width(nb_char As Integer) As Integer
         Return CInt(nb_char * 6.5)
     End Function
-
 
     Public Function Get_Title_Rectangle(
             x_pos As Integer,
@@ -135,13 +134,27 @@
             x2_pos As Integer,
             y2_pos As Integer,
             color As String,
+            Optional is_dashed As Boolean = False,
+            Optional marker_id As String = "",
             Optional stroke_width As Integer = 1) As String
+        Dim dash_array As String = ""
+        If is_dashed Then
+            dash_array = "4,4"
+        End If
+        Dim marker As String = ""
+        If marker_id <> "" Then
+            marker = "marker-end:url(#" & marker_id & ");"
+        End If
         Dim svg_content As String =
             "  <line x1=""" & x1_pos & "px""" &
                 " y1=""" & y1_pos & "px""" &
                 " x2=""" & x2_pos & "px""" &
                 " y2=""" & y2_pos & "px""" & vbCrLf &
-                "    style=""stroke:" & color & ";stroke-width:" & stroke_width & "px""/>" & vbCrLf
+                "    style=""stroke:" & color &
+                ";stroke-width:" & stroke_width & "px" &
+                ";stroke-dasharray:" & dash_array & ";" &
+                marker & """" &
+                "/>" & vbCrLf
         Return svg_content
     End Function
 
@@ -194,6 +207,16 @@
         Return svg_content
     End Function
 
+    Public Function Get_Open_Arrow_Marker() As String
+        Dim svg_content As String _
+            = "  <marker id=""open_arrow"" style=""overflow:visible"" orient=""auto"">" & vbCrLf &
+                "  <line style=""stroke:currentColor"" stroke-dasharray=""1,0"" " &
+                    "x1=""0px"" y1=""0px"" x2=""-10px"" y2=""-5px""/>" & vbCrLf &
+                "  <line style=""stroke:currentColor"" stroke-dasharray=""1,0"" " &
+                    "x1=""0px"" y1=""0px"" x2=""-10px"" y2=""5px""/>" & vbCrLf &
+                "  </marker>" & vbCrLf
+        Return svg_content
+    End Function
 
     Public Enum E_Text_Anchor
         ANCHOR_START
@@ -232,6 +255,5 @@
                 text & "</text>" & vbCrLf
         Return svg_content
     End Function
-
 
 End Module

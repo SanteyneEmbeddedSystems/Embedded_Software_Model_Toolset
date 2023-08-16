@@ -87,27 +87,28 @@ Public MustInherit Class Basic_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
-        Dim box_width As Integer = Get_Box_Witdh(SVG_MIN_CHAR_PER_LINE)
+        Me.SVG_Width = Get_Box_Width(SVG_MIN_CHAR_PER_LINE)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Title (Name + stereotype)
         Me.SVG_Content &= Get_Title_Rectangle(
-            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, "basic_type")
+            0, 0, Me.Name, Type.SVG_COLOR, Me.SVG_Width, "basic_type")
 
         ' Description compartment
         Dim split_description As List(Of String) = Split_String(
             Me.Description, SVG_MIN_CHAR_PER_LINE)
+        Dim desc_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
-            box_width)
+            Me.SVG_Width,
+            desc_rect_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height ' - stroke width
         Return Me.SVG_Content
 
     End Function
@@ -268,8 +269,6 @@ Public Class Array_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
 
         ' Compute Box width (it depends on the longuest line of the attributes compartment)
         ' Build the lines of the attributes compartment
@@ -286,35 +285,38 @@ Public Class Array_Type
 
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(attr_lines, SVG_MIN_CHAR_PER_LINE)
-        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+        Me.SVG_Width = Get_Box_Width(nb_max_char_per_line)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add title (Name + stereotype) compartment
         Me.SVG_Content &= Get_Title_Rectangle(
-            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, Array_Type.Metaclass_Name)
+            0, 0, Me.Name, Type.SVG_COLOR, Me.SVG_Width, Array_Type.Metaclass_Name)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String) =
             Split_String(Me.Description, nb_max_char_per_line)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
-            box_width,
+            Me.SVG_Width,
             desc_rect_height)
 
         ' Add attributes compartment
+        Dim attr_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
             attr_lines,
             Type.SVG_COLOR,
-            box_width)
+            Me.SVG_Width,
+            attr_rect_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height + attr_rect_height ' - 2*stroke width
         Return Me.SVG_Content
     End Function
 
@@ -490,26 +492,24 @@ Public Class Enumerated_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
-        Dim box_witdh As Integer = Get_Box_Witdh(SVG_MIN_CHAR_PER_LINE)
+        Me.SVG_Width = Get_Box_Width(SVG_MIN_CHAR_PER_LINE)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add title (Name + stereotype) compartment
         Me.SVG_Content &= Get_Title_Rectangle(
-            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_witdh, Metaclass_Name)
+            0, 0, Me.Name, Type.SVG_COLOR, Me.SVG_Width, Metaclass_Name)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String) =
             Split_String(Me.Description, SVG_MIN_CHAR_PER_LINE)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
-            box_witdh,
+            Me.SVG_Width,
             desc_rect_height)
 
         ' Add enumerals compartment
@@ -517,14 +517,17 @@ Public Class Enumerated_Type
         For Each enumeral In Me.Enumerals
             enumeral_lines.Add(enumeral.Name)
         Next
+        Dim enum_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
             enumeral_lines,
             Type.SVG_COLOR,
-            box_witdh)
+            Me.SVG_Width,
+            enum_rect_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height + enum_rect_height ' - 2*stroke width
         Return Me.SVG_Content
 
     End Function
@@ -756,9 +759,6 @@ Public Class Fixed_Point_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
-
         ' Compute Box width (it depends on the longuest line of the attributes compartment)
         ' Build the lines of the attributes compartment
         Dim attr_lines As New List(Of String) From {
@@ -769,35 +769,38 @@ Public Class Fixed_Point_Type
 
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(attr_lines, SVG_MIN_CHAR_PER_LINE)
-        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+        Me.SVG_Width = Get_Box_Width(nb_max_char_per_line)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add title (Name + stereotype) compartment
         Me.SVG_Content &= Get_Title_Rectangle(
-            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, Metaclass_Name)
+            0, 0, Me.Name, Type.SVG_COLOR, Me.SVG_Width, Metaclass_Name)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String) =
             Split_String(Me.Description, nb_max_char_per_line)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
-            box_width,
+            Me.SVG_Width,
             desc_rect_height)
 
         ' Add attributes compartment
+        Dim attr_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
             attr_lines,
             Type.SVG_COLOR,
-            box_width)
+            Me.SVG_Width,
+            attr_rect_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height + attr_rect_height ' - 2*stroke width
         Return Me.SVG_Content
     End Function
 
@@ -941,8 +944,6 @@ Public Class Record_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
 
         ' Compute Box width (it depends on the longuest line of the fields compartment)
         ' Build the lines of the fields compartment
@@ -954,35 +955,38 @@ Public Class Record_Type
 
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(fields_lines, SVG_MIN_CHAR_PER_LINE)
-        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+        Me.SVG_Width = Get_Box_Width(nb_max_char_per_line)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add title (Name + stereotype) compartment
         Me.SVG_Content &= Get_Title_Rectangle(
-            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, Metaclass_Name)
+            0, 0, Me.Name, Type.SVG_COLOR, Me.SVG_Width, Metaclass_Name)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String) =
             Split_String(Me.Description, nb_max_char_per_line)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
-            box_width,
+            Me.SVG_Width,
             desc_rect_height)
 
         ' Add fields compartment
+        Dim fields_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
             fields_lines,
             Type.SVG_COLOR,
-            box_width)
+            Me.SVG_Width,
+            fields_rect_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height + fields_rect_height ' - 2*stroke width
         Return Me.SVG_Content
 
     End Function
@@ -1060,40 +1064,40 @@ Public Class Record_Field
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
 
         Dim attr_lines As New List(Of String) From {
             "Base : " & Me.Get_Type_Path()}
 
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Math.Max(attr_lines(0).Length, SVG_MIN_CHAR_PER_LINE)
-        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+        Me.SVG_Width = Get_Box_Width(nb_max_char_per_line)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         Me.SVG_Content &= Get_Title_Rectangle(
-            x_pos, y_pos, Me.Name, Type.SVG_COLOR, box_width, "field")
+            0, 0, Me.Name, Type.SVG_COLOR, Me.SVG_Width, "field")
 
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String)
         split_description = Split_String(Me.Description, nb_max_char_per_line)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             Type.SVG_COLOR,
-            box_width,
+            Me.SVG_Width,
             desc_rect_height)
 
+        Dim attr_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
             attr_lines,
             Type.SVG_COLOR,
-            box_width)
+            Me.SVG_Width)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height + attr_rect_height ' - 2*stroke width
         Return Me.SVG_Content
     End Function
 

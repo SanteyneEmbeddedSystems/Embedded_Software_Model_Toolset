@@ -27,6 +27,9 @@ Public MustInherit Class Software_Element
     Protected Const SVG_MIN_CHAR_PER_LINE As Integer = NB_CHARS_MAX_FOR_SYMBOL
 
     Protected SVG_Content As String = ""
+    Protected SVG_Width As Integer = 0
+    Protected SVG_Height As Integer = 0
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -300,15 +303,6 @@ Public MustInherit Class Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
     Public Function Get_SVG_Id() As String
-        'Dim my_svg_id As String = Me.Name
-        'Dim parent As Software_Element = Me.Owner
-        'If Not IsNothing(parent) Then
-        '    While Not IsNothing(parent.Owner)
-        '        my_svg_id = parent.Name & "__" & my_svg_id
-        '        parent = parent.Owner
-        '    End While
-        'End If
-        'Return Me.Get_Metaclass_Name() & "__" & my_svg_id
         Return Me.Identifier.ToString()
     End Function
 
@@ -318,7 +312,7 @@ Public MustInherit Class Software_Element
     End Function
 
     Protected Shared Function Get_SVG_Def_Group_Footer() As String
-        Return "  </g>" & vbCrLf & "  </defs>"
+        Return "  </g>" & vbCrLf & "  </defs>" & vbCrLf
     End Function
 
     Public Overridable Function Get_SVG_File_Path() As String
@@ -342,7 +336,7 @@ Public MustInherit Class Software_Element
         file_stream.WriteLine(Me.Compute_SVG_Content())
         file_stream.WriteLine("  <use xlink:href=""#" &
                               Me.Get_SVG_Id() &
-                              """ transform=""translate(10,10)"" />")
+                              """ transform=""translate(0,0)"" />")
         file_stream.WriteLine("</svg>")
         file_stream.Close()
         Return svg_file_full_path
@@ -350,35 +344,43 @@ Public MustInherit Class Software_Element
     End Function
 
     Public Overridable Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
-        Dim box_width As Integer = Get_Box_Witdh(SVG_MIN_CHAR_PER_LINE)
+        Me.SVG_Width = Get_Box_Width(SVG_MIN_CHAR_PER_LINE)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add title (Name + stereotype) compartment
-        Me.SVG_Content &= Get_Title_Rectangle(x_pos, y_pos, Me.Name,
-            "lightblue", box_width, Me.Get_Metaclass_Name)
+        Me.SVG_Content &= Get_Title_Rectangle(0, 0, Me.Name,
+            "lightblue", Me.SVG_Width, Me.Get_Metaclass_Name)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         Dim split_description As List(Of String)
         split_description = Split_String(Me.Description, SVG_MIN_CHAR_PER_LINE)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            0,
+            SVG_TITLE_HEIGHT,
             split_description,
             "lightblue",
-            box_width,
+            Me.SVG_Width,
             desc_rect_height)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Height = desc_rect_height + SVG_TITLE_HEIGHT
         Return Me.SVG_Content
 
     End Function
 
     Public Function Get_SVG_Content() As String
         Return Me.SVG_Content
+    End Function
+
+
+    Public Function Get_SVG_Width() As Integer
+        Return Me.SVG_Width
+    End Function
+
+    Public Function Get_SVG_Height() As Integer
+        Return Me.SVG_Height
     End Function
 
     Public Sub Update_Views()

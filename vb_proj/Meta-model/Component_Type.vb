@@ -233,8 +233,6 @@
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Compute_SVG_Content() As String
-        Dim x_pos As Integer = 0
-        Dim y_pos As Integer = 0
 
         ' ---------------------------------------------------------------------------------------- '
         ' Compute Box width (it depends on the longuest line of the configurations compartment)
@@ -246,7 +244,7 @@
         Next
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(config_lines, SVG_MIN_CHAR_PER_LINE)
-        Dim box_width As Integer = Get_Box_Witdh(nb_max_char_per_line)
+        Dim box_width As Integer = Get_Box_Width(nb_max_char_per_line)
 
         ' ---------------------------------------------------------------------------------------- '
         ' Compute other boxes lines
@@ -267,7 +265,7 @@
             + SVG_STROKE_WIDTH * 4 + SVG_VERTICAL_MARGIN * 3
         Dim port_box_height As Integer
         port_box_height = Math.Max(Me.Provider_Ports.Count, Me.Requirer_Ports.Count) * PORT_SPACE
-        Dim box_height As Integer = Math.Max(text_box_height, port_box_height)
+        Me.SVG_Height = Math.Max(text_box_height, port_box_height)
 
         ' ---------------------------------------------------------------------------------------- '
         ' Compute box x_pos offset (it depends on pport longuest name)
@@ -282,12 +280,12 @@
         ' Add compartments and ports
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
-        Dim rectangle_x_pos As Integer = x_pos
+        Dim rectangle_x_pos As Integer = 0
         If nb_char_offset <> 0 Then
-            rectangle_x_pos += Get_Text_Witdh(nb_char_offset) + SVG_TEXT_MARGIN
+            rectangle_x_pos += Get_Text_Width(nb_char_offset) + SVG_TEXT_MARGIN
         End If
         ' Add title (Name + stereotype) compartment
-        Me.SVG_Content &= Get_Title_Rectangle(rectangle_x_pos, y_pos, Me.Name,
+        Me.SVG_Content &= Get_Title_Rectangle(rectangle_x_pos, 0, Me.Name,
             Component_Type.SVG_COLOR, box_width, Metaclass_Name)
 
         ' Add description compartment
@@ -299,7 +297,7 @@
 
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
             rectangle_x_pos,
-            y_pos + SVG_TITLE_HEIGHT,
+            SVG_TITLE_HEIGHT,
             split_description,
             Component_Type.SVG_COLOR,
             box_width,
@@ -309,7 +307,7 @@
         Dim conf_rect_height As Integer = 0
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
             rectangle_x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height,
+            SVG_TITLE_HEIGHT + desc_rect_height,
             config_lines,
             Component_Type.SVG_COLOR,
             box_width,
@@ -318,7 +316,7 @@
         ' Add operations compartement
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
             rectangle_x_pos,
-            y_pos + SVG_TITLE_HEIGHT + desc_rect_height + conf_rect_height,
+            SVG_TITLE_HEIGHT + desc_rect_height + conf_rect_height,
             op_lines,
             Component_Type.SVG_COLOR,
             box_width)
@@ -327,7 +325,7 @@
         Dim port_idx As Integer = 0
         Dim port_rect_x_pos As Integer = rectangle_x_pos - PORT_SIDE
         For Each pp In Me.Provider_Ports
-            Dim port_y_pos As Integer = y_pos + PORT_SPACE \ 2 + port_idx * PORT_SPACE
+            Dim port_y_pos As Integer = PORT_SPACE \ 2 + port_idx * PORT_SPACE
 
             Me.SVG_Content &= Get_SVG_Rectangle(
                 port_rect_x_pos,
@@ -365,8 +363,9 @@
 
         port_idx = 0
         port_rect_x_pos = port_rect_x_pos + PORT_SIDE + box_width
+        Dim nb_char_rp_offset As Integer = 0
         For Each rp In Me.Requirer_Ports
-            Dim port_y_pos As Integer = y_pos + PORT_SPACE \ 2 + port_idx * PORT_SPACE
+            Dim port_y_pos As Integer = PORT_SPACE \ 2 + port_idx * PORT_SPACE
 
             Me.SVG_Content &= Get_SVG_Rectangle(
                 port_rect_x_pos,
@@ -389,18 +388,22 @@
                 LOLLIPOP_RADIUS,
                 Component_Type.SVG_COLOR)
 
+            Dim rp_text As String = rp.Name & ":" & rp.Get_Interface_Name()
             Me.SVG_Content &= Get_SVG_Text(
                 port_rect_x_pos + SVG_TEXT_MARGIN,
                 port_y_pos - SVG_VERTICAL_MARGIN,
-                rp.Name & ":" & rp.Get_Interface_Name(),
+                rp_text,
                 SVG_FONT_SIZE,
                 False,
                 False)
+            nb_char_rp_offset = Math.Max(nb_char_rp_offset, rp_text.Length)
 
             port_idx += 1
         Next
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Me.SVG_Width = rectangle_x_pos + box_width +
+            Get_Text_Width(nb_char_rp_offset) + SVG_TEXT_MARGIN
         Return Me.SVG_Content
 
     End Function
