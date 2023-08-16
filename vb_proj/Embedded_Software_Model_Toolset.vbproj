@@ -93,6 +93,9 @@
     <Compile Include="Context_Menus\Client_Server_Operation_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Context_Menus\Composition_Context_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Context_Menus\Element_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -150,6 +153,7 @@
     </Compile>
     <Compile Include="Meta-model\Classifier.vb" />
     <Compile Include="Meta-model\Component_Type.vb" />
+    <Compile Include="Meta-model\Composition.vb" />
     <Compile Include="Meta-model\Software_Interface.vb" />
     <Compile Include="Meta-model\Type.vb" />
     <Compile Include="Modules\Consistency_Check_Report.vb" />
@@ -267,6 +271,15 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Requirer_Port.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Composition.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Connector.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Grey_Object_With_Ports.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

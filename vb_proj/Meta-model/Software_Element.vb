@@ -166,6 +166,14 @@ Public MustInherit Class Software_Element
         Return Me.Get_Project().Get_Interface_By_Path(path)
     End Function
 
+    Protected Function Get_All_Component_Types_Path_From_Project() As List(Of String)
+        Return Me.Get_Project().Get_All_Component_Types_Path()
+    End Function
+
+    Protected Function Get_Component_Type_From_Project_By_Path(path As String) As Component_Type
+        Return Me.Get_Project().Get_Component_Type_By_Path(path)
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for tree view management

@@ -22,6 +22,8 @@ Public Class Package
 
     Public Component_Types As New List(Of Component_Type)
 
+    Public Compositions As New List(Of Composition)
+
     Private Shared ReadOnly Context_Menu As New Package_Context_Menu()
 
     Public Const Metaclass_Name As String = "Package"
@@ -62,6 +64,7 @@ Public Class Package
             Me.Children.AddRange(Me.Types)
             Me.Children.AddRange(Me.Interfaces)
             Me.Children.AddRange(Me.Component_Types)
+            Me.Children.AddRange(Me.Compositions)
         End If
         Return Me.Children
     End Function
@@ -312,6 +315,28 @@ Public Class Package
                 Me.Node)
             Me.Component_Types.Add(new_swct)
             Me.Children.Add(new_swct)
+            Me.Update_Views()
+        End If
+    End Sub
+
+    Public Sub Add_Composition()
+        Dim creation_form As New Element_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            Composition.Metaclass_Name,
+            "",
+            Composition.Metaclass_Name,
+            "",
+            Me.Get_Children_Name())
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_compo As New Composition(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node)
+            Me.Compositions.Add(new_compo)
+            Me.Children.Add(new_compo)
+            Me.Get_Project().Add_Element_To_Project(new_compo)
             Me.Update_Views()
         End If
     End Sub

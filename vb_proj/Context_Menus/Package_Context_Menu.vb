@@ -10,6 +10,7 @@
     Protected WithEvents Menu_Add_CS_Interface As New ToolStripMenuItem("Add Client_Server_Interface")
     Protected WithEvents Menu_Add_Event_Interface As New ToolStripMenuItem("Add Event_Interface")
     Protected WithEvents Menu_Add_Component_Type As New ToolStripMenuItem("Add Component_Type")
+    Protected WithEvents Menu_Add_Composition As New ToolStripMenuItem("Add Composition")
 
     Public Sub New()
         Me.Items.AddRange(New ToolStripItem() {
@@ -27,7 +28,8 @@
             Me.Menu_Add_CS_Interface,
             Me.Menu_Add_Event_Interface,
             New ToolStripSeparator,
-            Me.Menu_Add_Component_Type})
+            Me.Menu_Add_Component_Type,
+            Me.Menu_Add_Composition})
     End Sub
 
     Private Sub Add_Package(
@@ -38,8 +40,8 @@
     End Sub
 
     Private Sub Add_Array_Type(
-        ByVal sender As Object,
-        ByVal e As EventArgs) Handles Menu_Add_Array_Type.Click
+            ByVal sender As Object,
+            ByVal e As EventArgs) Handles Menu_Add_Array_Type.Click
         Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
         pkg.Add_Array_Type()
     End Sub
@@ -59,8 +61,8 @@
     End Sub
 
     Private Sub Add_Record_Type(
-        ByVal sender As Object,
-        ByVal e As EventArgs) Handles Menu_Add_Record_Type.Click
+            ByVal sender As Object,
+            ByVal e As EventArgs) Handles Menu_Add_Record_Type.Click
         Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
         pkg.Add_Record_Type()
     End Sub
@@ -73,17 +75,25 @@
     End Sub
 
     Private Sub Add_Event_Interface(
-        ByVal sender As Object,
-        ByVal e As EventArgs) Handles Menu_Add_Event_Interface.Click
+            ByVal sender As Object,
+            ByVal e As EventArgs) Handles Menu_Add_Event_Interface.Click
         Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
         pkg.Add_Event_Interface()
     End Sub
 
     Private Sub Add_Component_Type(
-    ByVal sender As Object,
-    ByVal e As EventArgs) Handles Menu_Add_Component_Type.Click
+            ByVal sender As Object,
+            ByVal e As EventArgs) Handles Menu_Add_Component_Type.Click
         Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
         pkg.Add_Component_Type()
+    End Sub
+
+
+    Private Sub Add_Composition(
+            ByVal sender As Object,
+            ByVal e As EventArgs) Handles Menu_Add_Composition.Click
+        Dim pkg As Package = CType(Element_Context_Menu.Get_Selected_Element(sender), Package)
+        pkg.Add_Composition()
     End Sub
 
 End Class

@@ -31,6 +31,7 @@ Public Class Software_Project
     Private ReadOnly Types As New Dictionary(Of String, Type)
     Private ReadOnly Basic_Integer_Types As New Dictionary(Of String, Basic_Integer_Type)
     Private ReadOnly Interfaces As New Dictionary(Of String, Software_Interface)
+    Private ReadOnly Component_Types As New Dictionary(Of String, Component_Type)
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -324,6 +325,8 @@ Public Class Software_Project
             End If
         ElseIf TypeOf element Is Software_Interface Then
             Me.Interfaces.Add(element.Get_Path, CType(element, Software_Interface))
+        ElseIf TypeOf element Is Component_Type Then
+            Me.Component_Types.Add(element.Get_Path, CType(element, Component_Type))
         End If
     End Sub
 
@@ -336,6 +339,8 @@ Public Class Software_Project
             End If
         ElseIf TypeOf element Is Software_Interface Then
             Me.Interfaces.Remove(element.Get_Path)
+        ElseIf TypeOf element Is Component_Type Then
+            Me.Component_Types.Remove(element.Get_Path)
         End If
     End Sub
 
@@ -353,6 +358,10 @@ Public Class Software_Project
             elmt = Me.Interfaces(old_path)
             Me.Interfaces.Remove(old_path)
             Me.Interfaces.Add(new_path, CType(elmt, Software_Interface))
+        ElseIf Me.Component_Types.ContainsKey(old_path) Then
+            elmt = Me.Component_Types(old_path)
+            Me.Component_Types.Remove(old_path)
+            Me.Component_Types.Add(new_path, CType(elmt, Component_Type))
         End If
     End Sub
 
@@ -398,6 +407,18 @@ Public Class Software_Project
 
     Public Function Get_All_Interfaces_Path() As List(Of String)
         Return Me.Interfaces.Keys.ToList
+    End Function
+
+    Public Function Get_Component_Type_By_Path(path As String) As Component_Type
+        If Me.Component_Types.ContainsKey(path) Then
+            Return Me.Component_Types(path)
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Function Get_All_Component_Types_Path() As List(Of String)
+        Return Me.Component_Types.Keys.ToList
     End Function
 
     Public Sub Remove_Package(pkg_name As String)

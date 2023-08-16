@@ -123,6 +123,26 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
+        Friend ReadOnly Property Composition() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Composition", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
+        Friend ReadOnly Property Connector() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Connector", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
         Friend ReadOnly Property CS_Interface() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("CS_Interface", resourceCulture)
@@ -156,6 +176,16 @@ Namespace My.Resources
         Friend ReadOnly Property Fixed_Point_Type() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("Fixed_Point_Type", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
+        Friend ReadOnly Property Grey_Object_With_Ports() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Grey_Object_With_Ports", resourceCulture)
                 Return CType(obj,System.Drawing.Icon)
             End Get
         End Property

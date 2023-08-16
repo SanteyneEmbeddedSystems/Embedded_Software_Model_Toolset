@@ -81,6 +81,11 @@
             .Add(OS_Operation.Metaclass_Name, My.Resources.Black_Cross)
             .Add(Provider_Port.Metaclass_Name, My.Resources.Provider_Port)
             .Add(Requirer_Port.Metaclass_Name, My.Resources.Requirer_Port)
+            .Add(Composition.Metaclass_Name, My.Resources.Composition)
+            .Add(Connector.Metaclass_Name, My.Resources.Connector)
+            .Add(Component_Prototype.Metaclass_Name, My.Resources.Grey_Object_With_Ports)
+            .Add(Composition_Task.Metaclass_Name, My.Resources.Black_Cross)
+
         End With
 
 

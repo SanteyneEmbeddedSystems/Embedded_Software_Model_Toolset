@@ -136,6 +136,12 @@
   <data name="Black_Gears" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Black_Gears.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Composition" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Composition.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Connector" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Connector.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="CS_Interface" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\CS_Interface.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -147,6 +153,9 @@
   </data>
   <data name="Fixed_Point_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Fixed_Point_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Grey_Object_With_Ports" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Grey_Object_With_Ports.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Operation_Parameter" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Icons\Operation_Parameter.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
