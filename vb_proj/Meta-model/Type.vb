@@ -888,7 +888,7 @@ Public Class Record_Type
         Me.Needed_Elements.Clear()
         For Each fd In Me.Fields
             Dim data_type As Type
-            data_type = CType(Me.Get_Element_From_Project_By_Identifier(fd.Type_Ref), Type)
+            data_type = CType(Me.Get_Element_From_Project_By_Identifier(fd.Element_Ref), Type)
             If Not IsNothing(data_type) Then
                 If Not Me.Needed_Elements.Contains(data_type) Then
                     Me.Needed_Elements.Add(data_type)
@@ -944,7 +944,7 @@ Public Class Record_Type
         ' Build the lines of the fields compartment
         Dim fields_lines As New List(Of String)
         For Each field In Me.Fields
-            Dim referenced_type_name As String = field.Get_Type_Name()
+            Dim referenced_type_name As String = field.Get_Referenced_Element_Name()
             fields_lines.Add("+ " & field.Name & " : " & referenced_type_name)
         Next
 
@@ -1004,7 +1004,7 @@ End Class
 
 
 Public Class Record_Field
-    Inherits Typed_Software_Element
+    Inherits Software_Element_With_Type_Reference
 
     Public Const Metaclass_Name As String = "Record_Field"
 
@@ -1061,7 +1061,7 @@ Public Class Record_Field
     Public Overrides Function Compute_SVG_Content() As String
 
         Dim attr_lines As New List(Of String) From {
-            "Base : " & Me.Get_Type_Path()}
+            "Base : " & Me.Get_Referenced_Element_Path()}
 
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Math.Max(attr_lines(0).Length, SVG_MIN_CHAR_PER_LINE)
@@ -1107,7 +1107,7 @@ Public Class Record_Field
         Dim type_ref_not_owner_check As New _
             Consistency_Check_Report_Item(Me, Record_Field.Type_Ref_Not_Owner_Rule)
         report.Add_Item(type_ref_not_owner_check)
-        type_ref_not_owner_check.Set_Compliance(Me.Type_Ref <> Me.Owner.Identifier)
+        type_ref_not_owner_check.Set_Compliance(Me.Element_Ref <> Me.Owner.Identifier)
 
     End Sub
 

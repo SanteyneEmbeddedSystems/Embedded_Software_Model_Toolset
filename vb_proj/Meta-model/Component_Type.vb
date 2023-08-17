@@ -75,7 +75,7 @@
         Me.Needed_Elements.Clear()
         For Each port In Me.Provider_Ports
             Dim sw_if As Software_Interface
-            sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Interface_Ref),
+            sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Element_Ref),
                 Software_Interface)
             If Not IsNothing(sw_if) Then
                 If Not Me.Needed_Elements.Contains(sw_if) Then
@@ -85,7 +85,7 @@
         Next
         For Each port In Me.Requirer_Ports
             Dim sw_if As Software_Interface
-            sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Interface_Ref),
+            sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Element_Ref),
                 Software_Interface)
             If Not IsNothing(sw_if) Then
                 If Not Me.Needed_Elements.Contains(sw_if) Then
@@ -95,7 +95,7 @@
         Next
         For Each conf In Me.Configurations
             Dim data_type As Type
-            data_type = CType(Me.Get_Element_From_Project_By_Identifier(conf.Type_Ref), Type)
+            data_type = CType(Me.Get_Element_From_Project_By_Identifier(conf.Element_Ref), Type)
             If Not IsNothing(data_type) Then
                 If Not Me.Needed_Elements.Contains(data_type) Then
                     Me.Needed_Elements.Add(data_type)
@@ -238,7 +238,8 @@
         ' Build the lines of the configurations compartment
         Dim config_lines As New List(Of String)
         For Each config In Me.Configurations
-            Dim config_line As String = "+ " & config.Name & " : " & config.Get_Type_Name()
+            Dim config_line As String = "+ " & config.Name & " : " &
+                config.Get_Referenced_Element_Name()
             config_lines.Add(config_line)
         Next
         Dim nb_max_char_per_line As Integer
@@ -272,7 +273,7 @@
         For Each pp In Me.Provider_Ports
             nb_char_offset = Math.Max(
                 nb_char_offset,
-                pp.Name.Length + pp.Get_Interface_Name().Length + 1)
+                pp.Name.Length + pp.Get_Referenced_Element_Name().Length + 1)
         Next
 
         ' ---------------------------------------------------------------------------------------- '
@@ -351,7 +352,7 @@
             Me.SVG_Content &= Get_SVG_Text(
                 rectangle_x_pos - SVG_TEXT_MARGIN,
                 port_y_pos - SVG_VERTICAL_MARGIN,
-                pp.Name & ":" & pp.Get_Interface_Name(),
+                pp.Name & ":" & pp.Get_Referenced_Element_Name(),
                 SVG_FONT_SIZE,
                 False,
                 False,
@@ -387,7 +388,7 @@
                 LOLLIPOP_RADIUS,
                 Component_Type.SVG_COLOR)
 
-            Dim rp_text As String = rp.Name & ":" & rp.Get_Interface_Name()
+            Dim rp_text As String = rp.Name & ":" & rp.Get_Referenced_Element_Name()
             Me.SVG_Content &= Get_SVG_Text(
                 port_rect_x_pos + SVG_TEXT_MARGIN,
                 port_y_pos - SVG_VERTICAL_MARGIN,
@@ -411,7 +412,7 @@ End Class
 
 
 Public Class Configuration_Parameter
-    Inherits Typed_Software_Element
+    Inherits Software_Element_With_Type_Reference
 
     Public Const Metaclass_Name As String = "Configuration_Parameter"
 
@@ -427,8 +428,8 @@ Public Class Configuration_Parameter
             description As String,
             owner As Software_Element,
             parent_node As TreeNode,
-            type As Guid)
-        MyBase.New(name, description, owner, parent_node, type)
+            type_ref As Guid)
+        MyBase.New(name, description, owner, parent_node, type_ref)
     End Sub
 
 
@@ -506,10 +507,7 @@ End Class
 
 
 Public MustInherit Class Port
-    Inherits Software_Element
-
-    Public Interface_Ref As Guid
-
+    Inherits Software_Element_Wih_Reference
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -524,8 +522,7 @@ Public MustInherit Class Port
             owner As Software_Element,
             parent_node As TreeNode,
             interface_ref As Guid)
-        MyBase.New(name, description, owner, parent_node)
-        Me.Interface_Ref = interface_ref
+        MyBase.New(name, description, owner, parent_node, interface_ref)
     End Sub
 
 
@@ -539,66 +536,15 @@ Public MustInherit Class Port
 
 
     ' -------------------------------------------------------------------------------------------- '
-    ' Methods for contextual menu
+    ' Methods from Software_Element_Wih_Reference
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Sub Edit()
-        Dim edit_form As New Element_With_Ref_Form(
-            Element_Form.E_Form_Kind.EDITION_FORM,
-            Me.Get_Metaclass_Name(),
-            Me.Identifier.ToString,
-            Me.Name,
-            Me.Description,
-            Me.Get_Forbidden_Name_List(),
-            "Interface",
-            Me.Get_Interface_Path(),
-            Me.Get_All_Interfaces_From_Project())
-        Dim edition_form_result As DialogResult = edit_form.ShowDialog()
-        If edition_form_result = DialogResult.OK Then
-            Me.Name = edit_form.Get_Element_Name()
-            Me.Node.Text = Me.Name
-            Me.Description = edit_form.Get_Element_Description()
-            Me.Interface_Ref = edit_form.Get_Ref_Element().Identifier
-            Me.Update_Views()
-        End If
-
-    End Sub
-
-    Public Overrides Sub View()
-        Dim elmt_view_form As New Element_With_Ref_Form(
-            Element_Form.E_Form_Kind.VIEW_FORM,
-            Me.Get_Metaclass_Name(),
-            Me.Identifier.ToString,
-            Me.Name,
-            Me.Description,
-            Nothing, ' Forbidden name list, useless for View
-            "Interface",
-            Me.Get_Interface_Path(),
-            Nothing)
-        elmt_view_form.ShowDialog()
-    End Sub
-
-
-    '----------------------------------------------------------------------------------------------'
-    ' Specific methods
-    '----------------------------------------------------------------------------------------------'
-
-    Public Function Get_Interface_Name() As String
-        Dim if_name As String = "unresolved"
-        Dim sw_if As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Interface_Ref)
-        If Not IsNothing(sw_if) Then
-            if_name = sw_if.Name
-        End If
-        Return if_name
+    Protected Overrides Function Get_Referenceable_Element_List() As List(Of Software_Element)
+        Return Me.Get_All_Interfaces_From_Project()
     End Function
 
-    Public Function Get_Interface_Path() As String
-        Dim if_path As String = "unresolved"
-        Dim sw_if As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Interface_Ref)
-        If Not IsNothing(sw_if) Then
-            if_path = sw_if.Get_Path()
-        End If
-        Return if_path
+    Protected Overrides Function Get_Referenceable_Element_Kind() As String
+        Return "Interface"
     End Function
 
 End Class

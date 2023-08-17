@@ -426,14 +426,10 @@ Public MustInherit Class Must_Describe_Software_Element
 End Class
 
 
-Public MustInherit Class Typed_Software_Element
+Public MustInherit Class Software_Element_Wih_Reference
     Inherits Must_Describe_Software_Element
 
-    Public Type_Ref As Guid
-
-    Private Shared ReadOnly Type_Rule As New Modeling_Rule(
-        "Type_Ref",
-        "Shall reference one Type.")
+    Public Element_Ref As Guid
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -448,18 +444,15 @@ Public MustInherit Class Typed_Software_Element
             description As String,
             owner As Software_Element,
             parent_node As TreeNode,
-            type As Guid)
+            element_ref As Guid)
         MyBase.New(name, description, owner, parent_node)
-        Me.Type_Ref = type
+        Me.Element_Ref = element_ref
     End Sub
 
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
-    Protected Overrides Function Get_Path_Separator() As String
-        Return "."
-    End Function
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -475,9 +468,9 @@ Public MustInherit Class Typed_Software_Element
             Me.Name,
             Me.Description,
             Me.Get_Forbidden_Name_List(),
-            "Type",
-            Me.Get_Type_Path(),
-            Me.Get_All_Types_From_Project())
+            Me.Get_Referenceable_Element_Kind(),
+            Me.Get_Referenced_Element_Path(),
+            Me.Get_Referenceable_Element_List())
 
         Dim edition_form_result As DialogResult = edit_form.ShowDialog()
 
@@ -488,7 +481,7 @@ Public MustInherit Class Typed_Software_Element
             Me.Name = edit_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Type_Ref = edit_form.Get_Ref_Element().Identifier
+            Me.Element_Ref = edit_form.Get_Ref_Element().Identifier
 
             Me.Update_Views()
         End If
@@ -503,8 +496,8 @@ Public MustInherit Class Typed_Software_Element
             Me.Name,
             Me.Description,
             Nothing, ' Forbidden name list, useless for View
-            "Type",
-            Me.Get_Type_Path(),
+            Me.Get_Referenceable_Element_Kind(),
+            Me.Get_Referenced_Element_Path(),
             Nothing)
         elmt_view_form.ShowDialog()
     End Sub
@@ -514,34 +507,66 @@ Public MustInherit Class Typed_Software_Element
     ' Methods for model consistency checking
     '----------------------------------------------------------------------------------------------'
 
-    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
-        MyBase.Check_Own_Consistency(report)
-        Dim type_check As New Consistency_Check_Report_Item(Me, Typed_Software_Element.Type_Rule)
-        report.Add_Item(type_check)
-        type_check.Set_Compliance(Me.Type_Ref <> Guid.Empty)
-    End Sub
-
 
     '----------------------------------------------------------------------------------------------'
     ' Specific methods
     '----------------------------------------------------------------------------------------------'
 
-    Public Function Get_Type_Name() As String
-        Dim type_name As String = "unresolved"
-        Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Type_Ref)
-        If Not IsNothing(type) Then
-            type_name = type.Name
+    Public Function Get_Referenced_Element_Name() As String
+        Dim element_name As String = "unresolved"
+        Dim element As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Element_Ref)
+        If Not IsNothing(element) Then
+            element_name = element.Name
         End If
-        Return type_name
+        Return element_name
     End Function
 
-    Public Function Get_Type_Path() As String
-        Dim type_path As String = "unresolved"
-        Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Type_Ref)
-        If Not IsNothing(type) Then
-            type_path = type.Get_Path()
+    Public Function Get_Referenced_Element_Path() As String
+        Dim element_path As String = "unresolved"
+        Dim element As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Element_Ref)
+        If Not IsNothing(element) Then
+            element_path = element.Get_Path()
         End If
-        Return type_path
+        Return element_path
+    End Function
+
+    Protected MustOverride Function Get_Referenceable_Element_List() As List(Of Software_Element)
+
+    Protected MustOverride Function Get_Referenceable_Element_Kind() As String
+
+End Class
+
+
+Public MustInherit Class Software_Element_With_Type_Reference
+    Inherits Software_Element_Wih_Reference
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode,
+            element_ref As Guid)
+        MyBase.New(name, description, owner, parent_node, element_ref)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element_Wih_Reference
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Function Get_Referenceable_Element_List() As List(Of Software_Element)
+        Return Me.Get_All_Types_From_Project()
+    End Function
+
+    Protected Overrides Function Get_Referenceable_Element_Kind() As String
+        Return "Type"
     End Function
 
 End Class

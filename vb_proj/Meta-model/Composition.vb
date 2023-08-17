@@ -68,7 +68,7 @@
         Me.Needed_Elements.Clear()
         For Each swc In Me.Parts
             Dim swct As Component_Type
-            swct = CType(Me.Get_Element_From_Project_By_Identifier(swc.Component_Type_Ref),
+            swct = CType(Me.Get_Element_From_Project_By_Identifier(swc.Element_Ref),
                 Component_Type)
             If Not IsNothing(swct) Then
                 If Not Me.Needed_Elements.Contains(swct) Then
@@ -140,9 +140,7 @@ End Class
 
 
 Public Class Component_Prototype
-    Inherits Must_Describe_Software_Element
-
-    Public Component_Type_Ref As Guid
+    Inherits Software_Element_Wih_Reference
 
     Public Const Metaclass_Name As String = "Component_Protoype"
 
@@ -159,9 +157,8 @@ Public Class Component_Prototype
             description As String,
             owner As Software_Element,
             parent_node As TreeNode,
-            type As Guid)
-        MyBase.New(name, description, owner, parent_node)
-        Me.Component_Type_Ref = type
+            component_type_ref As Guid)
+        MyBase.New(name, description, owner, parent_node, component_type_ref)
     End Sub
 
 
@@ -185,6 +182,19 @@ Public Class Component_Prototype
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return TypeOf parent Is Composition
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element_Wih_Reference
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Function Get_Referenceable_Element_List() As List(Of Software_Element)
+        Return Me.Get_All_Component_Types_From_Project()
+    End Function
+
+    Protected Overrides Function Get_Referenceable_Element_Kind() As String
+        Return "Component_Type"
     End Function
 
 End Class

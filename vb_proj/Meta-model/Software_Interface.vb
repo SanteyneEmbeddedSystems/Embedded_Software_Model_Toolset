@@ -99,7 +99,7 @@ Public Class Client_Server_Interface
         For Each op In Me.Operations
             For Each param In op.Parameters
                 Dim data_type As Type
-                data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Type_Ref), Type)
+                data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Element_Ref), Type)
                 If Not IsNothing(data_type) Then
                     If Not Me.Needed_Elements.Contains(data_type) Then
                         Me.Needed_Elements.Add(data_type)
@@ -159,7 +159,7 @@ Public Class Client_Server_Interface
                 op_lines.Add(op_line)
             ElseIf op.Parameters.Count = 1 Then
                 Dim param As Operation_Parameter = op.Parameters(0)
-                Dim type_name As String = param.Get_Type_Name()
+                Dim type_name As String = param.Get_Referenced_Element_Name()
                 op_line = "+ " & op.Name & "( " & param.Get_Short_Direction() & " " &
                         param.Name & ":" & type_name & " )"
                 If op_line.Length <= MAX_NB_OF_CHAR_FOR_OPERATION_LINE Then
@@ -178,7 +178,7 @@ Public Class Client_Server_Interface
                 op_line = "+ " & op.Name & "("
                 op_lines.Add(op_line)
                 For Each param In op.Parameters
-                    Dim type_name As String = param.Get_Type_Name()
+                    Dim type_name As String = param.Get_Referenced_Element_Name()
                     op_line = "&#160;&#160;&#160;&#160;&#160;&#160;" &
                         param.Get_Short_Direction() & " " &
                         param.Name & ":" & type_name
@@ -365,7 +365,7 @@ End Class
 
 
 Public Class Operation_Parameter
-    Inherits Typed_Software_Element
+    Inherits Software_Element_With_Type_Reference
 
     Public Direction As E_DIRECTION
 
@@ -439,8 +439,8 @@ Public Class Operation_Parameter
             Me.Name,
             Me.Description,
             Me.Get_Forbidden_Name_List(),
-            Me.Get_Type_Path(),
-            Me.Get_All_Types_From_Project(),
+            Me.Get_Referenced_Element_Path(),
+            Me.Get_Referenceable_Element_List(),
             Operation_Parameter.Directions,
             Operation_Parameter.Directions(0))
 
@@ -453,7 +453,7 @@ Public Class Operation_Parameter
             Me.Name = edition_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
-            Me.Type_Ref = edition_form.Get_Ref_Element().Identifier
+            Me.Element_Ref = edition_form.Get_Ref_Element().Identifier
             [Enum].TryParse(edition_form.Get_Direction(), Me.Direction)
 
             Me.Update_Views()
@@ -469,7 +469,7 @@ Public Class Operation_Parameter
             Me.Name,
             Me.Description,
             Nothing, ' Forbidden name list, useless for View
-            Me.Get_Type_Path(),
+            Me.Get_Referenced_Element_Path(),
             Nothing,
             Operation_Parameter.Directions,
             Me.Direction.ToString())
@@ -552,7 +552,7 @@ Public Class Event_Interface
         Me.Needed_Elements.Clear()
         For Each param In Me.Parameters
             Dim data_type As Type
-            data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Type_Ref), Type)
+            data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Element_Ref), Type)
             If Not IsNothing(data_type) Then
                 If Not Me.Needed_Elements.Contains(data_type) Then
                     Me.Needed_Elements.Add(data_type)
@@ -607,7 +607,7 @@ Public Class Event_Interface
         ' Build the lines of the parameters compartment
         Dim param_lines As New List(Of String)
         For Each param In Me.Parameters
-            Dim type_name As String = param.Get_Type_Name()
+            Dim type_name As String = param.Get_Referenced_Element_Name()
             Dim param_line As String = "+ " & param.Name & " : " & type_name
             param_lines.Add(param_line)
         Next
@@ -653,7 +653,7 @@ End Class
 
 
 Public Class Event_Parameter
-    Inherits Typed_Software_Element
+    Inherits Software_Element_With_Type_Reference
 
     Public Shared ReadOnly Metaclass_Name As String = "Event_Parameter"
 
