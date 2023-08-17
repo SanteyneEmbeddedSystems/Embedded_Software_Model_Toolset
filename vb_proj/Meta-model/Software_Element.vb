@@ -142,36 +142,20 @@ Public MustInherit Class Software_Element
         Return Me.Get_Project().Get_Element_By_Identifier(id)
     End Function
 
-    Protected Function Get_All_Types_Path_From_Project() As List(Of String)
-        Return Me.Get_Project().Get_All_Types_Path()
+    Protected Function Get_All_Types_From_Project() As List(Of Software_Element)
+        Return Me.Get_Project().Get_All_Types()
     End Function
 
-    Protected Function Get_Type_From_Project_By_Path(path As String) As Type
-        Return Me.Get_Project().Get_Type_By_Path(path)
+    Protected Function Get_All_Basic_Int_From_Project() As List(Of Software_Element)
+        Return Me.Get_Project().Get_All_Basic_Integer_Types()
     End Function
 
-    Protected Function Get_All_Basic_Int_Path_From_Project() As List(Of String)
-        Return Me.Get_Project().Get_All_Basic_Integer_Types_Path()
+    Protected Function Get_All_Interfaces_From_Project() As List(Of Software_Element)
+        Return Me.Get_Project().Get_All_Interfaces()
     End Function
 
-    Protected Function Get_Basic_Int_From_Proj_By_Path(path As String) As Basic_Type
-        Return Me.Get_Project().Get_Basic_Integer_Type_By_Path(path)
-    End Function
-
-    Protected Function Get_All_Interfaces_Path_From_Project() As List(Of String)
-        Return Me.Get_Project().Get_All_Interfaces_Path()
-    End Function
-
-    Protected Function Get_Interface_From_Project_By_Path(path As String) As Software_Interface
-        Return Me.Get_Project().Get_Interface_By_Path(path)
-    End Function
-
-    Protected Function Get_All_Component_Types_Path_From_Project() As List(Of String)
-        Return Me.Get_Project().Get_All_Component_Types_Path()
-    End Function
-
-    Protected Function Get_Component_Type_From_Project_By_Path(path As String) As Component_Type
-        Return Me.Get_Project().Get_Component_Type_By_Path(path)
+    Protected Function Get_All_Component_Types_From_Project() As List(Of Software_Element)
+        Return Me.Get_Project().Get_All_Component_Types()
     End Function
 
 
@@ -204,7 +188,6 @@ Public MustInherit Class Software_Element
     End Sub
 
     Public Sub Move(new_parent As Software_Element)
-        Dim old_path = Me.Get_Path()
 
         ' Manage top level packages
         Me.Display_Package_Modified()
@@ -220,8 +203,6 @@ Public MustInherit Class Software_Element
         ' Manage TreeNode
         Me.Node.Remove()
         new_parent.Node.Nodes.Add(Me.Node)
-
-        Me.Update_Project(old_path)
 
     End Sub
 
@@ -259,9 +240,7 @@ Public MustInherit Class Software_Element
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
-            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Update_Views()
@@ -293,17 +272,6 @@ Public MustInherit Class Software_Element
         view_form.ShowDialog()
     End Sub
 
-    ' Shall be called in Edit() sub to update dictionaries of Project.
-    Protected Sub Update_Project(old_path As String)
-        Dim new_path As String = Me.Get_Path()
-        Me.Get_Project().Move_Element_In_Project(old_path, new_path)
-        Dim children As List(Of Software_Element) = Me.Get_Children()
-        If Not IsNothing(children) Then
-            For Each child In children
-                child.Update_Project(old_path & child.Get_Path_Separator() & child.Name)
-            Next
-        End If
-    End Sub
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -381,7 +349,6 @@ Public MustInherit Class Software_Element
     Public Function Get_SVG_Content() As String
         Return Me.SVG_Content
     End Function
-
 
     Public Function Get_SVG_Width() As Integer
         Return Me.SVG_Width
@@ -510,7 +477,7 @@ Public MustInherit Class Typed_Software_Element
             Me.Get_Forbidden_Name_List(),
             "Type",
             Me.Get_Type_Path(),
-            Me.Get_All_Types_Path_From_Project())
+            Me.Get_All_Types_From_Project())
 
         Dim edition_form_result As DialogResult = edit_form.ShowDialog()
 
@@ -518,12 +485,10 @@ Public MustInherit Class Typed_Software_Element
         If edition_form_result = DialogResult.OK Then
 
             ' Update Me
-            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Me.Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Type_Ref = Get_Type_From_Project_By_Path(edit_form.Get_Ref_Element_Path()).Identifier
+            Me.Type_Ref = edit_form.Get_Ref_Element().Identifier
 
             Me.Update_Views()
         End If

@@ -13,7 +13,7 @@ Public Class Array_Type_Form
             default_description As String,
             forbidden_name_list As List(Of String),
             default_ref_element_path As String,
-            ref_element_path_list As List(Of String),
+            ref_element_list As List(Of Software_Element),
             default_multiplicity As String)
 
         MyBase.New(
@@ -25,7 +25,7 @@ Public Class Array_Type_Form
             forbidden_name_list,
             "Base Type",
             default_ref_element_path,
-            ref_element_path_list)
+            ref_element_list)
 
         ' Get the current y position of Main_Button
         Dim item_y_pos As Integer = Me.ClientSize.Height - ESMT_Form.Marge - Button_Height

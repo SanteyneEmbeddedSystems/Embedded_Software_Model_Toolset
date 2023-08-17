@@ -120,7 +120,7 @@
             Me.Get_Children_Name(),
             "Type",
             "",
-            Me.Get_All_Types_Path_From_Project())
+            Me.Get_All_Types_From_Project())
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
@@ -131,7 +131,7 @@
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier)
+                creation_form.Get_Ref_Element().Identifier)
 
             Me.Configurations.Add(new_config)
             Me.Children.Add(new_config)
@@ -176,7 +176,7 @@
             Me.Get_Children_Name(),
             "Interface",
             "",
-            Me.Get_All_Interfaces_Path_From_Project())
+            Me.Get_All_Interfaces_From_Project())
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
@@ -186,8 +186,7 @@
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                Me.Get_Interface_From_Project_By_Path(creation_form.Get_Ref_Element_Path()) _
-                    .Identifier)
+                creation_form.Get_Ref_Element().Identifier)
             Me.Provider_Ports.Add(new_port)
             Me.Children.Add(new_port)
             Me.Get_Project().Add_Element_To_Project(new_port)
@@ -207,7 +206,7 @@
             Me.Get_Children_Name(),
             "Interface",
             "",
-            Me.Get_All_Interfaces_Path_From_Project())
+            Me.Get_All_Interfaces_From_Project())
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
@@ -217,8 +216,7 @@
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                Me.Get_Interface_From_Project_By_Path(creation_form.Get_Ref_Element_Path()) _
-                    .Identifier)
+                creation_form.Get_Ref_Element().Identifier)
             Me.Requirer_Ports.Add(new_port)
             Me.Children.Add(new_port)
             Me.Get_Project().Add_Element_To_Project(new_port)
@@ -553,16 +551,13 @@ Public MustInherit Class Port
             Me.Get_Forbidden_Name_List(),
             "Interface",
             Me.Get_Interface_Path(),
-            Me.Get_All_Interfaces_Path_From_Project())
+            Me.Get_All_Interfaces_From_Project())
         Dim edition_form_result As DialogResult = edit_form.ShowDialog()
         If edition_form_result = DialogResult.OK Then
-            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Interface_Ref =
-                Get_Interface_From_Project_By_Path(edit_form.Get_Ref_Element_Path()).Identifier
+            Me.Interface_Ref = edit_form.Get_Ref_Element().Identifier
             Me.Update_Views()
         End If
 

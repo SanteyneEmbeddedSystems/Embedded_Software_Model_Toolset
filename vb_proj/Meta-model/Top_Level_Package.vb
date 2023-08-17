@@ -296,9 +296,7 @@ Public Class Top_Level_Package
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
-            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Me.Update_Project(old_path)
             Me.Node.Text = Me.Name
             If previous_name <> Me.Name Then
                 Me.Get_Project().Update_Pkg_Known_Name(previous_name, Me.Name)

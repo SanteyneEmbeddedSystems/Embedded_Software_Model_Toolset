@@ -1,7 +1,8 @@
 ﻿Public Class Element_With_Ref_Form
     Inherits Element_Form
 
-    Protected WithEvents Referenced_Element_ComboBox As ComboBox
+    Private WithEvents Referenced_Element_ComboBox As ComboBox
+    Private ReadOnly Referenceable_Element_By_Path As New Dictionary(Of String, Software_Element)
 
     Public Sub New(
             form_kind As E_Form_Kind,
@@ -12,7 +13,7 @@
             forbidden_name_list As List(Of String),
             ref_element_title As String,
             default_ref_element_path As String,
-            ref_element_path_list As List(Of String))
+            ref_element_list As List(Of Software_Element))
 
         MyBase.New(
             form_kind,
@@ -42,8 +43,10 @@
         inner_item_y_pos += ref_label.Height
 
         Me.Referenced_Element_ComboBox = New ComboBox
-        If Not IsNothing(ref_element_path_list) Then
-            For Each ref_element_path In ref_element_path_list
+        If Not IsNothing(ref_element_list) Then
+            For Each ref_element In ref_element_list
+                Dim ref_element_path As String = ref_element.Get_Path()
+                Me.Referenceable_Element_By_Path.Add(ref_element_path, ref_element)
                 Me.Referenced_Element_ComboBox.Items.Add(ref_element_path)
             Next
         Else
@@ -76,8 +79,8 @@
 
     End Sub
 
-    Public Function Get_Ref_Element_Path() As String
-        Return Me.Referenced_Element_ComboBox.Text
+    Public Function Get_Ref_Element() As Software_Element
+        Return Me.Referenceable_Element_By_Path(Me.Referenced_Element_ComboBox.Text)
     End Function
 
     Protected Overrides Sub Set_Fields_Read_Only()

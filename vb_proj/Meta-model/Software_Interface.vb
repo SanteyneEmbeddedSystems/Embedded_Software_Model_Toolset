@@ -332,7 +332,7 @@ Public Class Client_Server_Operation
             "",
             Me.Get_Children_Name(),
             "",
-            Me.Get_All_Types_Path_From_Project(),
+            Me.Get_All_Types_From_Project(),
             Operation_Parameter.Directions,
             Operation_Parameter.Directions(0))
 
@@ -348,7 +348,7 @@ Public Class Client_Server_Operation
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier,
+                creation_form.Get_Ref_Element().Identifier,
                 direction)
 
             Me.Parameters.Add(new_param)
@@ -440,7 +440,7 @@ Public Class Operation_Parameter
             Me.Description,
             Me.Get_Forbidden_Name_List(),
             Me.Get_Type_Path(),
-            Me.Get_All_Types_Path_From_Project(),
+            Me.Get_All_Types_From_Project(),
             Operation_Parameter.Directions,
             Operation_Parameter.Directions(0))
 
@@ -450,13 +450,10 @@ Public Class Operation_Parameter
         If edition_form_result = DialogResult.OK Then
 
             ' Update Me
-            Dim old_path As String = Me.Get_Path()
             Me.Name = edition_form.Get_Element_Name()
-            Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
-            Me.Type_Ref = Me.Get_Type_From_Project_By_Path(edition_form.Get_Ref_Element_Path()) _
-                .Identifier
+            Me.Type_Ref = edition_form.Get_Ref_Element().Identifier
             [Enum].TryParse(edition_form.Get_Direction(), Me.Direction)
 
             Me.Update_Views()
@@ -581,7 +578,7 @@ Public Class Event_Interface
             Me.Get_Children_Name(),
             "Type",
             "",
-            Me.Get_All_Types_Path_From_Project())
+            Me.Get_All_Types_From_Project())
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
@@ -592,7 +589,7 @@ Public Class Event_Interface
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier)
+                creation_form.Get_Ref_Element().Identifier)
 
             Me.Parameters.Add(new_param)
             Me.Children.Add(new_param)

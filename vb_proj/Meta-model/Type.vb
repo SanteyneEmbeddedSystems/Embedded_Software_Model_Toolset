@@ -202,8 +202,8 @@ Public Class Array_Type
     Public Overrides Sub Edit()
 
         ' Build the list of possible referenced type
-        Dim type_path_list As List(Of String) = Me.Get_All_Types_Path_From_Project()
-        type_path_list.Remove(Me.Get_Path())
+        Dim type_list As List(Of Software_Element) = Me.Get_All_Types_From_Project()
+        type_list.Remove(Me)
 
         Dim current_referenced_type_path As String = "unresolved"
         Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
@@ -219,7 +219,7 @@ Public Class Array_Type
             Me.Description,
             Me.Get_Forbidden_Name_List(),
             current_referenced_type_path,
-            type_path_list,
+            type_list,
             Me.Multiplicity.ToString())
         Dim edition_form_result As DialogResult = edition_form.ShowDialog()
 
@@ -227,14 +227,11 @@ Public Class Array_Type
         If edition_form_result = DialogResult.OK Then
 
             ' Update the array type
-            Dim old_path As String = Me.Get_Path()
             Me.Name = edition_form.Get_Element_Name()
-            Me.Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
             Me.Multiplicity = CUInt(edition_form.Get_Multiplicity())
-            Me.Base_Type_Ref =
-                Me.Get_Type_From_Project_By_Path(edition_form.Get_Ref_Element_Path()).Identifier
+            Me.Base_Type_Ref = edition_form.Get_Ref_Element().Identifier
 
             Me.Update_Views()
         End If
@@ -453,9 +450,7 @@ Public Class Enumerated_Type
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
-            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Me.Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
             Me.Update_Enumerals(enumerals_table)
@@ -711,7 +706,7 @@ Public Class Fixed_Point_Type
             Me.Description,
             Me.Get_Forbidden_Name_List(),
             Me.Get_Referenced_Type(True),
-            Me.Get_All_Basic_Int_Path_From_Project(),
+            Me.Get_All_Basic_Int_From_Project(),
             Me.Unit,
             Me.Resolution,
             Me.Offset)
@@ -720,13 +715,10 @@ Public Class Fixed_Point_Type
         If edition_form_result = DialogResult.OK Then
 
             ' Update the fixed point type
-            Dim old_path As String = Me.Get_Path()
             Me.Name = edit_form.Get_Element_Name()
-            Update_Project(old_path)
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Base_Type_Ref =
-                Me.Get_Basic_Int_From_Proj_By_Path(edit_form.Get_Ref_Element_Path()).Identifier
+            Me.Base_Type_Ref = edit_form.Get_Ref_Element().Identifier
             Me.Unit = edit_form.Get_Unit()
             Me.Resolution = edit_form.Get_Resolution()
             Me.Offset = edit_form.Get_Offset()
@@ -919,7 +911,7 @@ Public Class Record_Type
             Me.Get_Children_Name(),
             "Type",
             "",
-            Me.Get_All_Types_Path_From_Project())
+            Me.Get_All_Types_From_Project())
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
@@ -929,7 +921,7 @@ Public Class Record_Type
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier)
+                creation_form.Get_Ref_Element().Identifier)
             Me.Fields.Add(new_field)
             Me.Children.Add(new_field)
             Me.Get_Project().Add_Element_To_Project(new_field)

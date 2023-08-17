@@ -10,8 +10,8 @@
             default_name As String,
             default_description As String,
             forbidden_name_list As List(Of String),
-            default_ref_element_path As String,
-            ref_element_path_list As List(Of String),
+            default_ref_type_path As String,
+            ref_type_list As List(Of Software_Element),
             directions As String(),
             default_direction As String)
 
@@ -23,8 +23,8 @@
             default_description,
             forbidden_name_list,
             "Type",
-            default_ref_element_path,
-            ref_element_path_list)
+            default_ref_type_path,
+            ref_type_list)
 
         ' Get the current y position of Main_Button
         Dim item_y_pos As Integer = Me.ClientSize.Height - ESMT_Form.Marge - Button_Height

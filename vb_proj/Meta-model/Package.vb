@@ -135,7 +135,7 @@ Public Class Package
             "",
             Me.Get_Children_Name(),
             "",
-            Me.Get_All_Types_Path_From_Project(),
+            Me.Get_All_Types_From_Project(),
             Array_Type.Multiplicity_Minimum_Value.ToString())
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
@@ -149,7 +149,7 @@ Public Class Package
                 Me,
                 Me.Node,
                 CUInt(creation_form.Get_Multiplicity()),
-                Me.Get_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()).Identifier)
+                creation_form.Get_Ref_Element().Identifier)
 
             ' Add array type to its package and project
             Me.Types.Add(new_array_type)
@@ -204,7 +204,7 @@ Public Class Package
             "",
             Me.Get_Children_Name(),
             "",
-            Me.Get_All_Basic_Int_Path_From_Project(),
+            Me.Get_All_Basic_Int_From_Project(),
             "-",
             "1",
             "0")
@@ -218,7 +218,7 @@ Public Class Package
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                Me.Get_Basic_Int_From_Proj_By_Path(creation_form.Get_Ref_Element_Path()).Identifier,
+                creation_form.Get_Ref_Element().Identifier,
                 creation_form.Get_Unit(),
                 creation_form.Get_Resolution(),
                 creation_form.Get_Offset())

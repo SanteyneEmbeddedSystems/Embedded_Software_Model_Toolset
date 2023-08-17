@@ -93,7 +93,7 @@
             Me.Get_Children_Name(),
             "Component_Type",
             "",
-            Me.Get_All_Component_Types_Path_From_Project())
+            Me.Get_All_Component_Types_From_Project())
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_swc As New Component_Prototype(
@@ -101,8 +101,7 @@
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                Me.Get_Component_Type_From_Project_By_Path(creation_form.Get_Ref_Element_Path()) _
-                    .Identifier)
+                creation_form.Get_Ref_Element().Identifier)
             Me.Parts.Add(new_swc)
             Me.Children.Add(new_swc)
             Me.Get_Project().Add_Element_To_Project(new_swc)

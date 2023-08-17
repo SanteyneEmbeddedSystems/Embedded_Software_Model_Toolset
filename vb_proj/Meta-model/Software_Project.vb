@@ -28,10 +28,10 @@ Public Class Software_Project
     Private Diagram_Viewer As WebBrowser
 
     Private ReadOnly Elements As New Dictionary(Of Guid, Software_Element)
-    Private ReadOnly Types As New Dictionary(Of String, Type)
-    Private ReadOnly Basic_Integer_Types As New Dictionary(Of String, Basic_Integer_Type)
-    Private ReadOnly Interfaces As New Dictionary(Of String, Software_Interface)
-    Private ReadOnly Component_Types As New Dictionary(Of String, Component_Type)
+    Private ReadOnly Types As New Dictionary(Of Guid, Software_Element)
+    Private ReadOnly Basic_Integer_Types As New Dictionary(Of Guid, Software_Element)
+    Private ReadOnly Interfaces As New Dictionary(Of Guid, Software_Element)
+    Private ReadOnly Component_Types As New Dictionary(Of Guid, Software_Element)
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -319,49 +319,28 @@ Public Class Software_Project
     Public Sub Add_Element_To_Project(element As Software_Element)
         Me.Elements.Add(element.Identifier, element)
         If TypeOf element Is Type Then
-            Me.Types.Add(element.Get_Path, CType(element, Type))
+            Me.Types.Add(element.Identifier, element)
             If TypeOf element Is Basic_Integer_Type Then
-                Me.Basic_Integer_Types.Add(element.Get_Path, CType(element, Basic_Integer_Type))
+                Me.Basic_Integer_Types.Add(element.Identifier, element)
             End If
         ElseIf TypeOf element Is Software_Interface Then
-            Me.Interfaces.Add(element.Get_Path, CType(element, Software_Interface))
+            Me.Interfaces.Add(element.Identifier, element)
         ElseIf TypeOf element Is Component_Type Then
-            Me.Component_Types.Add(element.Get_Path, CType(element, Component_Type))
+            Me.Component_Types.Add(element.Identifier, element)
         End If
     End Sub
 
     Public Sub Remove_Element_From_Project(element As Software_Element)
         Me.Elements.Remove(element.Identifier)
         If TypeOf element Is Type Then
-            Me.Types.Remove(element.Get_Path)
+            Me.Types.Remove(element.Identifier)
             If TypeOf element Is Basic_Integer_Type Then
-                Me.Basic_Integer_Types.Remove(element.Get_Path)
+                Me.Basic_Integer_Types.Remove(element.Identifier)
             End If
         ElseIf TypeOf element Is Software_Interface Then
-            Me.Interfaces.Remove(element.Get_Path)
+            Me.Interfaces.Remove(element.Identifier)
         ElseIf TypeOf element Is Component_Type Then
-            Me.Component_Types.Remove(element.Get_Path)
-        End If
-    End Sub
-
-    Public Sub Move_Element_In_Project(old_path As String, new_path As String)
-        Dim elmt As Software_Element
-        If Me.Types.ContainsKey(old_path) Then
-            elmt = Me.Types(old_path)
-            Me.Types.Remove(old_path)
-            Me.Types.Add(new_path, CType(elmt, Type))
-        ElseIf Me.Basic_Integer_Types.ContainsKey(old_path) Then
-            elmt = Me.Basic_Integer_Types(old_path)
-            Me.Basic_Integer_Types.Remove(old_path)
-            Me.Basic_Integer_Types.Add(new_path, CType(elmt, Basic_Integer_Type))
-        ElseIf Me.Interfaces.ContainsKey(old_path) Then
-            elmt = Me.Interfaces(old_path)
-            Me.Interfaces.Remove(old_path)
-            Me.Interfaces.Add(new_path, CType(elmt, Software_Interface))
-        ElseIf Me.Component_Types.ContainsKey(old_path) Then
-            elmt = Me.Component_Types(old_path)
-            Me.Component_Types.Remove(old_path)
-            Me.Component_Types.Add(new_path, CType(elmt, Component_Type))
+            Me.Component_Types.Remove(element.Identifier)
         End If
     End Sub
 
@@ -373,52 +352,20 @@ Public Class Software_Project
         End If
     End Function
 
-    Public Function Get_Type_By_Path(path As String) As Type
-        If Me.Types.ContainsKey(path) Then
-            Return Me.Types(path)
-        Else
-            Return Nothing
-        End If
+    Public Function Get_All_Types() As List(Of Software_Element)
+        Return Me.Types.Values.ToList
     End Function
 
-    Public Function Get_All_Types_Path() As List(Of String)
-        Return Me.Types.Keys.ToList
+    Public Function Get_All_Basic_Integer_Types() As List(Of Software_Element)
+        Return Me.Basic_Integer_Types.Values.ToList
     End Function
 
-    Public Function Get_Basic_Integer_Type_By_Path(path As String) As Basic_Integer_Type
-        If Me.Basic_Integer_Types.ContainsKey(path) Then
-            Return Me.Basic_Integer_Types(path)
-        Else
-            Return Nothing
-        End If
+    Public Function Get_All_Interfaces() As List(Of Software_Element)
+        Return Me.Interfaces.Values.ToList
     End Function
 
-    Public Function Get_All_Basic_Integer_Types_Path() As List(Of String)
-        Return Me.Basic_Integer_Types.Keys.ToList
-    End Function
-
-    Public Function Get_Interface_By_Path(path As String) As Software_Interface
-        If Me.Interfaces.ContainsKey(path) Then
-            Return Me.Interfaces(path)
-        Else
-            Return Nothing
-        End If
-    End Function
-
-    Public Function Get_All_Interfaces_Path() As List(Of String)
-        Return Me.Interfaces.Keys.ToList
-    End Function
-
-    Public Function Get_Component_Type_By_Path(path As String) As Component_Type
-        If Me.Component_Types.ContainsKey(path) Then
-            Return Me.Component_Types(path)
-        Else
-            Return Nothing
-        End If
-    End Function
-
-    Public Function Get_All_Component_Types_Path() As List(Of String)
-        Return Me.Component_Types.Keys.ToList
+    Public Function Get_All_Component_Types() As List(Of Software_Element)
+        Return Me.Component_Types.Values.ToList
     End Function
 
     Public Sub Remove_Package(pkg_name As String)
