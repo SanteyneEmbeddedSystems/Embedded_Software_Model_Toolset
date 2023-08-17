@@ -95,7 +95,7 @@ Public Class Client_Server_Interface
     ' Methods from Classifier
     ' -------------------------------------------------------------------------------------------- '
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
-        Me.Needed_Elements = New List(Of Classifier)
+        Me.Needed_Elements.Clear()
         For Each op In Me.Operations
             For Each param In op.Parameters
                 Dim data_type As Type
@@ -549,7 +549,7 @@ Public Class Event_Interface
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
-        Me.Needed_Elements = New List(Of Classifier)
+        Me.Needed_Elements.Clear()
         For Each param In Me.Parameters
             Dim data_type As Type
             data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Type_Ref), Type)

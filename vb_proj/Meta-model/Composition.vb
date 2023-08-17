@@ -65,6 +65,7 @@
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Me.Needed_Elements.Clear()
         For Each swc In Me.Parts
             Dim swct As Component_Type
             swct = CType(Me.Get_Element_From_Project_By_Identifier(swc.Component_Type_Ref),

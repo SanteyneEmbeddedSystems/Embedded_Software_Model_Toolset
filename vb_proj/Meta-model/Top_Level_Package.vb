@@ -376,7 +376,8 @@ Public Class Top_Level_Package
     End Function
 
     Private Sub Find_Needed_Elements()
-
+        Me.Needed_Elements_List.Clear()
+        Me.Needed_Top_Packages_List.Clear()
         Dim tmp_needed_elements_list = New List(Of Classifier)
 
         Dim pkg_list As New List(Of Package) From {Me}
@@ -393,6 +394,9 @@ Public Class Top_Level_Package
             Next
             For Each data_type In pkg.Types
                 tmp_needed_elements_list.AddRange(data_type.Find_Needed_Elements())
+            Next
+            For Each compo In pkg.Compositions
+                tmp_needed_elements_list.AddRange(compo.Find_Needed_Elements())
             Next
         Next
 

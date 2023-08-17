@@ -186,6 +186,7 @@ Public Class Array_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Me.Needed_Elements.Clear()
         Dim data_type As Type
         data_type = CType(Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref), Type)
         If Not IsNothing(data_type) Then
@@ -683,6 +684,7 @@ Public Class Fixed_Point_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Me.Needed_Elements.Clear()
         Dim data_type As Type
         data_type = CType(Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref), Type)
         If Not IsNothing(data_type) Then
@@ -883,6 +885,7 @@ Public Class Record_Type
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Me.Needed_Elements.Clear()
         For Each fd In Me.Fields
             Dim data_type As Type
             data_type = CType(Me.Get_Element_From_Project_By_Identifier(fd.Type_Ref), Type)

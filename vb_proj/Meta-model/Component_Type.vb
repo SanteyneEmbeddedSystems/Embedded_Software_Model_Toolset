@@ -72,6 +72,7 @@
     ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
+        Me.Needed_Elements.Clear()
         For Each port In Me.Provider_Ports
             Dim sw_if As Software_Interface
             sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Interface_Ref),
