@@ -111,6 +111,33 @@
     End Sub
 
     Public Sub Add_Connector()
+        Dim creation_form As New Connector_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            Connector.Metaclass_Name,
+            "",
+            Connector.Metaclass_Name,
+            "",
+            Me.Parts,
+            "",
+            "",
+            "",
+            "")
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_connector As New Connector(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node,
+                creation_form.Get_Provider_Swc_Identifier(),
+                creation_form.Get_Provider_Port_Identifier(),
+                creation_form.Get_Requirer_Swc_Identifier(),
+                creation_form.Get_Requirer_Port_Identifier())
+            Me.Links.Add(new_connector)
+            Me.Children.Add(new_connector)
+            Me.Get_Project().Add_Element_To_Project(new_connector)
+            Me.Update_Views()
+        End If
 
     End Sub
 
@@ -222,8 +249,16 @@ Public Class Connector
             name As String,
             description As String,
             owner As Software_Element,
-            parent_node As TreeNode)
+            parent_node As TreeNode,
+            prov_swc_ref As Guid,
+            prov_port_ref As Guid,
+            req_swc_ref As Guid,
+            req_port_ref As Guid)
         MyBase.New(name, description, owner, parent_node)
+        Me.Provider_Component_Ref = prov_swc_ref
+        Me.Provider_Port_Ref = prov_port_ref
+        Me.Requirer_Component_Ref = req_swc_ref
+        Me.Requirer_Port_Ref = req_port_ref
     End Sub
 
 
@@ -248,6 +283,52 @@ Public Class Connector
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return TypeOf parent Is Composition
     End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for contextual menu
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Sub Edit()
+        Dim edition_form As New Connector_Form(
+            Element_Form.E_Form_Kind.EDITION_FORM,
+            Connector.Metaclass_Name,
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            CType(Me.Owner, Composition).Parts,
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Provider_Component_Ref),
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Provider_Port_Ref),
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Requirer_Component_Ref),
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Requirer_Port_Ref))
+        Dim edition_form_result As DialogResult = edition_form.ShowDialog()
+        If edition_form_result = DialogResult.OK Then
+            Me.Name = edition_form.Get_Element_Name()
+            Me.Node.Text = Me.Name
+            Me.Description = edition_form.Get_Element_Description()
+            Me.Provider_Component_Ref = edition_form.Get_Provider_Swc_Identifier()
+            Me.Provider_Port_Ref = edition_form.Get_Provider_Port_Identifier()
+            Me.Requirer_Component_Ref = edition_form.Get_Requirer_Swc_Identifier()
+            Me.Requirer_Port_Ref = edition_form.Get_Requirer_Port_Identifier()
+            Me.Update_Views()
+        End If
+    End Sub
+
+    Public Overrides Sub View()
+        Dim view_form As New Connector_Form(
+            Element_Form.E_Form_Kind.VIEW_FORM,
+            Connector.Metaclass_Name,
+            Me.Identifier.ToString(),
+            Me.Name,
+            Me.Description,
+            CType(Me.Owner, Composition).Parts,
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Provider_Component_Ref),
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Provider_Port_Ref),
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Requirer_Component_Ref),
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Requirer_Port_Ref))
+        view_form.ShowDialog()
+    End Sub
+
 End Class
 
 

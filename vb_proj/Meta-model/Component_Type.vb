@@ -107,6 +107,25 @@
 
 
     ' -------------------------------------------------------------------------------------------- '
+    ' Specific methods 
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Function Get_Port_By_Name(port_name As String) As Port
+        For Each port In Me.Provider_Ports
+            If port.Name = port_name Then
+                Return port
+            End If
+        Next
+        For Each port In Me.Requirer_Ports
+            If port.Name = port_name Then
+                Return port
+            End If
+        Next
+        Return Nothing
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
     ' -------------------------------------------------------------------------------------------- '
 

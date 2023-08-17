@@ -206,12 +206,6 @@ Public Class Array_Type
         Dim type_list As List(Of Software_Element) = Me.Get_All_Types_From_Project()
         type_list.Remove(Me)
 
-        Dim current_referenced_type_path As String = "unresolved"
-        Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
-        If Not IsNothing(type) Then
-            current_referenced_type_path = type.Get_Path()
-        End If
-
         Dim edition_form As New Array_Type_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Array_Type.Metaclass_Name,
@@ -219,7 +213,7 @@ Public Class Array_Type
             Me.Name,
             Me.Description,
             Me.Get_Forbidden_Name_List(),
-            current_referenced_type_path,
+            Me.Get_Elmt_Path_From_Proj_By_Id(Me.Base_Type_Ref),
             type_list,
             Me.Multiplicity.ToString())
         Dim edition_form_result As DialogResult = edition_form.ShowDialog()
@@ -240,13 +234,6 @@ Public Class Array_Type
     End Sub
 
     Public Overrides Sub View()
-
-        Dim referenced_type_path As String = "unresolved"
-        Dim type As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
-        If Not IsNothing(type) Then
-            referenced_type_path = type.Get_Path()
-        End If
-
         Dim elmt_view_form As New Array_Type_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
             Array_Type.Metaclass_Name,
@@ -254,11 +241,10 @@ Public Class Array_Type
             Me.Name,
             Me.Description,
             Nothing, ' Forbidden name list, useless for View
-            referenced_type_path,
+            Me.Get_Elmt_Path_From_Proj_By_Id(Me.Base_Type_Ref),
             Nothing, ' Useless for View
             Me.Multiplicity.ToString())
         elmt_view_form.ShowDialog()
-
     End Sub
 
 
@@ -270,16 +256,10 @@ Public Class Array_Type
 
         ' Compute Box width (it depends on the longuest line of the attributes compartment)
         ' Build the lines of the attributes compartment
-        Dim referenced_type_name As String = "unresolved"
-        Dim referenced_type As Software_Element
-        referenced_type = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
-        If Not IsNothing(referenced_type) Then
-            referenced_type_name = referenced_type.Name
-        End If
-
         Dim attr_lines As New List(Of String) From {
             "Multiplicity : " & Me.Multiplicity,
-            "Base : " & referenced_type_name}
+            "Base : " & Get_Elmt_Name_From_Proj_By_Id(Me.Base_Type_Ref)
+        }
 
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(attr_lines, SVG_MIN_CHAR_PER_LINE)

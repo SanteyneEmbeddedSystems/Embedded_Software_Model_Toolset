@@ -138,8 +138,26 @@ Public MustInherit Class Software_Element
         Return top_pkg.Get_Folder()
     End Function
 
-    Protected Function Get_Element_From_Project_By_Identifier(id As Guid) As Software_Element
+    Public Function Get_Element_From_Project_By_Identifier(id As Guid) As Software_Element
         Return Me.Get_Project().Get_Element_By_Identifier(id)
+    End Function
+
+    Public Function Get_Elmt_Name_From_Proj_By_Id(id As Guid) As String
+        Dim element As Software_Element = Me.Get_Project().Get_Element_By_Identifier(id)
+        If IsNothing(element) Then
+            Return "unresolved"
+        Else
+            Return element.Name
+        End If
+    End Function
+
+    Public Function Get_Elmt_Path_From_Proj_By_Id(id As Guid) As String
+        Dim element As Software_Element = Me.Get_Project().Get_Element_By_Identifier(id)
+        If IsNothing(element) Then
+            Return "unresolved"
+        Else
+            Return element.Get_Path()
+        End If
     End Function
 
     Protected Function Get_All_Types_From_Project() As List(Of Software_Element)
@@ -513,21 +531,11 @@ Public MustInherit Class Software_Element_Wih_Reference
     '----------------------------------------------------------------------------------------------'
 
     Public Function Get_Referenced_Element_Name() As String
-        Dim element_name As String = "unresolved"
-        Dim element As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Element_Ref)
-        If Not IsNothing(element) Then
-            element_name = element.Name
-        End If
-        Return element_name
+        Return Get_Elmt_Name_From_Proj_By_Id(Me.Element_Ref)
     End Function
 
     Public Function Get_Referenced_Element_Path() As String
-        Dim element_path As String = "unresolved"
-        Dim element As Software_Element = Me.Get_Element_From_Project_By_Identifier(Me.Element_Ref)
-        If Not IsNothing(element) Then
-            element_path = element.Get_Path()
-        End If
-        Return element_path
+        Return Get_Elmt_Path_From_Proj_By_Id(Me.Element_Ref)
     End Function
 
     Protected MustOverride Function Get_Referenceable_Element_List() As List(Of Software_Element)
