@@ -292,7 +292,7 @@
         For Each pp In Me.Provider_Ports
             nb_char_offset = Math.Max(
                 nb_char_offset,
-                pp.Name.Length + pp.Get_Referenced_Element_Name().Length + 1)
+                pp.Name.Length + pp.Get_Referenced_Element_Name().Length + 1) ' "+1" for ":"
         Next
 
         ' ---------------------------------------------------------------------------------------- '
@@ -301,7 +301,7 @@
 
         Dim rectangle_x_pos As Integer = 0
         If nb_char_offset <> 0 Then
-            rectangle_x_pos += Get_Text_Width(nb_char_offset) + SVG_TEXT_MARGIN
+            rectangle_x_pos += Get_Text_Width(nb_char_offset) + 2 * SVG_TEXT_MARGIN
         End If
         ' Add title (Name + stereotype) compartment
         Me.SVG_Content &= Get_Title_Rectangle(rectangle_x_pos, 0, Me.Name,
