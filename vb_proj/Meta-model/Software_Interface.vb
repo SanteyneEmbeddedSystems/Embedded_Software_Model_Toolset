@@ -225,7 +225,8 @@ Public Class Client_Server_Interface
             padded_op_lines,
             Client_Server_Interface.SVG_COLOR,
             Me.SVG_Width,
-            op_rect_height)
+            op_rect_height,
+            True)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
         Me.SVG_Height = SVG_TITLE_HEIGHT + desc_rect_height + op_rect_height ' - 2 * stroke width

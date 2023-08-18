@@ -75,7 +75,8 @@
         lines As List(Of String),
         color As String,
         rectangle_witdh As Integer,
-        Optional ByRef rectangle_height As Integer = 0) As String
+        Optional ByRef rectangle_height As Integer = 0,
+        Optional is_italic As Boolean = False) As String
 
         Dim svg_content As String
 
@@ -99,7 +100,7 @@
             line,
             SVG_FONT_SIZE,
             False,
-            False)
+            is_italic)
             line_idx += 1
         Next
 
