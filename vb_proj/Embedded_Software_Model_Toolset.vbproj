@@ -159,6 +159,7 @@
     <Compile Include="Meta-model\Composition.vb" />
     <Compile Include="Meta-model\Software_Interface.vb" />
     <Compile Include="Meta-model\Type.vb" />
+    <Compile Include="Modules\Cardinality.vb" />
     <Compile Include="Modules\Consistency_Check_Report.vb" />
     <Compile Include="Modules\Dependencies_Manager.vb" />
     <Compile Include="Modules\SVG.vb" />

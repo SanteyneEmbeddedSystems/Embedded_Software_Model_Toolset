@@ -137,7 +137,9 @@ Public Class Package
             Me.Get_Children_Name(),
             "",
             Me.Get_All_Types_From_Project(),
-            Array_Type.Multiplicity_Minimum_Value.ToString())
+            "2",
+            "1",
+            "1")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
         ' Treat creation form result
@@ -149,7 +151,9 @@ Public Class Package
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                CUInt(creation_form.Get_Multiplicity()),
+                New Cardinality(creation_form.Get_First_Dimension()),
+                New Cardinality(creation_form.Get_Second_Dimension()),
+                New Cardinality(creation_form.Get_Third_Dimension()),
                 creation_form.Get_Ref_Element().Identifier)
 
             ' Add array type to its package and project

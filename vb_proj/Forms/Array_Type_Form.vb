@@ -3,7 +3,9 @@
 Public Class Array_Type_Form
     Inherits Element_With_Ref_Form
 
-    Private WithEvents Multiplicity_TexBox As TextBox
+    Private WithEvents First_Dim_TexBox As New TextBox
+    Private WithEvents Second_Dim_TexBox As New TextBox
+    Private WithEvents Third_Dim_TexBox As New TextBox
 
     Public Sub New(
             form_kind As E_Form_Kind,
@@ -14,7 +16,9 @@ Public Class Array_Type_Form
             forbidden_name_list As List(Of String),
             default_ref_element_path As String,
             ref_element_list As List(Of Software_Element),
-            default_multiplicity As String)
+            default_first_dim As String,
+            default_second_dim As String,
+            default_third_dim As String)
 
         MyBase.New(
             form_kind,
@@ -34,30 +38,60 @@ Public Class Array_Type_Form
 
 
         '------------------------------------------------------------------------------------------'
-        ' Add multiplicity panel
-        Dim multiplicity_panel As New Panel With {
+        ' Add dimension panel
+        Dim dimension_panel As New Panel With {
             .Location = New Point(ESMT_Form.Marge, item_y_pos),
             .BorderStyle = BorderStyle.FixedSingle}
-        Me.Controls.Add(multiplicity_panel)
+        Me.Controls.Add(dimension_panel)
 
-        Dim multiplicity_label As New Label With {
-            .Text = "Multiplicity",
+        Dim dimension_label As New Label With {
+            .Text = "Dimension",
             .Location = New Point(ESMT_Form.Marge, inner_item_y_pos),
             .Size = ESMT_Form.Label_Size}
-        multiplicity_panel.Controls.Add(multiplicity_label)
-        inner_item_y_pos += multiplicity_label.Height
+        dimension_panel.Controls.Add(dimension_label)
+        inner_item_y_pos += dimension_label.Height + ESMT_Form.Marge
 
-        Me.Multiplicity_TexBox = New TextBox With {
-            .Text = default_multiplicity,
+        Dim first_dim_label As New Label With {
+            .Text = "First dimension :",
             .Location = New Point(ESMT_Form.Marge, inner_item_y_pos),
-            .Size = ESMT_Form.Label_Size}
-        multiplicity_panel.Controls.Add(Me.Multiplicity_TexBox)
-        inner_item_y_pos += Me.Multiplicity_TexBox.Height + ESMT_Form.Marge
+            .Size = ESMT_Form.Field_Label_Size}
+        dimension_panel.Controls.Add(first_dim_label)
+        With Me.First_Dim_TexBox
+            .Text = default_first_dim
+            .Location = New Point(ESMT_Form.Marge + first_dim_label.Width, inner_item_y_pos)
+            .Size = ESMT_Form.Field_Value_Size
+        End With
+        dimension_panel.Controls.Add(Me.First_Dim_TexBox)
+        inner_item_y_pos += Me.First_Dim_TexBox.Height + ESMT_Form.Marge
 
-        multiplicity_panel.Size = New Size(Panel_Width, inner_item_y_pos)
-        item_y_pos += multiplicity_panel.Height + ESMT_Form.Marge
+        Dim second_dim_label As New Label With {
+            .Text = "Second dimension :",
+            .Location = New Point(ESMT_Form.Marge, inner_item_y_pos),
+            .Size = ESMT_Form.Field_Label_Size}
+        dimension_panel.Controls.Add(second_dim_label)
+        With Me.Second_Dim_TexBox
+            .Text = default_second_dim
+            .Location = New Point(ESMT_Form.Marge + second_dim_label.Width, inner_item_y_pos)
+            .Size = ESMT_Form.Field_Value_Size
+        End With
+        dimension_panel.Controls.Add(Me.Second_Dim_TexBox)
+        inner_item_y_pos += Me.Second_Dim_TexBox.Height + ESMT_Form.Marge
 
-        Me.Checks_List.Add(AddressOf Check_Multiplicity)
+        Dim third_dim_label As New Label With {
+            .Text = "Third dimension :",
+            .Location = New Point(ESMT_Form.Marge, inner_item_y_pos),
+            .Size = ESMT_Form.Field_Label_Size}
+        dimension_panel.Controls.Add(third_dim_label)
+        With Me.Third_Dim_TexBox
+            .Text = default_third_dim
+            .Location = New Point(ESMT_Form.Marge + third_dim_label.Width, inner_item_y_pos)
+            .Size = ESMT_Form.Field_Value_Size
+        End With
+        dimension_panel.Controls.Add(Me.Third_Dim_TexBox)
+        inner_item_y_pos += Me.Third_Dim_TexBox.Height + ESMT_Form.Marge
+
+        dimension_panel.Size = New Size(Panel_Width, inner_item_y_pos)
+        item_y_pos += dimension_panel.Height + ESMT_Form.Marge
 
 
         '------------------------------------------------------------------------------------------'
@@ -72,35 +106,23 @@ Public Class Array_Type_Form
 
     End Sub
 
-    Public Function Get_Multiplicity() As String
-        Return Me.Multiplicity_TexBox.Text
+    Public Function Get_First_Dimension() As String
+        Return Me.First_Dim_TexBox.Text
     End Function
 
-    Private Function Check_Multiplicity() As Boolean
-        Dim is_multiplicity_valid As Boolean = False
-        Dim multiplicity As UInteger = 0
-        Dim is_multplicity_integer As Boolean
-        is_multplicity_integer = UInteger.TryParse(
-            Multiplicity_TexBox.Text,
-            NumberStyles.Any,
-            CultureInfo.GetCultureInfo("en-US"),
-            multiplicity)
-        If is_multplicity_integer = True Then
-            If multiplicity >= 1 Then
-                is_multiplicity_valid = True
-            End If
-        End If
-        If is_multiplicity_valid = False Then
-            MsgBox(
-                "Multiplicity shall be a integer equal or lager than 1.",
-                MsgBoxStyle.Exclamation)
-        End If
-        Return is_multiplicity_valid
+    Public Function Get_Second_Dimension() As String
+        Return Me.Second_Dim_TexBox.Text
+    End Function
+
+    Public Function Get_Third_Dimension() As String
+        Return Me.Third_Dim_TexBox.Text
     End Function
 
     Protected Overrides Sub Set_Fields_Read_Only()
         MyBase.Set_Fields_Read_Only()
-        Me.Multiplicity_TexBox.ReadOnly = True
+        Me.First_Dim_TexBox.ReadOnly = True
+        Me.Second_Dim_TexBox.ReadOnly = True
+        Me.Third_Dim_TexBox.ReadOnly = True
     End Sub
 
 End Class

@@ -139,16 +139,13 @@ End Class
 Public Class Array_Type
     Inherits Type
 
-    Public Multiplicity As UInteger
+    Public First_Dimension As Cardinality
+    Public Second_Dimension As Cardinality
+    Public Third_Dimension As Cardinality
     Public Base_Type_Ref As Guid
 
     Public Const Metaclass_Name As String = "Array_Type"
 
-    Public Const Multiplicity_Minimum_Value As UInteger = 2
-
-    Private Shared ReadOnly Multiplicity_Rule As New Modeling_Rule(
-        "Array_Multiplicity",
-        "Multiplicity shall be strictly greater than 1.")
     Private Shared ReadOnly Base_Type_Rule As New Modeling_Rule(
         "Base_Type_Defined",
         "Shall reference a base Data_Type.")
@@ -169,10 +166,14 @@ Public Class Array_Type
             description As String,
             owner As Software_Element,
             parent_node As TreeNode,
-            multiplicity As UInteger,
+            dimension_1 As Cardinality,
+            dimension_2 As Cardinality,
+            dimension_3 As Cardinality,
             base_type_ref As Guid)
         MyBase.New(name, description, owner, parent_node)
-        Me.Multiplicity = multiplicity
+        Me.First_Dimension = dimension_1
+        Me.Second_Dimension = dimension_2
+        Me.Third_Dimension = dimension_3
         Me.Base_Type_Ref = base_type_ref
     End Sub
 
@@ -220,19 +221,21 @@ Public Class Array_Type
             Me.Get_Forbidden_Name_List(),
             Me.Get_Elmt_Path_From_Proj_By_Id(Me.Base_Type_Ref),
             type_list,
-            Me.Multiplicity.ToString())
+            Me.First_Dimension.Get_Value(),
+            Me.Second_Dimension.Get_Value(),
+            Me.Third_Dimension.Get_Value())
         Dim edition_form_result As DialogResult = edition_form.ShowDialog()
 
         ' Treat edition form result
         If edition_form_result = DialogResult.OK Then
-
             ' Update the array type
             Me.Name = edition_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
-            Me.Multiplicity = CUInt(edition_form.Get_Multiplicity())
+            Me.First_Dimension = New Cardinality(edition_form.Get_First_Dimension())
+            Me.Second_Dimension = New Cardinality(edition_form.Get_Second_Dimension())
+            Me.Third_Dimension = New Cardinality(edition_form.Get_Third_Dimension())
             Me.Base_Type_Ref = edition_form.Get_Ref_Element().Identifier
-
             Me.Update_Views()
         End If
 
@@ -248,7 +251,9 @@ Public Class Array_Type
             Nothing, ' Forbidden name list, useless for View
             Me.Get_Elmt_Path_From_Proj_By_Id(Me.Base_Type_Ref),
             Nothing, ' Useless for View
-            Me.Multiplicity.ToString())
+            Me.First_Dimension.Get_Value(),
+            Me.Second_Dimension.Get_Value(),
+            Me.Third_Dimension.Get_Value())
         elmt_view_form.ShowDialog()
     End Sub
 
@@ -261,8 +266,16 @@ Public Class Array_Type
 
         ' Compute Box width (it depends on the longuest line of the attributes compartment)
         ' Build the lines of the attributes compartment
+        Dim dim_str As String = "["
+        dim_str &= Me.First_Dimension.Get_Value() & "]"
+        If Not Me.Second_Dimension.Is_One() Then
+            dim_str &= "[" & Me.Second_Dimension.Get_Value() & "]"
+            If Not Me.Third_Dimension.Is_One() Then
+                dim_str &= "[" & Me.Third_Dimension.Get_Value() & "]"
+            End If
+        End If
         Dim attr_lines As New List(Of String) From {
-            "Multiplicity : " & Me.Multiplicity,
+            "Dimension : " & dim_str,
             "Base : " & Get_Elmt_Name_From_Proj_By_Id(Me.Base_Type_Ref)
         }
 
@@ -310,11 +323,6 @@ Public Class Array_Type
 
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         MyBase.Check_Own_Consistency(report)
-
-        Dim multiplicity_check =
-            New Consistency_Check_Report_Item(Me, Array_Type.Multiplicity_Rule)
-        report.Add_Item(multiplicity_check)
-        multiplicity_check.Set_Compliance(Me.Multiplicity > 1)
 
         Dim base_type_check =
             New Consistency_Check_Report_Item(Me, Array_Type.Base_Type_Rule)
