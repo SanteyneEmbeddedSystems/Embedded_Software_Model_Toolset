@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Top_Level_Package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" >
   <Name>Basic_Types</Name>
-	<Identifier>35865e57-e35c-48d4-a100-72230e456b6b</Identifier>
+  <Identifier>35865e57-e35c-48d4-a100-72230e456b6b</Identifier>
   <Description>This package provides pre-defined basic data types which represent the types that any micro-controller could natively handle.</Description>
   <Types>
     <Basic_Integer_Type>
@@ -9,78 +9,84 @@
       <Description>Pre-defined basic data type which allows to model a data representing a signed integer value from -128 to 127.</Description>
       <Identifier>e6f0bcaa-8b2b-43b6-b1e5-553b4a3f74d0</Identifier>
     </Basic_Integer_Type>
-    
+
     <Basic_Integer_Type>
       <Name>uint8</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a unsigned integer value from 0 to 255.</Description>
-	  <Identifier>058963e7-375f-4f57-aceb-5a2f36b75490</Identifier>
+      <Identifier>058963e7-375f-4f57-aceb-5a2f36b75490</Identifier>
     </Basic_Integer_Type>
-    
+
     <Basic_Integer_Type>
       <Name>sint16</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a signed integer value from -32768 to 32767.</Description>
-	  <Identifier>ebb36a0f-a588-4dc2-b4ff-03b59b7f0451</Identifier>
+    <Identifier>ebb36a0f-a588-4dc2-b4ff-03b59b7f0451</Identifier>
     </Basic_Integer_Type>
-    
+
     <Basic_Integer_Type>
       <Name>uint16</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a unsigned integer value from 0 to 65535.</Description>
-	  <Identifier>0d6a9487-2e1a-4d71-8dcb-52824fa8170d</Identifier>
+      <Identifier>0d6a9487-2e1a-4d71-8dcb-52824fa8170d</Identifier>
     </Basic_Integer_Type>
-    
+
     <Basic_Integer_Type>
       <Name>sint32</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a signed integer value from -2147483648 to 2147483647.</Description>
       <Identifier>874ecc76-8567-4d26-babc-0a38a4c8e1df</Identifier>
     </Basic_Integer_Type>
-    
+
     <Basic_Integer_Type>
       <Name>uint32</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a unsigned integer value from 0 to 4294967295.</Description>
-	  <Identifier>3f1b684a-51d5-4374-a479-56bd195faa9e</Identifier>
+      <Identifier>3f1b684a-51d5-4374-a479-56bd195faa9e</Identifier>
     </Basic_Integer_Type>
-    
+
     <Basic_Integer_Type>
       <Name>sint64</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a signed integer value from -9223372036854775808 to 9223372036854775807.</Description>
-	  <Identifier>417d1937-91ff-4bc6-ad20-46b03d49d6b5</Identifier>
+      <Identifier>417d1937-91ff-4bc6-ad20-46b03d49d6b5</Identifier>
     </Basic_Integer_Type>
-    
+
     <Basic_Integer_Type>
       <Name>uint64</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a unsigned integer value from 0 to 18446744073709551616.</Description>
-	  <Identifier>f49b3ace-96bc-463c-8444-5436f4a801f1</Identifier>
+      <Identifier>f49b3ace-96bc-463c-8444-5436f4a801f1</Identifier>
     </Basic_Integer_Type>
-    
+
+    <Basic_Integer_Type>
+      <Name>byte</Name>
+      <Description>Pre-defined basic data type which allows to model a data stored on 8 bits, without arithmetic purposes.</Description>
+      <Identifier>97d8da02-29ed-4ba2-9d78-07fff6147434</Identifier>
+    </Basic_Integer_Type>
+
     <Basic_Boolean_Type>
       <Name>boolean</Name>
       <Description>Pre-defined basic data type which allows to model a data representing boolean value. It can be true or false.</Description>
-	  <Identifier>5df8e979-be4c-4790-87a7-f8ee053c4162</Identifier>
+      <Identifier>5df8e979-be4c-4790-87a7-f8ee053c4162</Identifier>
     </Basic_Boolean_Type>
-    
+
     <Basic_Floating_Point_Type>
       <Name>fp32</Name>
       <Description></Description>
-	  <Identifier>1045feea-03f6-4690-a89c-33134ec24f54</Identifier>
+      <Identifier>1045feea-03f6-4690-a89c-33134ec24f54</Identifier>
     </Basic_Floating_Point_Type>
-    
+
     <Basic_Floating_Point_Type>
       <Name>fp64</Name>
       <Description></Description>
-	  <Identifier>d74c7bfa-9e57-443f-ab99-96ab3cdcce0b</Identifier>
+      <Identifier>d74c7bfa-9e57-443f-ab99-96ab3cdcce0b</Identifier>
     </Basic_Floating_Point_Type>
 
-	<Basic_Character_Type>
-		<Name>character_string</Name>
-		<Description></Description>
-		<Identifier>573d6c92-f0f8-4fb0-8530-7a37cf4ed0ac</Identifier>
-	</Basic_Character_Type>
+    <Basic_Character_Type>
+      <Name>character_string</Name>
+      <Description></Description>
+      <Identifier>573d6c92-f0f8-4fb0-8530-7a37cf4ed0ac</Identifier>
+    </Basic_Character_Type>
 
-	<Basic_Character_Type>
-		<Name>character</Name>
-		<Description></Description>
-		<Identifier>b7e67188-4975-4207-bd33-9a8f25aff14a</Identifier>
-	</Basic_Character_Type>
-	  
+    <Basic_Character_Type>
+      <Name>character</Name>
+      <Description></Description>
+      <Identifier>b7e67188-4975-4207-bd33-9a8f25aff14a</Identifier>
+    </Basic_Character_Type>
+
   </Types>
 </Top_Level_Package>
