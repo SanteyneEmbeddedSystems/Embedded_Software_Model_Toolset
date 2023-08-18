@@ -131,6 +131,11 @@ Public Class Basic_Floating_Point_Type
 End Class
 
 
+Public Class Basic_Character_Type
+    Inherits Basic_Type
+End Class
+
+
 Public Class Array_Type
     Inherits Type
 

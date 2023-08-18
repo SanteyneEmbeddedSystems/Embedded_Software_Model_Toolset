@@ -8,6 +8,7 @@ Public Class Package
     <XmlArrayItemAttribute(GetType(Basic_Integer_Type)),
      XmlArrayItemAttribute(GetType(Basic_Boolean_Type)),
      XmlArrayItemAttribute(GetType(Basic_Floating_Point_Type)),
+     XmlArrayItemAttribute(GetType(Basic_Character_Type)),
      XmlArrayItemAttribute(GetType(Array_Type)),
      XmlArrayItemAttribute(GetType(Enumerated_Type)),
      XmlArrayItemAttribute(GetType(Fixed_Point_Type)),
