@@ -1,7 +1,7 @@
 ﻿Public Class Element_With_Ref_Form
     Inherits Element_Form
 
-    Private WithEvents Referenced_Element_ComboBox As ComboBox
+    Protected WithEvents Referenced_Element_ComboBox As ComboBox
     Private ReadOnly Referenceable_Element_By_Path As New Dictionary(Of String, Software_Element)
 
     Public Sub New(
