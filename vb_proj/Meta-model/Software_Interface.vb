@@ -151,7 +151,6 @@ Public Class Client_Server_Interface
         ' Compute Box width (it depends on the longuest line of the operations compartment)
         ' Build the lines of the operations compartment
         Dim op_lines As New List(Of String)
-        Dim indent_used As Boolean = False
         For Each op In Me.Operations
             Dim op_line As String
             If op.Parameters.Count = 0 Then
@@ -167,10 +166,8 @@ Public Class Client_Server_Interface
                 Else
                     op_line = "+ " & op.Name & "("
                     op_lines.Add(op_line)
-                    op_line = "&#160;&#160;&#160;&#160;&#160;&#160;" &
-                        param.Get_Short_Direction() & " " &
+                    op_line = "      " & param.Get_Short_Direction() & " " &
                         param.Name & ":" & type_name & " )"
-                    indent_used = True
                     op_lines.Add(op_line)
                 End If
             Else
@@ -179,10 +176,8 @@ Public Class Client_Server_Interface
                 op_lines.Add(op_line)
                 For Each param In op.Parameters
                     Dim type_name As String = param.Get_Referenced_Element_Name()
-                    op_line = "&#160;&#160;&#160;&#160;&#160;&#160;" &
-                        param.Get_Short_Direction() & " " &
+                    op_line = "      " & param.Get_Short_Direction() & " " &
                         param.Name & ":" & type_name
-                    indent_used = True
                     If param Is op.Parameters.Last Then
                         op_line &= " )"
                     Else
@@ -193,17 +188,16 @@ Public Class Client_Server_Interface
             End If
         Next
         ' Get the longuest line
-        Dim nb_max_char_per_line As Integer = 0
+        Dim nb_max_char_per_line As Integer = SVG_MIN_CHAR_PER_LINE
         For Each line In op_lines
             nb_max_char_per_line = Math.Max(nb_max_char_per_line, line.Length)
         Next
-        If indent_used = True Then
-            ' -30 to not count &#160;&#160;&#160;&#160;&#160;&#160; = 36 char but add 6 real spaces
-            nb_max_char_per_line = Math.Max(nb_max_char_per_line - 30, SVG_MIN_CHAR_PER_LINE)
-        Else
-            nb_max_char_per_line = Math.Max(nb_max_char_per_line, SVG_MIN_CHAR_PER_LINE)
-        End If
         Me.SVG_Width = Get_Box_Width(nb_max_char_per_line)
+
+        Dim padded_op_lines As New List(Of String)
+        For Each op_line In op_lines
+            padded_op_lines.Add(op_line.Replace("      ", "&#160;&#160;&#160;&#160;&#160;&#160;"))
+        Next
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
@@ -228,7 +222,7 @@ Public Class Client_Server_Interface
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
             0,
             SVG_TITLE_HEIGHT + desc_rect_height,
-            op_lines,
+            padded_op_lines,
             Client_Server_Interface.SVG_COLOR,
             Me.SVG_Width,
             op_rect_height)
