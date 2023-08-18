@@ -122,7 +122,7 @@ Public MustInherit Class Software_Element
     End Function
 
     Protected Function Get_Project() As Software_Project
-        Return Get_Top_Package().Project
+        Return Get_Top_Package().Get_Owner_Project()
     End Function
 
     Public Function Get_Top_Package() As Top_Level_Package

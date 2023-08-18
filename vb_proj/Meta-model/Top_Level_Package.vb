@@ -19,7 +19,7 @@ Public Class Top_Level_Package
 
     Private Xml_File_Path As String
     Private Status As E_PACKAGE_STATUS = E_PACKAGE_STATUS.WRITABLE
-    Public Project As Software_Project
+    Private Project As Software_Project
 
     Private Shared ReadOnly Writable_Context_Menu As New Top_Package_Writable_Context_Menu
     Private Shared ReadOnly Readable_Context_Menu As New Top_Package_Readable_Context_Menu
@@ -263,6 +263,10 @@ Public Class Top_Level_Package
         Else
             Return MyBase.Get_SVG_File_Path()
         End If
+    End Function
+
+    Public Function Get_Owner_Project() As Software_Project
+        Return Me.Project
     End Function
 
 

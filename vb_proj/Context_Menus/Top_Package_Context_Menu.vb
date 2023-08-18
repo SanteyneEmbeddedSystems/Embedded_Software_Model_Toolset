@@ -24,7 +24,7 @@
     End Function
 
     Protected Shared Function Get_Project(sender As Object) As Software_Project
-        Return Get_Top_Package(sender).Project
+        Return Get_Top_Package(sender).Get_Owner_Project()
     End Function
 
 End Class
