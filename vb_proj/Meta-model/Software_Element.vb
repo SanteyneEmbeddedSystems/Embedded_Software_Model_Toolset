@@ -138,7 +138,7 @@ Public MustInherit Class Software_Element
         Return top_pkg.Get_Folder()
     End Function
 
-    Public Function Get_Element_From_Project_By_Identifier(id As Guid) As Software_Element
+    Public Function Get_Elmt_From_Prj_By_Id(id As Guid) As Software_Element
         Return Me.Get_Project().Get_Element_By_Identifier(id)
     End Function
 

@@ -68,8 +68,7 @@
         Me.Needed_Elements.Clear()
         For Each swc In Me.Parts
             Dim swct As Component_Type
-            swct = CType(Me.Get_Element_From_Project_By_Identifier(swc.Element_Ref),
-                Component_Type)
+            swct = CType(Me.Get_Elmt_From_Prj_By_Id(swc.Element_Ref), Component_Type)
             If Not IsNothing(swct) Then
                 If Not Me.Needed_Elements.Contains(swct) Then
                     Me.Needed_Elements.Add(swct)
@@ -174,6 +173,11 @@ Public Class Component_Prototype
 
     Public Configuration_Values As New List(Of Configuration_Value)
 
+    Private Const SVG_COLOR As String = "rgb(127,127,127)"
+
+    Private Const SVG_CONNECTOR_WIDTH = 600 ' ~ 4 * Get_Text_Width(NB_CHARS_MAX_FOR_SYMBOL)
+    Private Const SVG_SWC_MARGIN = 40
+
     Public Class Configuration_Value
 
         Public Configuration_Ref As Guid = Nothing
@@ -263,7 +267,7 @@ Public Class Component_Prototype
 
     Public Function Create_Config_Data_Table() As DataTable
         Dim swct As Component_Type
-        swct = CType(Me.Get_Element_From_Project_By_Identifier(Me.Element_Ref), Component_Type)
+        swct = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref), Component_Type)
         Dim config_table As New DataTable
         With config_table
             .Columns.Add("Configuration", GetType(String))
@@ -347,6 +351,173 @@ Public Class Component_Prototype
         view_form.ShowDialog()
     End Sub
 
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Compute_SVG_Content() As String
+
+        Dim compo As Composition = CType(Me.Owner, Composition)
+
+        ' ---------------------------------------------------------------------------------------- '
+        ' Compute requirer swc (Me) Box width (it depends on the longuest line of the
+        ' configurations values compartment)
+        ' Build the lines of the configurations values compartment
+        Dim config_lines As New List(Of String)
+        For Each config_val In Me.Configuration_Values
+            Dim config_param As Configuration_Parameter = CType(
+                Me.Get_Elmt_From_Prj_By_Id(config_val.Configuration_Ref),
+                Configuration_Parameter)
+            config_lines.Add("+ " & config_param.Name & " = " & config_val.Value)
+        Next
+        Dim nb_max_char_per_line As Integer
+        nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(config_lines, SVG_MIN_CHAR_PER_LINE)
+        Dim req_swc_box_width As Integer = Get_Box_Width(nb_max_char_per_line)
+
+
+        ' ---------------------------------------------------------------------------------------- '
+        ' Get the list of provider Component_Prototypes and Portss to draw
+        Dim prov_swc_list As New List(Of Component_Prototype)
+        Dim prov_port_list_by_swc As New Dictionary(Of Component_Prototype, List(Of Provider_Port))
+        Dim req_port_list_by_swc As New Dictionary(Of Component_Prototype, List(Of Requirer_Port))
+        For Each link In compo.Links
+            If link.Requirer_Component_Ref = Me.Identifier Then
+                Dim prov_swc As Component_Prototype
+                prov_swc = CType(Me.Get_Elmt_From_Prj_By_Id(link.Provider_Component_Ref),
+                    Component_Prototype)
+                Dim prov_port As Provider_Port
+                prov_port = CType(Me.Get_Elmt_From_Prj_By_Id(link.Provider_Port_Ref),
+                    Provider_Port)
+                Dim req_port As Requirer_Port
+                req_port = CType(Me.Get_Elmt_From_Prj_By_Id(link.Requirer_Port_Ref),
+                    Requirer_Port)
+                If Not prov_port_list_by_swc.ContainsKey(prov_swc) Then
+                    prov_port_list_by_swc.Add(prov_swc, New List(Of Provider_Port))
+                    req_port_list_by_swc.Add(prov_swc, New List(Of Requirer_Port))
+                End If
+                prov_port_list_by_swc(prov_swc).Add(prov_port)
+                req_port_list_by_swc(prov_swc).Add(req_port)
+                If Not prov_swc_list.Contains(prov_swc) Then
+                    prov_swc_list.Add(prov_swc)
+                End If
+            End If
+        Next
+
+        ' ---------------------------------------------------------------------------------------- '
+        Dim split_description As List(Of String)
+        Dim desc_rect_height As Integer = 0
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+        ' Draw provider Component_Prototypes
+        Dim prov_swc_box_width As Integer = Get_Box_Width(SVG_MIN_CHAR_PER_LINE)
+        Dim prov_swc_x_pos As Integer = req_swc_box_width + SVG_CONNECTOR_WIDTH _
+            + 2 * Port.PORT_BLOCK_WITDH
+        Me.SVG_Width = prov_swc_x_pos + prov_swc_box_width
+        Dim prov_swc_y_pos As Integer = 0
+        For Each swc In prov_swc_list
+            Dim swc_height As Integer
+            split_description = Split_String(swc.Description, SVG_MIN_CHAR_PER_LINE)
+            Dim text_box_height As Integer = SVG_TITLE_HEIGHT _
+                + split_description.Count * SVG_TEXT_LINE_HEIGHT _
+                + SVG_STROKE_WIDTH + SVG_VERTICAL_MARGIN
+            Dim port_box_height As Integer
+            port_box_height = (prov_port_list_by_swc(swc).Count + 1) * Component_Type.PORT_SPACE
+            swc_height = Math.Max(text_box_height, port_box_height)
+
+            ' Draw title
+            Me.SVG_Content &= Get_Title_Rectangle(prov_swc_x_pos, prov_swc_y_pos, swc.Name,
+                SVG_COLOR, prov_swc_box_width, Metaclass_Name)
+
+            ' Draw description compartment
+            If text_box_height < port_box_height Then
+                desc_rect_height = Get_SVG_Rectangle_Height(split_description.Count) _
+                + (port_box_height - text_box_height)
+            End If
+            Me.SVG_Content &= Get_Multi_Line_Rectangle(
+                prov_swc_x_pos,
+                prov_swc_y_pos + SVG_TITLE_HEIGHT,
+                split_description,
+                SVG_COLOR,
+                prov_swc_box_width,
+                desc_rect_height)
+
+            ' Draw ports and connectors
+            Dim port_idx As Integer = 0
+            For Each pp In prov_port_list_by_swc(swc)
+                ' Draw provider port
+                Me.SVG_Content &= pp.Compute_SVG_Content()
+                Dim port_x_pos As Integer = prov_swc_x_pos - pp.Get_SVG_Width()
+                Dim port_y_pos As Integer = prov_swc_y_pos + Component_Type.PORT_SPACE \ 2 _
+                    + port_idx * Component_Type.PORT_SPACE
+                Me.SVG_Content &= "  <use xlink:href=""#" & pp.Get_SVG_Id() &
+                                      """ transform=""translate(" & port_x_pos &
+                                      "," & port_y_pos & ")"" />" & vbCrLf
+
+                ' Draw requirer port
+                Dim rp As Requirer_Port = req_port_list_by_swc(swc).Item(port_idx)
+                Me.SVG_Content &= rp.Compute_SVG_Content()
+                Me.SVG_Content &= "  <use xlink:href=""#" & rp.Get_SVG_Id() &
+                                      """ transform=""translate(" & req_swc_box_width &
+                                      "," & port_y_pos & ")"" />" & vbCrLf
+
+                ' Draw connector
+                Me.SVG_Content &= Get_SVG_Horizontal_Line(
+                    req_swc_box_width + Port.PORT_BLOCK_WITDH,
+                    port_y_pos + SVG_TEXT_LINE_HEIGHT + SVG_VERTICAL_MARGIN + Port.PORT_SIDE \ 2,
+                    SVG_CONNECTOR_WIDTH,
+                    SVG_COLOR)
+
+                port_idx += 1
+            Next
+
+            prov_swc_y_pos += swc_height + SVG_SWC_MARGIN
+        Next
+
+
+        ' ---------------------------------------------------------------------------------------- '
+        ' Draw requirer Component_Prototype (Me)
+        ' The minimum height of the box of the requirer swc (Me) shall be the y position of the last
+        ' provider swc + its height
+        Dim req_swc_min_height As Integer = prov_swc_y_pos - SVG_SWC_MARGIN
+
+        ' Add title
+        Me.SVG_Content &= Get_Title_Rectangle(0, 0, Me.Name,
+                SVG_COLOR, req_swc_box_width, Metaclass_Name)
+
+        ' Add description compartment
+        split_description = Split_String(Me.Description, nb_max_char_per_line)
+        Dim req_swc_nominal_height = SVG_TITLE_HEIGHT _
+            + Get_SVG_Rectangle_Height(split_description.Count) _
+            + Get_SVG_Rectangle_Height(config_lines.Count)
+
+        If req_swc_min_height > req_swc_nominal_height Then
+            Me.SVG_Height = req_swc_min_height
+            desc_rect_height = Get_SVG_Rectangle_Height(split_description.Count) _
+                + req_swc_min_height - req_swc_nominal_height
+        Else
+            Me.SVG_Height = req_swc_nominal_height
+            desc_rect_height = 0
+        End If
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
+            0,
+            SVG_TITLE_HEIGHT,
+            split_description,
+            SVG_COLOR,
+            req_swc_box_width,
+            desc_rect_height)
+
+        ' Add configuration values compartment
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
+            config_lines,
+            SVG_COLOR,
+            req_swc_box_width)
+
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+
+        Return Me.SVG_Content
+    End Function
 
 End Class
 

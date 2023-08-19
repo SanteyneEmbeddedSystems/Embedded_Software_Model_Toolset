@@ -81,7 +81,7 @@
         Dim svg_content As String
 
         If rectangle_height = 0 Then
-            rectangle_height = Get_SVG_Retangle_Height(lines.Count)
+            rectangle_height = Get_SVG_Rectangle_Height(lines.Count)
         End If
         svg_content = Get_SVG_Rectangle(
             x_pos,
@@ -108,7 +108,7 @@
 
     End Function
 
-    Public Function Get_SVG_Retangle_Height(nb_lines As Integer) As Integer
+    Public Function Get_SVG_Rectangle_Height(nb_lines As Integer) As Integer
         Return nb_lines * SVG_TEXT_LINE_HEIGHT + SVG_VERTICAL_MARGIN + 2 * SVG_STROKE_WIDTH
     End Function
 

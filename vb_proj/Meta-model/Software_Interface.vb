@@ -99,7 +99,7 @@ Public Class Client_Server_Interface
         For Each op In Me.Operations
             For Each param In op.Parameters
                 Dim data_type As Type
-                data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Element_Ref), Type)
+                data_type = CType(Me.Get_Elmt_From_Prj_By_Id(param.Element_Ref), Type)
                 If Not IsNothing(data_type) Then
                     If Not Me.Needed_Elements.Contains(data_type) Then
                         Me.Needed_Elements.Add(data_type)
@@ -547,7 +547,7 @@ Public Class Event_Interface
         Me.Needed_Elements.Clear()
         For Each param In Me.Parameters
             Dim data_type As Type
-            data_type = CType(Me.Get_Element_From_Project_By_Identifier(param.Element_Ref), Type)
+            data_type = CType(Me.Get_Elmt_From_Prj_By_Id(param.Element_Ref), Type)
             If Not IsNothing(data_type) Then
                 If Not Me.Needed_Elements.Contains(data_type) Then
                     Me.Needed_Elements.Add(data_type)

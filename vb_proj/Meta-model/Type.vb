@@ -194,7 +194,7 @@ Public Class Array_Type
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
         Me.Needed_Elements.Clear()
         Dim data_type As Type
-        data_type = CType(Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref), Type)
+        data_type = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref), Type)
         If Not IsNothing(data_type) Then
             Me.Needed_Elements.Add(data_type)
         End If
@@ -616,7 +616,7 @@ Public Class Fixed_Point_Type
     Private Function Get_Referenced_Type(get_full_path As Boolean) As String
         Dim result As String = "unresolved"
         Dim referenced_type As Software_Element
-        referenced_type = Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
+        referenced_type = Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref)
         If Not IsNothing(referenced_type) Then
             If get_full_path = True Then
                 result = referenced_type.Get_Path()
@@ -679,7 +679,7 @@ Public Class Fixed_Point_Type
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
         Me.Needed_Elements.Clear()
         Dim data_type As Type
-        data_type = CType(Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref), Type)
+        data_type = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref), Type)
         If Not IsNothing(data_type) Then
             Me.Needed_Elements.Add(data_type)
         End If
@@ -806,7 +806,7 @@ Public Class Fixed_Point_Type
         Dim base_type_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Base_Type_Rule)
         report.Add_Item(base_type_check)
         Dim basic_type As Software_Element =
-            Me.Get_Element_From_Project_By_Identifier(Me.Base_Type_Ref)
+            Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref)
         base_type_check.Set_Compliance(TypeOf basic_type Is Basic_Type)
 
         Dim resol_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Resol_Positive_Dec)
@@ -881,7 +881,7 @@ Public Class Record_Type
         Me.Needed_Elements.Clear()
         For Each fd In Me.Fields
             Dim data_type As Type
-            data_type = CType(Me.Get_Element_From_Project_By_Identifier(fd.Element_Ref), Type)
+            data_type = CType(Me.Get_Elmt_From_Prj_By_Id(fd.Element_Ref), Type)
             If Not IsNothing(data_type) Then
                 If Not Me.Needed_Elements.Contains(data_type) Then
                     Me.Needed_Elements.Add(data_type)

@@ -378,7 +378,7 @@ Public Class Package
         Dim split_description As List(Of String) =
             Split_String(Me.Description, SVG_NB_CHARS_PKG_DESC)
         Dim description_rectangle_height =
-            Math.Max(Get_SVG_Retangle_Height(split_description.Count), SVG_TEXT_LINE_HEIGHT * 4)
+            Math.Max(Get_SVG_Rectangle_Height(split_description.Count), SVG_TEXT_LINE_HEIGHT * 4)
         Me.SVG_Content &= Get_Multi_Line_Rectangle(
             0,
             title_rectangle_height,

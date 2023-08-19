@@ -1,4 +1,6 @@
-﻿Public Class Component_Type
+﻿Imports System.Math
+
+Public Class Component_Type
     Inherits Classifier
 
     Public Configurations As New List(Of Configuration_Parameter)
@@ -9,10 +11,8 @@
     Public Const Metaclass_Name As String = "Component_Type"
 
     Public Const SVG_COLOR As String = "rgb(0,0,0)"
-    Private Const PORT_SPACE As Integer = 60
-    Private Const PORT_SIDE As Integer = 16
-    Private Const LOLLIPOP_RADIUS As Integer = PORT_SIDE \ 2
-    Private Const PORT_LINE_LENGTH As Integer = 10
+    Public Const PORT_SPACE As Integer = Port.PORT_SIDE + SVG_TEXT_LINE_HEIGHT _
+        + SVG_VERTICAL_MARGIN * 3
 
     Private Shared ReadOnly Context_Menu As New SWCT_Context_Menu()
 
@@ -75,7 +75,7 @@
         Me.Needed_Elements.Clear()
         For Each port In Me.Provider_Ports
             Dim sw_if As Software_Interface
-            sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Element_Ref),
+            sw_if = CType(Me.Get_Elmt_From_Prj_By_Id(port.Element_Ref),
                 Software_Interface)
             If Not IsNothing(sw_if) Then
                 If Not Me.Needed_Elements.Contains(sw_if) Then
@@ -85,7 +85,7 @@
         Next
         For Each port In Me.Requirer_Ports
             Dim sw_if As Software_Interface
-            sw_if = CType(Me.Get_Element_From_Project_By_Identifier(port.Element_Ref),
+            sw_if = CType(Me.Get_Elmt_From_Prj_By_Id(port.Element_Ref),
                 Software_Interface)
             If Not IsNothing(sw_if) Then
                 If Not Me.Needed_Elements.Contains(sw_if) Then
@@ -95,7 +95,7 @@
         Next
         For Each conf In Me.Configurations
             Dim data_type As Type
-            data_type = CType(Me.Get_Element_From_Project_By_Identifier(conf.Element_Ref), Type)
+            data_type = CType(Me.Get_Elmt_From_Prj_By_Id(conf.Element_Ref), Type)
             If Not IsNothing(data_type) Then
                 If Not Me.Needed_Elements.Contains(data_type) Then
                     Me.Needed_Elements.Add(data_type)
@@ -283,26 +283,33 @@
         Dim text_box_height As Integer = SVG_TITLE_HEIGHT + box_nb_line * SVG_TEXT_LINE_HEIGHT _
             + SVG_STROKE_WIDTH * 4 + SVG_VERTICAL_MARGIN * 3
         Dim port_box_height As Integer
-        port_box_height = Math.Max(Me.Provider_Ports.Count, Me.Requirer_Ports.Count) * PORT_SPACE
-        Me.SVG_Height = Math.Max(text_box_height, port_box_height)
+        port_box_height = (Max(Me.Provider_Ports.Count, Me.Requirer_Ports.Count) + 1) * PORT_SPACE
+        Me.SVG_Height = Max(text_box_height, port_box_height)
+
+
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' ---------------------------------------------------------------------------------------- '
-        ' Compute box x_pos offset (it depends on pport longuest name)
-        Dim nb_char_offset = 0
+        ' Add provider ports
+        Dim max_width As Integer = 0
         For Each pp In Me.Provider_Ports
-            nb_char_offset = Math.Max(
-                nb_char_offset,
-                pp.Name.Length + pp.Get_Referenced_Element_Name().Length + 1) ' "+1" for ":"
+            Me.SVG_Content &= pp.Compute_SVG_Content()
+            max_width = Max(max_width, pp.Get_SVG_Width())
+
+        Next
+        Dim port_idx As Integer = 0
+        For Each pp In Me.Provider_Ports
+            Dim port_x_pos As Integer = max_width - pp.Get_SVG_Width()
+            Dim port_y_pos As Integer = PORT_SPACE \ 2 + port_idx * PORT_SPACE
+            Me.SVG_Content &= "  <use xlink:href=""#" & pp.Get_SVG_Id() &
+                                  """ transform=""translate(" & port_x_pos &
+                                  "," & port_y_pos & ")"" />" & vbCrLf
+            port_idx += 1
         Next
 
         ' ---------------------------------------------------------------------------------------- '
-        ' Add compartments and ports
-        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
-
-        Dim rectangle_x_pos As Integer = 0
-        If nb_char_offset <> 0 Then
-            rectangle_x_pos += Get_Text_Width(nb_char_offset) + 2 * SVG_TEXT_MARGIN
-        End If
+        ' Add compartments
+        Dim rectangle_x_pos As Integer = max_width
         ' Add title (Name + stereotype) compartment
         Me.SVG_Content &= Get_Title_Rectangle(rectangle_x_pos, 0, Me.Name,
             Component_Type.SVG_COLOR, box_width, Metaclass_Name)
@@ -310,7 +317,7 @@
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
         If text_box_height < port_box_height Then
-            desc_rect_height = Get_SVG_Retangle_Height(split_description.Count) _
+            desc_rect_height = Get_SVG_Rectangle_Height(split_description.Count) _
                 + (port_box_height - text_box_height)
         End If
 
@@ -340,89 +347,27 @@
             Component_Type.SVG_COLOR,
             box_width)
 
-        ' Add ports
-        Dim port_idx As Integer = 0
-        Dim port_rect_x_pos As Integer = rectangle_x_pos - PORT_SIDE
-        For Each pp In Me.Provider_Ports
-            Dim port_y_pos As Integer = PORT_SPACE \ 2 + port_idx * PORT_SPACE
-
-            Me.SVG_Content &= Get_SVG_Rectangle(
-                port_rect_x_pos,
-                port_y_pos,
-                PORT_SIDE,
-                PORT_SIDE,
-                Component_Type.SVG_COLOR,
-                "0.6")
-
-            Dim line_y_pos As Integer = port_y_pos + PORT_SIDE \ 2
-            Me.SVG_Content &= Get_SVG_Horizontal_Line(
-                port_rect_x_pos - PORT_LINE_LENGTH,
-                line_y_pos,
-                PORT_LINE_LENGTH,
-                Component_Type.SVG_COLOR)
-
-            Me.SVG_Content &= Get_SVG_Circle(
-                port_rect_x_pos - PORT_LINE_LENGTH - LOLLIPOP_RADIUS,
-                line_y_pos,
-                LOLLIPOP_RADIUS,
-                Component_Type.SVG_COLOR,
-                "0.6")
-
-            Me.SVG_Content &= Get_SVG_Text(
-                rectangle_x_pos - SVG_TEXT_MARGIN,
-                port_y_pos - SVG_VERTICAL_MARGIN,
-                pp.Name & ":" & pp.Get_Referenced_Element_Name(),
-                SVG_FONT_SIZE,
-                False,
-                False,
-                E_Text_Anchor.ANCHOR_END)
-
-            port_idx += 1
-        Next
-
-        port_idx = 0
-        port_rect_x_pos = port_rect_x_pos + PORT_SIDE + box_width
-        Dim nb_char_rp_offset As Integer = 0
+        ' ---------------------------------------------------------------------------------------- '
+        ' Add requirer ports
+        max_width = 0
         For Each rp In Me.Requirer_Ports
+            Me.SVG_Content &= rp.Compute_SVG_Content()
+            max_width = Max(max_width, rp.Get_SVG_Width())
+
+        Next
+        port_idx = 0
+        For Each rp In Me.Requirer_Ports
+            Dim port_x_pos As Integer = rectangle_x_pos + box_width
             Dim port_y_pos As Integer = PORT_SPACE \ 2 + port_idx * PORT_SPACE
-
-            Me.SVG_Content &= Get_SVG_Rectangle(
-                port_rect_x_pos,
-                port_y_pos,
-                PORT_SIDE,
-                PORT_SIDE,
-                Component_Type.SVG_COLOR,
-                "0.6")
-
-            Dim line_y_pos As Integer = port_y_pos + PORT_SIDE \ 2
-            Me.SVG_Content &= Get_SVG_Horizontal_Line(
-                port_rect_x_pos + PORT_SIDE,
-                line_y_pos,
-                PORT_LINE_LENGTH,
-                Component_Type.SVG_COLOR)
-
-            Me.SVG_Content &= Get_SVG_Haf_Moon(
-                port_rect_x_pos + PORT_SIDE + PORT_LINE_LENGTH,
-                line_y_pos,
-                LOLLIPOP_RADIUS,
-                Component_Type.SVG_COLOR)
-
-            Dim rp_text As String = rp.Name & ":" & rp.Get_Referenced_Element_Name()
-            Me.SVG_Content &= Get_SVG_Text(
-                port_rect_x_pos + SVG_TEXT_MARGIN,
-                port_y_pos - SVG_VERTICAL_MARGIN,
-                rp_text,
-                SVG_FONT_SIZE,
-                False,
-                False)
-            nb_char_rp_offset = Math.Max(nb_char_rp_offset, rp_text.Length)
-
+            Me.SVG_Content &= "  <use xlink:href=""#" & rp.Get_SVG_Id() &
+                                  """ transform=""translate(" & port_x_pos &
+                                  "," & port_y_pos & ")"" />" & vbCrLf
             port_idx += 1
         Next
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
-        Me.SVG_Width = rectangle_x_pos + box_width +
-            Get_Text_Width(nb_char_rp_offset) + SVG_TEXT_MARGIN
+        Me.SVG_Width = rectangle_x_pos + max_width
+
         Return Me.SVG_Content
 
     End Function
@@ -528,6 +473,11 @@ End Class
 Public MustInherit Class Port
     Inherits Software_Element_Wih_Reference
 
+    Public Const PORT_SIDE As Integer = 16
+    Protected Const LOLLIPOP_RADIUS As Integer = PORT_SIDE \ 2
+    Protected Const PORT_LINE_LENGTH As Integer = 10
+    Public Const PORT_BLOCK_WITDH As Integer = PORT_SIDE + 2 * LOLLIPOP_RADIUS + PORT_LINE_LENGTH
+
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
     ' -------------------------------------------------------------------------------------------- '
@@ -611,6 +561,58 @@ Public Class Provider_Port
         Return Provider_Port.Metaclass_Name
     End Function
 
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Compute_SVG_Content() As String
+
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
+        Dim port_text As String = Me.Name & ":" & Me.Get_Referenced_Element_Name()
+        Dim port_text_x_pos As Integer = Get_Text_Width(port_text.Count) + SVG_TEXT_MARGIN
+        Dim port_text_y_pos As Integer = SVG_TEXT_LINE_HEIGHT
+
+        Me.SVG_Content &= Get_SVG_Text(
+            port_text_x_pos,
+            port_text_y_pos,
+            port_text,
+            SVG_FONT_SIZE,
+            False,
+            False,
+            E_Text_Anchor.ANCHOR_END)
+
+        Dim port_rect_y_pos As Integer = port_text_y_pos + SVG_VERTICAL_MARGIN
+        Me.SVG_Content &= Get_SVG_Rectangle(
+            port_text_x_pos,
+            port_rect_y_pos,
+            PORT_SIDE,
+            PORT_SIDE,
+            Component_Type.SVG_COLOR,
+            "0.6")
+
+        Dim line_y_pos As Integer = port_rect_y_pos + PORT_SIDE \ 2
+        Me.SVG_Content &= Get_SVG_Horizontal_Line(
+            port_text_x_pos - PORT_LINE_LENGTH,
+            line_y_pos,
+            PORT_LINE_LENGTH,
+            Component_Type.SVG_COLOR)
+
+        Me.SVG_Content &= Get_SVG_Circle(
+            port_text_x_pos - PORT_LINE_LENGTH - LOLLIPOP_RADIUS,
+            line_y_pos,
+            LOLLIPOP_RADIUS,
+            Component_Type.SVG_COLOR,
+            "0.6")
+
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+
+        Me.SVG_Width = port_text_x_pos + PORT_SIDE
+        Me.SVG_Height = port_rect_y_pos + PORT_SIDE
+
+        Return Me.SVG_Content
+    End Function
+
 End Class
 
 
@@ -653,6 +655,56 @@ Public Class Requirer_Port
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Requirer_Port.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Compute_SVG_Content() As String
+
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
+        Dim port_text As String = Me.Name & ":" & Me.Get_Referenced_Element_Name()
+        Dim port_text_y_pos As Integer = SVG_TEXT_LINE_HEIGHT
+
+        Me.SVG_Content &= Get_SVG_Text(
+                PORT_SIDE,
+                port_text_y_pos,
+                port_text,
+                SVG_FONT_SIZE,
+                False,
+                False)
+
+        Dim port_rect_y_pos As Integer = port_text_y_pos + SVG_VERTICAL_MARGIN
+        Me.SVG_Content &= Get_SVG_Rectangle(
+                0,
+                port_rect_y_pos,
+                PORT_SIDE,
+                PORT_SIDE,
+                Component_Type.SVG_COLOR,
+                "0.6")
+
+        Dim line_y_pos As Integer = port_rect_y_pos + PORT_SIDE \ 2
+        Me.SVG_Content &= Get_SVG_Horizontal_Line(
+                PORT_SIDE,
+                line_y_pos,
+                PORT_LINE_LENGTH,
+                Component_Type.SVG_COLOR)
+
+        Me.SVG_Content &= Get_SVG_Haf_Moon(
+                PORT_SIDE + PORT_LINE_LENGTH,
+                line_y_pos,
+                LOLLIPOP_RADIUS,
+                Component_Type.SVG_COLOR)
+
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+
+        Me.SVG_Width = PORT_SIDE + Get_Text_Width(port_text.Count)
+        Me.SVG_Height = port_rect_y_pos + PORT_SIDE
+
+        Return Me.SVG_Content
     End Function
 
 End Class
