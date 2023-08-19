@@ -320,6 +320,7 @@ Public Class Package
                 Me.Node)
             Me.Component_Types.Add(new_swct)
             Me.Children.Add(new_swct)
+            Me.Get_Project().Add_Element_To_Project(new_swct)
             Me.Update_Views()
         End If
     End Sub
