@@ -86,7 +86,6 @@
     Public Sub Add_Prototype()
         Dim creation_form As New Component_Prototype_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
-            Component_Prototype.Metaclass_Name,
             "",
             Component_Prototype.Metaclass_Name,
             "",
@@ -113,7 +112,6 @@
     Public Sub Add_Connector()
         Dim creation_form As New Connector_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
-            Connector.Metaclass_Name,
             "",
             Connector.Metaclass_Name,
             "",
@@ -315,7 +313,6 @@ Public Class Component_Prototype
         Dim config_table As DataTable = Me.Create_Config_Data_Table()
         Dim edit_form As New Component_Prototype_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
-            Me.Get_Metaclass_Name(),
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
@@ -335,11 +332,10 @@ Public Class Component_Prototype
         End If
     End Sub
 
-    Public Overrides Sub view()
+    Public Overrides Sub View()
         Dim config_table As DataTable = Me.Create_Config_Data_Table()
         Dim view_form As New Component_Prototype_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
-            Me.Get_Metaclass_Name(),
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
@@ -586,7 +582,6 @@ Public Class Connector
     Public Overrides Sub Edit()
         Dim edition_form As New Connector_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
-            Connector.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
@@ -611,7 +606,6 @@ Public Class Connector
     Public Overrides Sub View()
         Dim view_form As New Connector_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
-            Connector.Metaclass_Name,
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,

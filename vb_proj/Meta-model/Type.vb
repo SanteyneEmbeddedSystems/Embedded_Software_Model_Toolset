@@ -214,7 +214,6 @@ Public Class Array_Type
 
         Dim edition_form As New Array_Type_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
-            Array_Type.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
@@ -244,7 +243,6 @@ Public Class Array_Type
     Public Overrides Sub View()
         Dim elmt_view_form As New Array_Type_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
-            Array_Type.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
@@ -434,7 +432,6 @@ Public Class Enumerated_Type
 
         Dim edit_form As New Enumerated_Type_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
-            Me.Get_Metaclass_Name(),
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
@@ -466,7 +463,6 @@ Public Class Enumerated_Type
 
         Dim view_form As New Enumerated_Type_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
-            Me.Get_Metaclass_Name(),
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
@@ -695,7 +691,6 @@ Public Class Fixed_Point_Type
 
         Dim edit_form As New Fixed_Point_Type_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
-            Fixed_Point_Type.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
@@ -726,7 +721,6 @@ Public Class Fixed_Point_Type
 
         Dim view_form As New Fixed_Point_Type_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
-            Fixed_Point_Type.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,

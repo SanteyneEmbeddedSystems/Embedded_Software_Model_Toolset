@@ -9,7 +9,6 @@ Public Class Fixed_Point_Type_Form
 
     Public Sub New(
             form_kind As E_Form_Kind,
-            element_metaclass_name As String,
             default_uuid As String,
             default_name As String,
             default_description As String,
@@ -22,7 +21,7 @@ Public Class Fixed_Point_Type_Form
 
         MyBase.New(
             form_kind,
-            element_metaclass_name,
+            Fixed_Point_Type.Metaclass_Name,
             default_uuid,
             default_name,
             default_description,

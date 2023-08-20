@@ -321,7 +321,6 @@ Public Class Client_Server_Operation
 
         Dim creation_form As New Operation_Parameter_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
-            Operation_Parameter.Metaclass_Name,
             "",
             Operation_Parameter.Metaclass_Name,
             "",
@@ -429,7 +428,6 @@ Public Class Operation_Parameter
 
         Dim edition_form As New Operation_Parameter_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
-            Operation_Parameter.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
@@ -459,7 +457,6 @@ Public Class Operation_Parameter
     Public Overrides Sub View()
         Dim elmt_view_form As New Operation_Parameter_Form(
             Element_Form.E_Form_Kind.VIEW_FORM,
-            Operation_Parameter.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,

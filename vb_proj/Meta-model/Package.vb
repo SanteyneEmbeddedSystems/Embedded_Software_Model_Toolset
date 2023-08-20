@@ -130,7 +130,6 @@ Public Class Package
         ' Display a creation form
         Dim creation_form As New Array_Type_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
-            Array_Type.Metaclass_Name,
             "",
             Array_Type.Metaclass_Name,
             "",
@@ -177,7 +176,6 @@ Public Class Package
 
         Dim creation_form As New Enumerated_Type_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
-            Enumerated_Type.Metaclass_Name,
             "",
             Enumerated_Type.Metaclass_Name,
             "",
@@ -203,7 +201,6 @@ Public Class Package
 
         Dim creation_form As New Fixed_Point_Type_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
-            Fixed_Point_Type.Metaclass_Name,
             "",
             Fixed_Point_Type.Metaclass_Name,
             "",
