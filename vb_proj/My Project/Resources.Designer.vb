@@ -183,6 +183,16 @@ Namespace My.Resources
         '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
         '''</summary>
+        Friend ReadOnly Property Grey_Cross() As System.Drawing.Icon
+            Get
+                Dim obj As Object = ResourceManager.GetObject("Grey_Cross", resourceCulture)
+                Return CType(obj,System.Drawing.Icon)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Icon semblable à (Icône).
+        '''</summary>
         Friend ReadOnly Property Grey_Object_With_Ports() As System.Drawing.Icon
             Get
                 Dim obj As Object = ResourceManager.GetObject("Grey_Object_With_Ports", resourceCulture)

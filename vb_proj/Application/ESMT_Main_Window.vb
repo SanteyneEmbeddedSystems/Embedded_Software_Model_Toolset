@@ -84,8 +84,8 @@
             .Add(Composition.Metaclass_Name, My.Resources.Composition)
             .Add(Connector.Metaclass_Name, My.Resources.Connector)
             .Add(Component_Prototype.Metaclass_Name, My.Resources.Grey_Object_With_Ports)
-            .Add(Composition_Task.Metaclass_Name, My.Resources.Black_Cross)
-
+            .Add(Composition_Task.Metaclass_Name, My.Resources.Grey_Cross)
+            .Add(Call_OS_Operation.Metaclass_Name, My.Resources.Grey_Cross)
         End With
 
 

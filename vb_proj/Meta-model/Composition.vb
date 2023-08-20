@@ -138,7 +138,6 @@
             Me.Get_Project().Add_Element_To_Project(new_connector)
             Me.Update_Views()
         End If
-
     End Sub
 
     Public Sub Add_Task()
@@ -630,8 +629,11 @@ End Class
 Public Class Composition_Task
     Inherits Must_Describe_Software_Element
 
+    Public Calls As New List(Of Call_OS_Operation)
+
     Public Const Metaclass_Name As String = "Task"
 
+    Private Shared ReadOnly Context_Menu As New Task_Context_Menu()
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -653,6 +655,14 @@ Public Class Composition_Task
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
+    Protected Overrides Function Get_Children() As List(Of Software_Element)
+        If Me.Children_Is_Computed = False Then
+            Me.Children_Is_Computed = True
+            Me.Children.AddRange(Me.Calls)
+        End If
+        Return Me.Children
+    End Function
+
     Protected Overrides Sub Move_Me(new_parent As Software_Element)
         CType(Me.Owner, Composition).Tasks.Remove(Me)
         CType(new_parent, Composition).Tasks.Add(Me)
@@ -670,5 +680,139 @@ Public Class Composition_Task
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return TypeOf parent Is Composition
     End Function
+
+    Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
+        Return Composition_Task.Context_Menu
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for contextual menu
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub Add_Call_OS_Operation()
+        Dim creation_form As New Call_OS_Operation_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            "",
+            Call_OS_Operation.Metaclass_Name,
+            "",
+            CType(Me.Owner, Composition).Parts,
+            "",
+            "",
+            "")
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
+        If creation_form_result = DialogResult.OK Then
+            Dim new_call As New Call_OS_Operation(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node,
+                creation_form.Get_Component_Prototype_Identifier(),
+                creation_form.Get_OS_Operation_Identifier(),
+                creation_form.Get_Priority())
+            Me.Calls.Add(new_call)
+            Me.Children.Add(new_call)
+            Me.Get_Project().Add_Element_To_Project(new_call)
+            Me.Update_Views()
+        End If
+    End Sub
+
+
+End Class
+
+
+Public Class Call_OS_Operation
+    Inherits Software_Element
+
+    Public Component_Prototype_Ref As Guid
+    Public OS_Operation_Ref As Guid
+    Public Priority As UInteger
+
+    Public Const Metaclass_Name As String = "Call_OS_Operation"
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode,
+            component_ref As Guid,
+            operation_ref As Guid,
+            priority As UInteger)
+        MyBase.New(name, description, owner, parent_node)
+        Me.Component_Prototype_Ref = component_ref
+        Me.OS_Operation_Ref = operation_ref
+        Me.Priority = priority
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Move_Me(new_parent As Software_Element)
+        CType(Me.Owner, Composition_Task).Calls.Remove(Me)
+        CType(new_parent, Composition_Task).Calls.Add(Me)
+    End Sub
+
+    Protected Overrides Sub Remove_Me()
+        Me.Node.Remove()
+        CType(Me.Owner, Composition_Task).Calls.Remove(Me)
+    End Sub
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Metaclass_Name
+    End Function
+
+    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
+        Return TypeOf parent Is Composition_Task
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for contextual menu
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Sub Edit()
+        Dim edition_form As New Call_OS_Operation_Form(
+            Element_Form.E_Form_Kind.EDITION_FORM,
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            CType(Me.Owner.Get_Owner(), Composition).Parts,
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Component_Prototype_Ref),
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.OS_Operation_Ref),
+            Me.Priority.ToString)
+        Dim edition_form_result As DialogResult = edition_form.ShowDialog()
+        If edition_form_result = DialogResult.OK Then
+            Me.Name = edition_form.Get_Element_Name()
+            Me.Node.Text = Me.Name
+            Me.Description = edition_form.Get_Element_Description()
+            Me.Component_Prototype_Ref = edition_form.Get_Component_Prototype_Identifier()
+            Me.OS_Operation_Ref = edition_form.Get_OS_Operation_Identifier()
+            Me.Priority = edition_form.Get_Priority()
+            Me.Update_Views()
+        End If
+    End Sub
+
+    Public Overrides Sub View()
+        Dim view_form As New Call_OS_Operation_Form(
+            Element_Form.E_Form_Kind.VIEW_FORM,
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            CType(Me.Owner.Get_Owner(), Composition).Parts,
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.Component_Prototype_Ref),
+            Me.Get_Elmt_Name_From_Proj_By_Id(Me.OS_Operation_Ref),
+            Me.Priority.ToString)
+        Dim edition_form_result As DialogResult = view_form.ShowDialog()
+    End Sub
 
 End Class

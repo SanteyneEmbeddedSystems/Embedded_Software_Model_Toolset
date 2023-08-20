@@ -176,6 +176,10 @@ Public MustInherit Class Software_Element
         Return Me.Get_Project().Get_All_Component_Types()
     End Function
 
+    Public Function Get_Owner() As Software_Element
+        Return Me.Owner
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for tree view management

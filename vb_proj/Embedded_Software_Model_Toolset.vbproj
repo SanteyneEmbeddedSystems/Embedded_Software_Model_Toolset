@@ -114,6 +114,9 @@
     <Compile Include="Context_Menus\SWCT_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Context_Menus\Task_Context_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Context_Menus\Top_Package_Writable_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -127,6 +130,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Application\ESMT_Main_Window.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Call_OS_Operation_Form.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Forms\Component_Prototype_Form.vb">
@@ -287,6 +293,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Grey_Object_With_Ports.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Grey_Cross.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
