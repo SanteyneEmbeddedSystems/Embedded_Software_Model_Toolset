@@ -74,11 +74,8 @@ Public Class Client_Server_Interface
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Function Get_Children() As List(Of Software_Element)
-        If Me.Children_Is_Computed = False Then
-            Me.Children_Is_Computed = True
-            Me.Children.AddRange(Me.Operations)
-        End If
+    Protected Overrides Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
+        Me.Children.AddRange(Me.Operations)
         Return Me.Children
     End Function
 
@@ -303,11 +300,8 @@ Public Class Client_Server_Operation
         Return Client_Server_Operation.Metaclass_Name
     End Function
 
-    Protected Overrides Function Get_Children() As List(Of Software_Element)
-        If Me.Children_Is_Computed = False Then
-            Me.Children_Is_Computed = True
-            Me.Children.AddRange(Me.Parameters)
-        End If
+    Protected Overrides Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
+        Me.Children.AddRange(Me.Parameters)
         Return Me.Children
     End Function
 
@@ -515,11 +509,8 @@ Public Class Event_Interface
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Function Get_Children() As List(Of Software_Element)
-        If Me.Children_Is_Computed = False Then
-            Me.Children_Is_Computed = True
-            Me.Children.AddRange(Me.Parameters)
-        End If
+    Protected Overrides Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
+        Me.Children.AddRange(Me.Parameters)
         Return Me.Children
     End Function
 

@@ -36,14 +36,11 @@ Public Class Component_Type
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Function Get_Children() As List(Of Software_Element)
-        If Me.Children_Is_Computed = False Then
-            Me.Children_Is_Computed = True
-            Me.Children.AddRange(Me.Configurations)
-            Me.Children.AddRange(Me.Operations)
-            Me.Children.AddRange(Me.Provider_Ports)
-            Me.Children.AddRange(Me.Requirer_Ports)
-        End If
+    Protected Overrides Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
+        Me.Children.AddRange(Me.Configurations)
+        Me.Children.AddRange(Me.Operations)
+        Me.Children.AddRange(Me.Provider_Ports)
+        Me.Children.AddRange(Me.Requirer_Ports)
         Return Me.Children
     End Function
 

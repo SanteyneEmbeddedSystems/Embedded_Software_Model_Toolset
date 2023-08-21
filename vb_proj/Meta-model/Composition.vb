@@ -30,13 +30,10 @@
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Function Get_Children() As List(Of Software_Element)
-        If Me.Children_Is_Computed = False Then
-            Me.Children_Is_Computed = True
-            Me.Children.AddRange(Me.Parts)
-            Me.Children.AddRange(Me.Links)
-            Me.Children.AddRange(Me.Tasks)
-        End If
+    Protected Overrides Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
+        Me.Children.AddRange(Me.Parts)
+        Me.Children.AddRange(Me.Links)
+        Me.Children.AddRange(Me.Tasks)
         Return Me.Children
     End Function
 
@@ -655,11 +652,8 @@ Public Class Composition_Task
     ' Methods from Software_Element
     ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Function Get_Children() As List(Of Software_Element)
-        If Me.Children_Is_Computed = False Then
-            Me.Children_Is_Computed = True
-            Me.Children.AddRange(Me.Calls)
-        End If
+    Protected Overrides Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
+        Me.Children.AddRange(Me.Calls)
         Return Me.Children
     End Function
 

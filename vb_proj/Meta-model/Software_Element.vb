@@ -11,7 +11,6 @@ Public MustInherit Class Software_Element
 
     Protected Owner As Software_Element = Nothing
     Protected Children As New List(Of Software_Element)
-    Protected Children_Is_Computed As Boolean = False
 
     Public Const NB_CHARS_MAX_FOR_SYMBOL As Integer = 32
     Protected Shared Valid_Symbol_Regex As String =
@@ -71,7 +70,7 @@ Public MustInherit Class Software_Element
     Public MustOverride Function Get_Metaclass_Name() As String
 
     ' Shall be overridden by all non-leaf software elements
-    Protected Overridable Function Get_Children() As List(Of Software_Element)
+    Protected Overridable Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
         Return Nothing
     End Function
 
@@ -87,7 +86,7 @@ Public MustInherit Class Software_Element
             Me.Node.ContextMenuStrip = Software_Element.Read_Only_Context_Menu
         End If
         Me.Get_Project().Add_Element_To_Project(Me)
-        Dim children As List(Of Software_Element) = Me.Get_Children()
+        Dim children As List(Of Software_Element) = Me.Compute_Children_For_Post_Treat()
         If Not IsNothing(children) Then
             For Each child In children
                 child.Owner = Me
@@ -98,7 +97,7 @@ Public MustInherit Class Software_Element
 
     Public Function Get_Children_Name() As List(Of String)
         Dim children_name As New List(Of String)
-        Dim children As List(Of Software_Element) = Me.Get_Children()
+        Dim children As List(Of Software_Element) = Me.Children
         If Not IsNothing(children) Then
             For Each child In children
                 children_name.Add(child.Name)

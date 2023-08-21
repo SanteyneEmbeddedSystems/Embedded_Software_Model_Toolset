@@ -912,11 +912,8 @@ Public Class Record_Type
         Return Record_Type.Context_Menu
     End Function
 
-    Protected Overrides Function Get_Children() As List(Of Software_Element)
-        If Me.Children_Is_Computed = False Then
-            Me.Children_Is_Computed = True
-            Me.Children.AddRange(Me.Fields)
-        End If
+    Protected Overrides Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
+        Me.Children.AddRange(Me.Fields)
         Return Me.Children
     End Function
 
