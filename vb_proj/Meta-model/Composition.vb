@@ -613,6 +613,16 @@ Public Class Connector
         view_form.ShowDialog()
     End Sub
 
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        ' Do not call MyBase implementation of Check_Own_Consistency
+        ' Name pattern is notthe same
+    End Sub
+
 End Class
 
 
@@ -803,6 +813,16 @@ Public Class Call_OS_Operation
             Me.Get_Elmt_Name_From_Proj_By_Id(Me.OS_Operation_Ref),
             Me.Priority.ToString)
         Dim edition_form_result As DialogResult = view_form.ShowDialog()
+    End Sub
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        ' Do not call MyBase implementation of Check_Own_Consistency
+        ' Name pattern is notthe same
     End Sub
 
 End Class

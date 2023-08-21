@@ -512,6 +512,20 @@ Public MustInherit Class Port
         Return "Interface"
     End Function
 
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        ' Do not call MyBase implementation of Check_Own_Consistency
+        ' Description is not mandatory for a port
+        Dim name_pattern_check As New Consistency_Check_Report_Item(Me, Name_Pattern_Rule)
+        report.Add_Item(name_pattern_check)
+        name_pattern_check.Set_Compliance(Is_Symbol_Valid(Me.Name))
+    End Sub
+
+
 End Class
 
 

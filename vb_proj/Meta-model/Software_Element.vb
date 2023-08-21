@@ -20,7 +20,7 @@ Public MustInherit Class Software_Element
     Protected Shared ReadOnly Read_Only_Context_Menu As New Read_Only_Context_Menu
     Private Shared ReadOnly Leaf_Context_Menu As New Leaf_Context_Menu
 
-    Private Shared ReadOnly Name_Rule As New Modeling_Rule(
+    Protected Shared ReadOnly Name_Pattern_Rule As New Modeling_Rule(
         "Name_Pattern",
         "Name shall match " & Valid_Symbol_Regex)
     Private Shared ReadOnly Brother_Rule As New Modeling_Rule(
@@ -401,7 +401,7 @@ Public MustInherit Class Software_Element
 
     Protected Overridable Sub Check_Own_Consistency(report As Consistency_Check_Report)
 
-        Dim name_check As New Consistency_Check_Report_Item(Me, Software_Element.Name_Rule)
+        Dim name_check As New Consistency_Check_Report_Item(Me, Software_Element.Name_Pattern_Rule)
         report.Add_Item(name_check)
         name_check.Set_Compliance(Software_Element.Is_Symbol_Valid(Me.Name))
 
