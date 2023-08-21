@@ -199,10 +199,11 @@ Public Class Array_Type
 
     Public Overrides Function Find_Needed_Elements() As List(Of Classifier)
         Me.Needed_Elements.Clear()
-        Dim data_type As Type
-        data_type = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref), Type)
-        If Not IsNothing(data_type) Then
-            Me.Needed_Elements.Add(data_type)
+        Dim referenced_element As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref)
+        If Not IsNothing(referenced_element) Then
+            If TypeOf referenced_element Is Type Then
+                Me.Needed_Elements.Add(CType(referenced_element, Classifier))
+            End If
         End If
         Return Me.Needed_Elements
     End Function
@@ -379,13 +380,19 @@ Public Class Enumerated_Type
 
     Public Const Metaclass_Name As String = "Enumerated_Type"
 
-    Private Shared ReadOnly Nb_Enumerals As New Modeling_Rule(
-        "Number_Of_Enumerals",
+    Private Shared ReadOnly Enumerals_Rule As New Modeling_Rule(
+        "Enumerals",
         "Shall aggregate at least two Enumerals.")
 
-    Private Shared ReadOnly Unique_Enumeral_Name As New Modeling_Rule(
+    Private Shared ReadOnly Unique_Enumeral_Name_Rule As New Modeling_Rule(
         "Unique_Enumeral_Name",
-        "Name of Enulerals shall be unique.")
+        "Name of Enumerals shall be unique.")
+
+    Private Shared Valid_Enumeral_Name_Regex As String =
+        "^[A-Z][A-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
+    Private Shared ReadOnly Enumeral_Name_Rule As New Modeling_Rule(
+        "Enumeral_Name",
+        "Name shall match " & Valid_Enumeral_Name_Regex)
 
 
     Public Class Enumeral
@@ -558,14 +565,14 @@ Public Class Enumerated_Type
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         MyBase.Check_Own_Consistency(report)
 
-        Dim nb_enum_check As New _
-            Consistency_Check_Report_Item(Me, Enumerated_Type.Nb_Enumerals)
-        report.Add_Item(nb_enum_check)
-        nb_enum_check.Set_Compliance(Me.Enumerals.Count >= 2)
+        Dim enumerals_check As New _
+            Consistency_Check_Report_Item(Me, Enumerated_Type.Enumerals_Rule)
+        report.Add_Item(enumerals_check)
+        enumerals_check.Set_Compliance(Me.Enumerals.Count >= 2)
 
-        Dim enum_name_check As New _
-            Consistency_Check_Report_Item(Me, Enumerated_Type.Unique_Enumeral_Name)
-        report.Add_Item(enum_name_check)
+        Dim unique_enumeral_name_check As New _
+            Consistency_Check_Report_Item(Me, Enumerated_Type.Unique_Enumeral_Name_Rule)
+        report.Add_Item(unique_enumeral_name_check)
         Dim is_compliant As Boolean = True
         Dim enumeral_name_list As New List(Of String)
         For Each enumeral In Me.Enumerals
@@ -576,7 +583,23 @@ Public Class Enumerated_Type
                 Exit For
             End If
         Next
-        enum_name_check.Set_Compliance(is_compliant)
+        unique_enumeral_name_check.Set_Compliance(is_compliant)
+
+        Dim enumeral_name_check As New _
+            Consistency_Check_Report_Item(Me, Enumerated_Type.Enumeral_Name_Rule)
+        report.Add_Item(enumeral_name_check)
+        Dim enumerals_name_are_ok As Boolean = True
+        Dim message As String = "Wrong Name(s) :"
+        For Each enumeral In Me.Enumerals
+            If Not Regex.IsMatch(enumeral.Name, Enumerated_Type.Valid_Enumeral_Name_Regex) Then
+                enumerals_name_are_ok = False
+                message &= " " & enumeral.Name
+            End If
+        Next
+        If Not enumerals_name_are_ok Then
+            enumeral_name_check.Set_Message(message)
+        End If
+        enumeral_name_check.Set_Compliance(enumerals_name_are_ok)
 
     End Sub
 
