@@ -618,22 +618,23 @@ Public Class Fixed_Point_Type
     Public Const Metaclass_Name As String = "Fixed_Point_Type"
 
     Private Const Zero_Decimal_Regex_Str As String = "^0+[,|.]?0*$"
-    Private Const Valid_Decimal_Regex_Str As String = "\d+[.|,]?\d*"
-    Private Shared ReadOnly Valid_FPT_Attr_Regex As New _
-        Regex("^(?<Num>" & Valid_Decimal_Regex_Str &
-            ")(\/(?<Den>" & Valid_Decimal_Regex_Str & "))?$")
+    Private Shared ReadOnly Valid_Decimal_Ratio_Regex As New _
+        Regex("^(?<Sign>-?)(?<Num>\d+[.|,]?\d*)(\/(?<Den>\d+[.|,]?\d*))?$")
+
+    Private Shared ReadOnly Valid_Power_Two_Regex As New _
+        Regex("^(?<Sign>-?)2\^(?<Power_Sign>-?)(?<Power>\d+)$")
 
     Private Shared ReadOnly Unit_Rule As New Modeling_Rule(
-        "Unit_Mandatory",
+        "Unit",
         "Unit shall be set.")
     Private Shared ReadOnly Base_Type_Rule As New Modeling_Rule(
-        "Base_Type_Is_Integer",
+        "Base_Type",
         "Referenced type shall be a Basic_Integer_Type.")
-    Private Shared ReadOnly Resol_Positive_Dec As New Modeling_Rule(
-        "Resolution_Strictly_Positive",
-        "Resolution shall be a positive decimal value.")
-    Private Shared ReadOnly Offset_Dec As New Modeling_Rule(
-        "Offset_Decimal",
+    Private Shared ReadOnly Resolution_Rule As New Modeling_Rule(
+        "Resolution",
+        "Resolution shall be a strictly positive decimal value.")
+    Private Shared ReadOnly Offset_Rule As New Modeling_Rule(
+        "Offset",
         "Offset shall be a decimal value.")
 
 
@@ -682,15 +683,31 @@ Public Class Fixed_Point_Type
     Public Shared Function Is_Resolution_Valid(resolution_str As String) As Boolean
         Dim result As Boolean = False
         Dim regex_match As Match
-        regex_match = Fixed_Point_Type.Valid_FPT_Attr_Regex.Match(resolution_str)
+        regex_match = Fixed_Point_Type.Valid_Decimal_Ratio_Regex.Match(resolution_str)
         If regex_match.Success = True Then
+            result = True
+            ' Resolution is not valid if it is = 0
             Dim num_str As String = regex_match.Groups.Item("Num").Value
-            If Not Regex.IsMatch(num_str, Fixed_Point_Type.Zero_Decimal_Regex_Str) Then
-                result = True
+            If Regex.IsMatch(num_str, Fixed_Point_Type.Zero_Decimal_Regex_Str) Then
+                result = False
             End If
-            If Not IsNothing(regex_match.Groups.Item("Den")) Then
+            ' Resolution is not valid if it is < 0
+            If regex_match.Groups.Item("Sign").Value = "-" Then
+                result = False
+            End If
+            ' Resolution is not valid if denominator is 0
+            If regex_match.Groups.Item("Den").Success = True Then
                 Dim den_str As String = regex_match.Groups.Item("Den").Value
                 If Regex.IsMatch(den_str, Fixed_Point_Type.Zero_Decimal_Regex_Str) Then
+                    result = False
+                End If
+            End If
+        Else
+            regex_match = Fixed_Point_Type.Valid_Power_Two_Regex.Match(resolution_str)
+            If regex_match.Success = True Then
+                result = True
+                ' Resolution is not valid if it is < 0
+                If regex_match.Groups.Item("Sign").Value = "-" Then
                     result = False
                 End If
             End If
@@ -699,9 +716,9 @@ Public Class Fixed_Point_Type
     End Function
 
     Public Shared Function Is_Offset_Valid(offset_str As String) As Boolean
-        Dim result As Boolean = False
+        Dim result As Boolean
         Dim regex_match As Match
-        regex_match = Fixed_Point_Type.Valid_FPT_Attr_Regex.Match(offset_str)
+        regex_match = Fixed_Point_Type.Valid_Decimal_Ratio_Regex.Match(offset_str)
         If regex_match.Success = True Then
             result = True
             If Not IsNothing(regex_match.Groups.Item("Den")) Then
@@ -710,6 +727,8 @@ Public Class Fixed_Point_Type
                     result = False
                 End If
             End If
+        Else
+            result = Fixed_Point_Type.Valid_Power_Two_Regex.Match(offset_str).Success
         End If
         Return result
     End Function
@@ -853,15 +872,14 @@ Public Class Fixed_Point_Type
 
         Dim base_type_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Base_Type_Rule)
         report.Add_Item(base_type_check)
-        Dim basic_type As Software_Element =
-            Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref)
-        base_type_check.Set_Compliance(TypeOf basic_type Is Basic_Type)
+        Dim referenced_type As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref)
+        base_type_check.Set_Compliance(TypeOf referenced_type Is Basic_Integer_Type)
 
-        Dim resol_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Resol_Positive_Dec)
+        Dim resol_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Resolution_Rule)
         report.Add_Item(resol_check)
         resol_check.Set_Compliance(Fixed_Point_Type.Is_Resolution_Valid(Me.Resolution))
 
-        Dim offset_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Offset_Dec)
+        Dim offset_check = New Consistency_Check_Report_Item(Me, Fixed_Point_Type.Offset_Rule)
         report.Add_Item(offset_check)
         offset_check.Set_Compliance(Fixed_Point_Type.Is_Offset_Valid(Me.Offset))
 
