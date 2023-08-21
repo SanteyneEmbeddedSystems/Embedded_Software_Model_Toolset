@@ -47,7 +47,9 @@ Public Class Cardinality
             Me.Cardinality_Is_Valid = True
             If Me.Text = "*" Then
                 Me.Value_List.Add(Cardinality.ANY)
+                Me.Value_List.Add(Cardinality.ANY)
             Else
+                Me.Value_List.Add(CUInt(Me.Text))
                 Me.Value_List.Add(CUInt(Me.Text))
             End If
         Else
@@ -69,6 +71,7 @@ Public Class Cardinality
                 ' Test bounds
                 If lower_bound > upper_bound Then
                     Me.Cardinality_Is_Valid = False
+                    Me.Text = INVALID
                 Else
                     Me.Cardinality_Is_Valid = True
                     Me.Value_List.Add(lower_bound)
@@ -81,9 +84,22 @@ Public Class Cardinality
                     For Each sub_str In Me.Text.Split(","c)
                         Me.Value_List.Add(CUInt(sub_str))
                     Next
+                    Dim list_is_increasing As Boolean = True
+                    Dim prev_value As Integer = -1
+                    For Each value In Me.Value_List
+                        If prev_value > value Then
+                            list_is_increasing = False
+                            Exit For
+                        End If
+                        prev_value = CInt(value)
+                    Next
+                    If list_is_increasing = False Then
+                        Me.Text = INVALID
+                        Me.Cardinality_Is_Valid = False
+                    End If
                 Else
-                    Me.Text = INVALID
-                    Me.Cardinality_Is_Valid = False
+                    Me.Text= INVALID
+                    Me.Cardinality_Is_Valid= False
                 End If
             End If
         End If
@@ -93,14 +109,22 @@ Public Class Cardinality
         If Not Me.Is_Computed Then
             Me.Compute_From_Text()
         End If
-        Return Me.Value_List.First()
+        If Me.Cardinality_Is_Valid Then
+            Return Me.Value_List.First()
+        Else
+            Return 0
+        End If
     End Function
 
     Public Function Get_Maximum() As UInteger
         If Not Me.Is_Computed Then
             Me.Compute_From_Text()
         End If
-        Return Me.Value_List.Last()
+        If Me.Cardinality_Is_Valid Then
+            Return Me.Value_List.Last()
+        Else
+            Return 0
+        End If
     End Function
 
     Public Function Is_Cardinality_Valid() As Boolean
@@ -115,7 +139,7 @@ Public Class Cardinality
             Me.Compute_From_Text()
         End If
         If Me.Cardinality_Is_Valid Then
-            Return Me.Value_List.First() = 1
+            Return Me.Value_List.First() = 1 And Me.Value_List.Last() = 1
         Else
             Return False
         End If
@@ -126,7 +150,7 @@ Public Class Cardinality
             Me.Compute_From_Text()
         End If
         If Me.Cardinality_Is_Valid Then
-            Return Me.Value_List.First() = ANY
+            Return Me.Value_List.First() = ANY And Me.Value_List.Last() = ANY
         Else
             Return False
         End If
