@@ -52,11 +52,17 @@
       <Identifier>f49b3ace-96bc-463c-8444-5436f4a801f1</Identifier>
     </Basic_Integer_Type>
 
-    <Basic_Integer_Type>
+    <Basic_Carrier_Type>
       <Name>byte</Name>
       <Description>Pre-defined basic data type which allows to model a data stored on 8 bits, without arithmetic purposes.</Description>
       <Identifier>97d8da02-29ed-4ba2-9d78-07fff6147434</Identifier>
-    </Basic_Integer_Type>
+    </Basic_Carrier_Type>
+
+    <Basic_Carrier_Type>
+      <Name>word</Name>
+      <Description>Pre-defined basic data type which allows to model a data stored on 16 bits, without arithmetic purposes.</Description>
+      <Identifier>c8b4d816-ce0c-424d-98c3-a7f91dd1dd88</Identifier>
+    </Basic_Carrier_Type>
 
     <Basic_Boolean_Type>
       <Name>boolean</Name>
@@ -64,27 +70,15 @@
       <Identifier>5df8e979-be4c-4790-87a7-f8ee053c4162</Identifier>
     </Basic_Boolean_Type>
 
-    <Basic_Floating_Point_Type>
-      <Name>fp32</Name>
-      <Description></Description>
-      <Identifier>1045feea-03f6-4690-a89c-33134ec24f54</Identifier>
-    </Basic_Floating_Point_Type>
-
-    <Basic_Floating_Point_Type>
-      <Name>fp64</Name>
-      <Description></Description>
-      <Identifier>d74c7bfa-9e57-443f-ab99-96ab3cdcce0b</Identifier>
-    </Basic_Floating_Point_Type>
-
     <Basic_Character_Type>
       <Name>character_string</Name>
-      <Description></Description>
+      <Description>Pre-defined basic data type which allows to model a data representing a string of characters.</Description>
       <Identifier>573d6c92-f0f8-4fb0-8530-7a37cf4ed0ac</Identifier>
     </Basic_Character_Type>
 
     <Basic_Character_Type>
       <Name>character</Name>
-      <Description></Description>
+      <Description>Pre-defined basic data type which allows to model a data representing a character.</Description>
       <Identifier>b7e67188-4975-4207-bd33-9a8f25aff14a</Identifier>
     </Basic_Character_Type>
 

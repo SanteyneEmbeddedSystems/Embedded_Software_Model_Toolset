@@ -120,16 +120,13 @@ Public Class Basic_Integer_Type
     Inherits Basic_Type
 End Class
 
+Public Class Basic_Carrier_Type
+    Inherits Basic_Type
+End Class
 
 Public Class Basic_Boolean_Type
     Inherits Basic_Type
 End Class
-
-
-Public Class Basic_Floating_Point_Type
-    Inherits Basic_Type
-End Class
-
 
 Public Class Basic_Character_Type
     Inherits Basic_Type
