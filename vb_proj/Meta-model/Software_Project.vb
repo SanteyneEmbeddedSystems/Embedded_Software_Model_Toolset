@@ -295,17 +295,30 @@ Public Class Software_Project
     End Sub
 
     Public Sub Check_Model()
-        Dim report As New Consistency_Check_Report(Me.Name)
-        For Each pkg In Me.Top_Level_Packages_List
-            pkg.Check_Consistency(report)
-        Next
-        Dim report_file_path As String
-        report_file_path = report.Generate_Report(
-            E_Report_File_Format.CSV,
-            Path.GetDirectoryName(Me.Xml_File_Path),
+        Dim possible_formats As String() = [Enum].GetNames(GetType(E_Report_File_Format))
+        Dim check_form As New Check_Model_Form(
+            possible_formats,
+            possible_formats(0),
+            True,
             False,
-            False)
-        Process.Start(report_file_path)
+            Path.GetDirectoryName(Me.Xml_File_Path))
+        Dim check_form_result = check_form.ShowDialog()
+        If check_form_result = DialogResult.OK Then
+            Dim format As E_Report_File_Format
+            [Enum].TryParse(check_form.Get_Report_Format(), format)
+
+            Dim report As New Consistency_Check_Report(Me.Name)
+            For Each pkg In Me.Top_Level_Packages_List
+                pkg.Check_Consistency(report)
+            Next
+            Dim report_file_path As String
+            report_file_path = report.Generate_Report(
+                format,
+                check_form.Get_Report_Directory(),
+                check_form.Are_Only_Not_Compliant_Showed(),
+                check_form.Are_Rules_Description_Added())
+            Process.Start(report_file_path)
+        End If
     End Sub
 
 

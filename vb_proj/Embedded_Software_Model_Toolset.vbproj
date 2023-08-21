@@ -135,6 +135,9 @@
     <Compile Include="Forms\Call_OS_Operation_Form.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Forms\Check_Model_Form.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Forms\Component_Prototype_Form.vb">
       <SubType>Form</SubType>
     </Compile>
