@@ -147,11 +147,20 @@ Public Class Array_Type
     Public Const Metaclass_Name As String = "Array_Type"
 
     Private Shared ReadOnly Base_Type_Rule As New Modeling_Rule(
-        "Base_Type_Defined",
-        "Shall reference a base Data_Type.")
-    Private Shared ReadOnly Base_Not_Self_Rule As New Modeling_Rule(
+        "Base_Type",
+        "Shall reference one base Type.")
+    Private Shared ReadOnly Array_Base_Not_Self_Rule As New Modeling_Rule(
         "Array_Base_Not_Self",
         "Shall not reference itself.")
+    Private Shared ReadOnly First_Dimension_Used_Rule As New Modeling_Rule(
+        "First_Dimension_Used",
+        "First_Dimension shall not be 1.")
+    Private Shared ReadOnly Third_Dimension_Used_Rule As New Modeling_Rule(
+        "Third_Dimension_Used",
+        "Third_Dimension can be used ony if Second_Dimension is not 1.")
+    Private Shared ReadOnly Dimensions_Not_Zero_Rule As New Modeling_Rule(
+        "Dimensions_Not_Zero",
+        "Dimensions can not be 0 or *.")
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -322,16 +331,47 @@ Public Class Array_Type
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         MyBase.Check_Own_Consistency(report)
 
-        Dim base_type_check =
-            New Consistency_Check_Report_Item(Me, Array_Type.Base_Type_Rule)
+        Dim base_type_check = New Consistency_Check_Report_Item(Me, Array_Type.Base_Type_Rule)
         report.Add_Item(base_type_check)
-        base_type_check.Set_Compliance(Me.Base_Type_Ref <> Guid.Empty)
+        Dim base_type As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref)
+        If Not IsNothing(base_type) Then
+            If TypeOf base_type Is Type Then
+                base_type_check.Set_Compliance(True)
+            End If
+        End If
 
-        Dim base_not_self_check =
-            New Consistency_Check_Report_Item(Me, Array_Type.Base_Not_Self_Rule)
-        report.Add_Item(base_not_self_check)
-        base_not_self_check.Set_Compliance(Me.Base_Type_Ref <> Me.Identifier)
+        Dim array_base_not_self_check =
+            New Consistency_Check_Report_Item(Me, Array_Type.Array_Base_Not_Self_Rule)
+        report.Add_Item(array_base_not_self_check)
+        array_base_not_self_check.Set_Compliance(Me.Base_Type_Ref <> Me.Identifier)
 
+        Dim first_dimension_used_check =
+            New Consistency_Check_Report_Item(Me, Array_Type.First_Dimension_Used_Rule)
+        report.Add_Item(first_dimension_used_check)
+        first_dimension_used_check.Set_Compliance(Not Me.First_Dimension.Is_One())
+
+        Dim third_dimension_used_check =
+            New Consistency_Check_Report_Item(Me, Array_Type.Third_Dimension_Used_Rule)
+        report.Add_Item(third_dimension_used_check)
+        If Not Me.Third_Dimension.Is_One() Then
+            If Not Me.Second_Dimension.Is_One() Then
+                third_dimension_used_check.Set_Compliance(True)
+            End If
+        Else
+            third_dimension_used_check.Set_Compliance(True)
+        End If
+
+        Dim dimensions_not_zero_rule_check =
+            New Consistency_Check_Report_Item(Me, Array_Type.Dimensions_Not_Zero_Rule)
+        report.Add_Item(dimensions_not_zero_rule_check)
+        If Not (Me.First_Dimension.Get_Minimum() = 0 _
+            Or Me.Second_Dimension.Get_Minimum() = 0 _
+            Or Me.Third_Dimension.Get_Minimum() = 0 _
+            Or Me.First_Dimension.Is_Any() _
+            Or Me.Second_Dimension.Is_Any() _
+            Or Me.Third_Dimension.Is_Any()) Then
+            dimensions_not_zero_rule_check.Set_Compliance(True)
+        End If
     End Sub
 
 End Class

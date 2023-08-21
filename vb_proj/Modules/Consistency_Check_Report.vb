@@ -233,6 +233,7 @@ Public Class Consistency_Check_Report_Item
     Public Sub New(element As Software_Element, rule As Modeling_Rule)
         Me.Element = element
         Me.Rule = rule
+        Me.Rule_Complied = False
     End Sub
 
     Public Sub Write_In_CSV(
