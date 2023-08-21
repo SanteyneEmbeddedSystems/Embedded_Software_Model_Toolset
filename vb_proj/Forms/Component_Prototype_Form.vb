@@ -8,7 +8,6 @@
         default_uuid As String,
         default_name As String,
         default_description As String,
-        forbidden_name_list As List(Of String),
         default_ref_element_path As String,
         ref_element_list As List(Of Software_Element),
         default_config_data As DataTable)
@@ -19,7 +18,6 @@
             default_uuid,
             default_name,
             default_description,
-            forbidden_name_list,
             "Component_Type",
             default_ref_element_path,
             ref_element_list)
@@ -84,12 +82,14 @@
 
     Private Sub Ref_Swct_Changed() Handles Referenced_Element_ComboBox.SelectedIndexChanged
         Dim config_table As DataTable
-        Dim swct As Component_Type = CType(Me.Get_Ref_Element(), Component_Type)
-        config_table = Component_Prototype.Create_Config_Data_Table(swct)
-        If Not IsNothing(Me.Config_Values_Table_View) Then
-            Me.Config_Values_Table_View.DataSource = config_table
-            Me.Config_Values_Table_View.Columns(0).ReadOnly = True
-            Me.Config_Values_Table_View.Columns(2).Visible = False
+        Dim swct As Component_Type = CType(Get_Ref_Element(), Component_Type)
+        If Not IsNothing(swct) Then
+            config_table = Component_Prototype.Create_Config_Data_Table(swct)
+            If Not IsNothing(Me.Config_Values_Table_View) Then
+                Me.Config_Values_Table_View.DataSource = config_table
+                Me.Config_Values_Table_View.Columns(0).ReadOnly = True
+                Me.Config_Values_Table_View.Columns(2).Visible = False
+            End If
         End If
     End Sub
 

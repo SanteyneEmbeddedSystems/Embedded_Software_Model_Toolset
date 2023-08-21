@@ -226,7 +226,6 @@ Public Class Array_Type
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Me.Get_Forbidden_Name_List(),
             Me.Get_Elmt_Path_From_Proj_By_Id(Me.Base_Type_Ref),
             type_list,
             Me.First_Dimension.Get_Value(),
@@ -243,7 +242,7 @@ Public Class Array_Type
             Me.First_Dimension = New Cardinality(edition_form.Get_First_Dimension())
             Me.Second_Dimension = New Cardinality(edition_form.Get_Second_Dimension())
             Me.Third_Dimension = New Cardinality(edition_form.Get_Third_Dimension())
-            Me.Base_Type_Ref = edition_form.Get_Ref_Element().Identifier
+            Me.Base_Type_Ref = edition_form.Get_Ref_Element_Identifier()
             Me.Update_Views()
         End If
 
@@ -255,7 +254,6 @@ Public Class Array_Type
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Nothing, ' Forbidden name list, useless for View
             Me.Get_Elmt_Path_From_Proj_By_Id(Me.Base_Type_Ref),
             Nothing, ' Useless for View
             Me.First_Dimension.Get_Value(),
@@ -475,7 +473,6 @@ Public Class Enumerated_Type
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
-            Me.Get_Forbidden_Name_List(),
             enumerals_table)
 
         Dim edit_result As DialogResult
@@ -506,7 +503,6 @@ Public Class Enumerated_Type
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
-            Nothing, ' forbidden name list
             enumerals_table)
         view_form.ShowDialog()
     End Sub
@@ -734,7 +730,6 @@ Public Class Fixed_Point_Type
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Me.Get_Forbidden_Name_List(),
             Me.Get_Referenced_Type(True),
             Me.Get_All_Basic_Int_From_Project(),
             Me.Unit,
@@ -748,7 +743,7 @@ Public Class Fixed_Point_Type
             Me.Name = edit_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Base_Type_Ref = edit_form.Get_Ref_Element().Identifier
+            Me.Base_Type_Ref = edit_form.Get_Ref_Element_Identifier()
             Me.Unit = edit_form.Get_Unit()
             Me.Resolution = edit_form.Get_Resolution()
             Me.Offset = edit_form.Get_Offset()
@@ -764,7 +759,6 @@ Public Class Fixed_Point_Type
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Nothing, ' Forbidden name list, useless for View
             Get_Referenced_Type(True),
             Nothing, ' Useless for View
             Me.Unit,
@@ -938,7 +932,6 @@ Public Class Record_Type
             "",
             Record_Field.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "Type",
             "",
             Me.Get_All_Types_From_Project())
@@ -951,7 +944,7 @@ Public Class Record_Type
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                creation_form.Get_Ref_Element().Identifier)
+                creation_form.Get_Ref_Element_Identifier())
             Me.Fields.Add(new_field)
             Me.Children.Add(new_field)
             Me.Get_Project().Add_Element_To_Project(new_field)

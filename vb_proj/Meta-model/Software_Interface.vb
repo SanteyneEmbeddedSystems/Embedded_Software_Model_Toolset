@@ -122,8 +122,7 @@ Public Class Client_Server_Interface
             Client_Server_Operation.Metaclass_Name,
             "",
             Client_Server_Operation.Metaclass_Name,
-            "",
-            Me.Get_Children_Name())
+            "")
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
@@ -324,7 +323,6 @@ Public Class Client_Server_Operation
             "",
             Operation_Parameter.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "",
             Me.Get_All_Types_From_Project(),
             Operation_Parameter.Directions,
@@ -342,7 +340,7 @@ Public Class Client_Server_Operation
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                creation_form.Get_Ref_Element().Identifier,
+                creation_form.Get_Ref_Element_Identifier(),
                 direction)
 
             Me.Parameters.Add(new_param)
@@ -431,7 +429,6 @@ Public Class Operation_Parameter
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Me.Get_Forbidden_Name_List(),
             Me.Get_Referenced_Element_Path(),
             Me.Get_Referenceable_Element_List(),
             Operation_Parameter.Directions,
@@ -446,7 +443,7 @@ Public Class Operation_Parameter
             Me.Name = edition_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edition_form.Get_Element_Description()
-            Me.Element_Ref = edition_form.Get_Ref_Element().Identifier
+            Me.Element_Ref = edition_form.Get_Ref_Element_Identifier()
             [Enum].TryParse(edition_form.Get_Direction(), Me.Direction)
 
             Me.Update_Views()
@@ -460,7 +457,6 @@ Public Class Operation_Parameter
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Nothing, ' Forbidden name list, useless for View
             Me.Get_Referenced_Element_Path(),
             Nothing,
             Operation_Parameter.Directions,
@@ -567,7 +563,6 @@ Public Class Event_Interface
             "",
             Event_Parameter.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "Type",
             "",
             Me.Get_All_Types_From_Project())
@@ -581,7 +576,7 @@ Public Class Event_Interface
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                creation_form.Get_Ref_Element().Identifier)
+                creation_form.Get_Ref_Element_Identifier())
 
             Me.Parameters.Add(new_param)
             Me.Children.Add(new_param)

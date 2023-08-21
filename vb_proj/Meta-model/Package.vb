@@ -109,8 +109,7 @@ Public Class Package
             Package.Metaclass_Name,
             "",
             Package.Metaclass_Name,
-            "",
-            Me.Get_Children_Name())
+            "")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_pkg As New Package(
@@ -133,7 +132,6 @@ Public Class Package
             "",
             Array_Type.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "",
             Me.Get_All_Types_From_Project(),
             "2",
@@ -153,7 +151,7 @@ Public Class Package
                 New Cardinality(creation_form.Get_First_Dimension()),
                 New Cardinality(creation_form.Get_Second_Dimension()),
                 New Cardinality(creation_form.Get_Third_Dimension()),
-                creation_form.Get_Ref_Element().Identifier)
+                creation_form.Get_Ref_Element_Identifier())
 
             ' Add array type to its package and project
             Me.Types.Add(new_array_type)
@@ -179,7 +177,6 @@ Public Class Package
             "",
             Enumerated_Type.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             enumerals_table)
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
@@ -204,7 +201,6 @@ Public Class Package
             "",
             Fixed_Point_Type.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "",
             Me.Get_All_Basic_Int_From_Project(),
             "-",
@@ -220,7 +216,7 @@ Public Class Package
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                creation_form.Get_Ref_Element().Identifier,
+                creation_form.Get_Ref_Element_Identifier(),
                 creation_form.Get_Unit(),
                 creation_form.Get_Resolution(),
                 creation_form.Get_Offset())
@@ -240,8 +236,7 @@ Public Class Package
              Record_Type.Metaclass_Name,
              "",
              Record_Type.Metaclass_Name,
-             "",
-             Me.Get_Children_Name())
+             "")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_record As New Record_Type(
@@ -262,8 +257,7 @@ Public Class Package
              Client_Server_Interface.Metaclass_Name,
              "",
              Client_Server_Interface.Metaclass_Name,
-             "",
-             Me.Get_Children_Name())
+             "")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_cs_if As New Client_Server_Interface(
@@ -284,8 +278,7 @@ Public Class Package
              Event_Interface.Metaclass_Name,
              "",
              Event_Interface.Metaclass_Name,
-             "",
-             Me.Get_Children_Name())
+             "")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_ev_if As New Event_Interface(
@@ -306,8 +299,7 @@ Public Class Package
              Component_Type.Metaclass_Name,
              "",
              Component_Type.Metaclass_Name,
-             "",
-             Me.Get_Children_Name())
+             "")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_swct As New Component_Type(
@@ -328,8 +320,7 @@ Public Class Package
             Composition.Metaclass_Name,
             "",
             Composition.Metaclass_Name,
-            "",
-            Me.Get_Children_Name())
+            "")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_compo As New Composition(

@@ -23,6 +23,9 @@ Public MustInherit Class Software_Element
     Private Shared ReadOnly Name_Rule As New Modeling_Rule(
         "Name_Pattern",
         "Name shall match " & Valid_Symbol_Regex)
+    Private Shared ReadOnly Brother_Rule As New Modeling_Rule(
+        "Brother_Name",
+        "Elements aggregated by the same owner shall have a different name.")
 
     Protected Const SVG_MIN_CHAR_PER_LINE As Integer = NB_CHARS_MAX_FOR_SYMBOL
 
@@ -104,7 +107,7 @@ Public MustInherit Class Software_Element
         Return children_name
     End Function
 
-    Public Function Get_Forbidden_Name_List() As List(Of String)
+    Public Overridable Function Get_Forbidden_Name_List() As List(Of String)
         Dim forbidden_name_list As List(Of String)
         forbidden_name_list = Me.Owner.Get_Children_Name()
         forbidden_name_list.Remove(Me.Name)
@@ -257,8 +260,7 @@ Public MustInherit Class Software_Element
             Me.Get_Metaclass_Name(),
             Me.Identifier.ToString(),
             Me.Name,
-            Me.Description,
-            Me.Get_Forbidden_Name_List())
+            Me.Description)
         Dim edit_result As DialogResult
         edit_result = edit_form.ShowDialog()
         If edit_result = DialogResult.OK Then
@@ -289,8 +291,7 @@ Public MustInherit Class Software_Element
             Me.Get_Metaclass_Name(),
             Me.Identifier.ToString(),
             Me.Name,
-            Me.Description,
-            Nothing) ' forbidden name list
+            Me.Description)
         view_form.ShowDialog()
     End Sub
 
@@ -404,6 +405,11 @@ Public MustInherit Class Software_Element
         report.Add_Item(name_check)
         name_check.Set_Compliance(Software_Element.Is_Symbol_Valid(Me.Name))
 
+        Dim brother_check As New Consistency_Check_Report_Item(Me, Software_Element.Brother_Rule)
+        report.Add_Item(brother_check)
+        Dim brothers_name As List(Of String) = Me.Get_Forbidden_Name_List()
+        brother_check.Set_Compliance(Not brothers_name.Contains(Me.Name))
+
     End Sub
 
 End Class
@@ -489,7 +495,6 @@ Public MustInherit Class Software_Element_Wih_Reference
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Me.Get_Forbidden_Name_List(),
             Me.Get_Referenceable_Element_Kind(),
             Me.Get_Referenced_Element_Path(),
             Me.Get_Referenceable_Element_List())
@@ -503,7 +508,7 @@ Public MustInherit Class Software_Element_Wih_Reference
             Me.Name = edit_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Element_Ref = edit_form.Get_Ref_Element().Identifier
+            Me.Element_Ref = edit_form.Get_Ref_Element_Identifier()
 
             Me.Update_Views()
         End If
@@ -517,7 +522,6 @@ Public MustInherit Class Software_Element_Wih_Reference
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Nothing, ' Forbidden name list, useless for View
             Me.Get_Referenceable_Element_Kind(),
             Me.Get_Referenced_Element_Path(),
             Nothing)

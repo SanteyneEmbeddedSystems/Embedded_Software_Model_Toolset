@@ -72,6 +72,13 @@ Public Class Top_Level_Package
         Return ""
     End Function
 
+    Public Overrides Function Get_Forbidden_Name_List() As List(Of String)
+        Dim forbidden_name_list As List(Of String)
+        forbidden_name_list = Me.Project.Get_Children_Name()
+        forbidden_name_list.Remove(Me.Name)
+        Return forbidden_name_list
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Various method
@@ -283,16 +290,12 @@ Public Class Top_Level_Package
 
         Dim previous_name As String = Me.Name
 
-        Dim forbidden_name_list As List(Of String) = Me.Project.Get_Children_Name()
-        forbidden_name_list.Remove(Me.Name)
-
         Dim edit_form As New Recordable_Element_Form(
             Element_Form.E_Form_Kind.EDITION_FORM,
             Package.Metaclass_Name,
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            forbidden_name_list,
             my_directory,
             my_file_name,
             Top_Level_Package.Package_File_Extension)
@@ -324,7 +327,6 @@ Public Class Top_Level_Package
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Nothing,
             my_directory,
             my_file_name,
             Top_Level_Package.Package_File_Extension)

@@ -163,7 +163,6 @@ Public Class Software_Project
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Nothing,
             my_directory,
             my_file_name,
             Software_Project.Project_File_Extension)
@@ -192,7 +191,6 @@ Public Class Software_Project
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Nothing,
             my_directory,
             my_file_name,
             Software_Project.Project_File_Extension)
@@ -269,7 +267,6 @@ Public Class Software_Project
             "",
             Package.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             Path.GetDirectoryName(Me.Xml_File_Path),
             Package.Metaclass_Name,
             Top_Level_Package.Package_File_Extension)

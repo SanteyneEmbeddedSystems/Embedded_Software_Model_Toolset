@@ -8,7 +8,6 @@
             default_uuid As String,
             default_name As String,
             default_description As String,
-            forbidden_name_list As List(Of String),
             default_ref_type_path As String,
             ref_type_list As List(Of Software_Element),
             directions As String(),
@@ -20,7 +19,6 @@
             default_uuid,
             default_name,
             default_description,
-            forbidden_name_list,
             "Type",
             default_ref_type_path,
             ref_type_list)

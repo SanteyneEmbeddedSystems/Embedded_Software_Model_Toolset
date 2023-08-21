@@ -10,13 +10,13 @@ Public Class Recordable_Element_Form
 
     Private ReadOnly Element_File_Extension As String
 
+
     Public Sub New(
             form_kind As E_Form_Kind,
             element_metaclass_name As String,
             default_uuid As String,
             default_name As String,
             default_description As String,
-            forbidden_name_list As List(Of String),
             default_directory As String,
             default_file_name As String,
             file_extension As String)
@@ -26,8 +26,7 @@ Public Class Recordable_Element_Form
             element_metaclass_name,
             default_uuid,
             default_name,
-            default_description,
-            forbidden_name_list)
+            default_description)
 
         Me.Element_File_Extension = file_extension
 
@@ -110,9 +109,11 @@ Public Class Recordable_Element_Form
         If Me.Kind <> E_Form_Kind.CREATION_FORM Then
             Me.Set_My_Specific_Fields_Read_Only()
         Else
-            Me.Checks_List.Add(AddressOf Check_File_Name)
-            Me.Checks_List.Add(AddressOf Check_File_Extension)
-            Me.Checks_List.Add(AddressOf Check_Directory)
+            Me.Checks_List = New List(Of Func(Of Boolean)) From {
+                AddressOf Check_File_Name,
+                AddressOf Check_File_Extension,
+                AddressOf Check_Directory
+            }
         End If
 
     End Sub

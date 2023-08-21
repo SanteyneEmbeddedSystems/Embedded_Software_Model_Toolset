@@ -89,7 +89,6 @@
             "",
             Component_Prototype.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "",
             Me.Get_All_Component_Types_From_Project(),
             Nothing)
@@ -100,7 +99,7 @@
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                creation_form.Get_Ref_Element().Identifier)
+                creation_form.Get_Ref_Element_Identifier())
             new_swc.Update_Configurations_Value(creation_form.Get_Config_Data())
             Me.Parts.Add(new_swc)
             Me.Children.Add(new_swc)
@@ -144,8 +143,7 @@
             Composition_Task.Metaclass_Name,
             "",
             Composition_Task.Metaclass_Name,
-            "",
-            Me.Get_Children_Name())
+            "")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_task As New Composition_Task(
@@ -316,7 +314,6 @@ Public Class Component_Prototype
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
-            Me.Get_Forbidden_Name_List(),
             Me.Get_Referenced_Element_Path(),
             Me.Get_All_Component_Types_From_Project(),
             config_table)
@@ -326,7 +323,7 @@ Public Class Component_Prototype
             Me.Name = edit_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Element_Ref = edit_form.Get_Ref_Element().Identifier
+            Me.Element_Ref = edit_form.Get_Ref_Element_Identifier()
             Me.Update_Configurations_Value(edit_form.Get_Config_Data())
             Me.Update_Views()
         End If
@@ -339,7 +336,6 @@ Public Class Component_Prototype
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
-            Nothing,
             Me.Get_Referenced_Element_Path(),
             Me.Get_All_Component_Types_From_Project(),
             config_table)

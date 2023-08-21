@@ -15,22 +15,16 @@
     Private ReadOnly Description_TextBox As RichTextBox
     Protected WithEvents Main_Button As Button
 
-    Private ReadOnly Forbidden_Names As List(Of String)
-
-    Protected Checks_List As New List(Of Func(Of Boolean))
+    Protected Checks_List As List(Of Func(Of Boolean))
 
     Public Sub New(
             form_kind As E_Form_Kind,
             element_metaclass_name As String,
             default_uuid As String,
             default_name As String,
-            default_description As String,
-            forbidden_name_list As List(Of String))
+            default_description As String)
 
         Me.Kind = form_kind
-
-        Me.Forbidden_Names = forbidden_name_list
-
 
         Dim item_y_pos As Integer = ESMT_Form.Marge
         Dim inner_item_y_pos As Integer
@@ -90,10 +84,6 @@
 
         name_panel.Size = New Size(Panel_Width, inner_item_y_pos)
         item_y_pos += name_panel.Height + ESMT_Form.Marge
-
-        Me.Checks_List.Add(AddressOf Check_Name)
-        Me.Checks_List.Add(AddressOf Check_Brothers_Name)
-
 
         '------------------------------------------------------------------------------------------'
         ' Add description panel
@@ -180,13 +170,15 @@
 
         If Me.Kind <> E_Form_Kind.VIEW_FORM Then
             Dim check_function As Func(Of Boolean)
-            For Each check_function In Me.Checks_List
-                elmt_is_valid = check_function()
-                ' Display only one error
-                If elmt_is_valid = False Then
-                    Exit For
-                End If
-            Next
+            If Not IsNothing(Me.Checks_List) Then
+                For Each check_function In Me.Checks_List
+                    elmt_is_valid = check_function()
+                    ' Display only one error
+                    If elmt_is_valid = False Then
+                        Exit For
+                    End If
+                Next
+            End If
         End If
 
         If elmt_is_valid = True Then
@@ -196,27 +188,6 @@
 
     End Sub
 
-    Private Function Check_Name() As Boolean
-        Dim name_is_valid As Boolean = True
-        If Not Software_Element.Is_Symbol_Valid(Me.Name_TextBox.Text) Then
-            MsgBox("Invalid name", MsgBoxStyle.Exclamation)
-            name_is_valid = False
-        End If
-        Return name_is_valid
-    End Function
-
-    Private Function Check_Brothers_Name() As Boolean
-        Dim name_is_valid As Boolean = True
-        If Not IsNothing(Me.Forbidden_Names) Then
-            If Me.Forbidden_Names.Contains(Me.Name_TextBox.Text) Then
-                MsgBox(
-                    "A element with the same name is already aggregated",
-                    MsgBoxStyle.Exclamation)
-                name_is_valid = False
-            End If
-        End If
-        Return name_is_valid
-    End Function
 
     Private Sub Form_Created() Handles Me.Load
         If Me.Kind = E_Form_Kind.VIEW_FORM Then

@@ -12,7 +12,6 @@ Public Class Array_Type_Form
             default_uuid As String,
             default_name As String,
             default_description As String,
-            forbidden_name_list As List(Of String),
             default_ref_element_path As String,
             ref_element_list As List(Of Software_Element),
             default_first_dim As String,
@@ -25,7 +24,6 @@ Public Class Array_Type_Form
             default_uuid,
             default_name,
             default_description,
-            forbidden_name_list,
             "Base Type",
             default_ref_element_path,
             ref_element_list)

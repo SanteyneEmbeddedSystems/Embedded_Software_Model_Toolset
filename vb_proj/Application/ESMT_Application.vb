@@ -63,7 +63,6 @@ Public Class ESMT_Application
             "",
             Software_Project.Metaclass_Name,
             "A good description is always useful.",
-            Nothing, ' no forbidden name because no brother
             "",
             Software_Project.Metaclass_Name,
             Software_Project.Project_File_Extension)

@@ -24,11 +24,9 @@
             Connector.Metaclass_Name,
             default_uuid,
             default_name,
-            default_description,
-            Nothing)
+            default_description)
 
         Me.Name_TextBox.ReadOnly = True
-        Me.Checks_List.Clear()
 
         If Not IsNothing(component_prototype_list) Then
             For Each swc In component_prototype_list

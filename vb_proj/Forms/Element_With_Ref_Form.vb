@@ -10,7 +10,6 @@
             default_uuid As String,
             default_name As String,
             default_description As String,
-            forbidden_name_list As List(Of String),
             ref_element_title As String,
             default_ref_element_path As String,
             ref_element_list As List(Of Software_Element))
@@ -20,8 +19,7 @@
             element_metaclass_name,
             default_uuid,
             default_name,
-            default_description,
-            forbidden_name_list)
+            default_description)
 
         ' Get the current y position of Main_Button
         Dim item_y_pos As Integer = Me.ClientSize.Height - ESMT_Form.Marge - Button_Height
@@ -64,14 +62,10 @@
         ref_panel.Size = New Size(Panel_Width, inner_item_y_pos)
         item_y_pos += ref_panel.Height + ESMT_Form.Marge
 
-        Me.Checks_List.Add(AddressOf Check_Ref_Element_Path)
-
-
         '------------------------------------------------------------------------------------------'
         ' (Re)design Main_Button
         Me.Main_Button.Location = New Point((Form_Width - Button_Width) \ 2, item_y_pos)
         item_y_pos += Me.Main_Button.Height + ESMT_Form.Marge
-
 
         '------------------------------------------------------------------------------------------'
         ' (Re)design Form
@@ -79,23 +73,25 @@
 
     End Sub
 
-    Public Function Get_Ref_Element() As Software_Element
-        Return Me.Referenceable_Element_By_Path(Me.Referenced_Element_ComboBox.Text)
+    Protected Function Get_Ref_Element() As Software_Element
+        If Me.Referenced_Element_ComboBox.Text <> "" Then
+            Return Me.Referenceable_Element_By_Path(Me.Referenced_Element_ComboBox.Text)
+        Else
+            Return Nothing
+        End If
+    End Function
+
+    Public Function Get_Ref_Element_Identifier() As Guid
+        If Me.Referenced_Element_ComboBox.Text <> "" Then
+            Return Me.Referenceable_Element_By_Path(Me.Referenced_Element_ComboBox.Text).Identifier
+        Else
+            Return Guid.Empty
+        End If
     End Function
 
     Protected Overrides Sub Set_Fields_Read_Only()
         MyBase.Set_Fields_Read_Only()
         Me.Referenced_Element_ComboBox.Enabled = False
     End Sub
-
-    Private Function Check_Ref_Element_Path() As Boolean
-        Dim ref_is_valid As Boolean = True
-        Dim used_combobox As ComboBox = Me.Referenced_Element_ComboBox
-        If Not used_combobox.Items.Contains(used_combobox.Text) Then
-            MsgBox("Invalid referenced element", MsgBoxStyle.Exclamation)
-            ref_is_valid = False
-        End If
-        Return ref_is_valid
-    End Function
 
 End Class

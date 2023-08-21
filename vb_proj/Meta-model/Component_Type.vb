@@ -137,7 +137,6 @@ Public Class Component_Type
             "",
             Configuration_Parameter.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "Type",
             "",
             Me.Get_All_Types_From_Project())
@@ -151,7 +150,7 @@ Public Class Component_Type
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                creation_form.Get_Ref_Element().Identifier)
+                creation_form.Get_Ref_Element_Identifier())
 
             Me.Configurations.Add(new_config)
             Me.Children.Add(new_config)
@@ -169,8 +168,7 @@ Public Class Component_Type
             OS_Operation.Metaclass_Name,
             "",
             OS_Operation.Metaclass_Name,
-            "",
-            Me.Get_Children_Name())
+            "")
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
             Dim new_op As New OS_Operation(
@@ -193,7 +191,6 @@ Public Class Component_Type
             "",
             Provider_Port.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "Interface",
             "",
             Me.Get_All_Interfaces_From_Project())
@@ -206,7 +203,7 @@ Public Class Component_Type
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                creation_form.Get_Ref_Element().Identifier)
+                creation_form.Get_Ref_Element_Identifier())
             Me.Provider_Ports.Add(new_port)
             Me.Children.Add(new_port)
             Me.Get_Project().Add_Element_To_Project(new_port)
@@ -223,7 +220,6 @@ Public Class Component_Type
             "",
             Requirer_Port.Metaclass_Name,
             "",
-            Me.Get_Children_Name(),
             "Interface",
             "",
             Me.Get_All_Interfaces_From_Project())
@@ -236,7 +232,7 @@ Public Class Component_Type
                 creation_form.Get_Element_Description(),
                 Me,
                 Me.Node,
-                creation_form.Get_Ref_Element().Identifier)
+                creation_form.Get_Ref_Element_Identifier())
             Me.Requirer_Ports.Add(new_port)
             Me.Children.Add(new_port)
             Me.Get_Project().Add_Element_To_Project(new_port)
