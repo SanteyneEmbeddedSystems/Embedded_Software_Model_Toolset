@@ -16,6 +16,11 @@ Public Class Component_Type
 
     Private Shared ReadOnly Context_Menu As New SWCT_Context_Menu()
 
+    Private Shared ReadOnly Nb_Ports_Rule As New Modeling_Rule(
+        "Nb_Ports",
+        "Shall aggregate at least one Port.")
+
+
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
     ' -------------------------------------------------------------------------------------------- '
@@ -365,6 +370,20 @@ Public Class Component_Type
 
     End Function
 
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+
+        Dim nb_ports_check As New Consistency_Check_Report_Item(Me, Nb_Ports_Rule)
+        report.Add_Item(nb_ports_check)
+        nb_ports_check.Set_Compliance(Me.Provider_Ports.Count > 0 Or Me.Requirer_Ports.Count > 0)
+
+    End Sub
+
 End Class
 
 
@@ -471,6 +490,11 @@ Public MustInherit Class Port
     Protected Const PORT_LINE_LENGTH As Integer = 10
     Public Const PORT_BLOCK_WITDH As Integer = PORT_SIDE + 2 * LOLLIPOP_RADIUS + PORT_LINE_LENGTH
 
+    Private Shared ReadOnly Interface_Rule As New Modeling_Rule(
+        "Interface",
+        "Shall reference one Interface.")
+
+
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
     ' -------------------------------------------------------------------------------------------- '
@@ -520,6 +544,11 @@ Public MustInherit Class Port
         Dim name_pattern_check As New Consistency_Check_Report_Item(Me, Name_Pattern_Rule)
         report.Add_Item(name_pattern_check)
         name_pattern_check.Set_Compliance(Is_Symbol_Valid(Me.Name))
+
+        Dim interface_check As New Consistency_Check_Report_Item(Me, Interface_Rule)
+        report.Add_Item(interface_check)
+        Dim sw_if As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref)
+        interface_check.Set_Compliance(TypeOf sw_if Is Software_Interface)
     End Sub
 
 
