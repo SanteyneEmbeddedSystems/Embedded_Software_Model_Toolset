@@ -47,8 +47,8 @@ Public Class Client_Server_Interface
 
     Public Const SVG_COLOR As String = "rgb(34,177,76)"
 
-    Private Shared ReadOnly Nb_Operation_Rule As New Modeling_Rule(
-        "Number_Of_Operations",
+    Private Shared ReadOnly Operations_Rule As New Modeling_Rule(
+        "Operations",
         "Shall aggregate at least one Operation.")
 
     Private Const MAX_NB_OF_CHAR_FOR_OPERATION_LINE As Integer = 77
@@ -238,7 +238,7 @@ Public Class Client_Server_Interface
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         MyBase.Check_Own_Consistency(report)
 
-        Dim nb_op_check As New Consistency_Check_Report_Item(Me, Nb_Operation_Rule)
+        Dim nb_op_check As New Consistency_Check_Report_Item(Me, Operations_Rule)
         report.Add_Item(nb_op_check)
         nb_op_check.Set_Compliance(Me.Operations.Count >= 1)
 
