@@ -388,7 +388,7 @@ Public Class Enumerated_Type
         "Unique_Enumeral_Name",
         "Name of Enumerals shall be unique.")
 
-    Private Shared Valid_Enumeral_Name_Regex As String =
+    Private Shared ReadOnly Valid_Enumeral_Name_Regex As String =
         "^[A-Z][A-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
     Private Shared ReadOnly Enumeral_Name_Rule As New Modeling_Rule(
         "Enumeral_Name",
@@ -897,9 +897,13 @@ Public Class Record_Type
 
     Private Shared ReadOnly Context_Menu As New Record_Type_Context_Menu()
 
-    Private Shared ReadOnly Nb_Fields_Rule As New Modeling_Rule(
-        "Number_Of_Fields",
+    Private Shared ReadOnly Fields_Rule As New Modeling_Rule(
+        "Fields",
         "Shall aggregate at least two Fields.")
+
+    Private Shared ReadOnly Fields_Base_Type_Rule As New Modeling_Rule(
+        "Fields_Base_Type",
+        "Shall not be referenced by its Fields.")
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -1049,9 +1053,22 @@ Public Class Record_Type
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         MyBase.Check_Own_Consistency(report)
 
-        Dim nb_fields_check As New Consistency_Check_Report_Item(Me, Record_Type.Nb_Fields_Rule)
-        report.Add_Item(nb_fields_check)
-        nb_fields_check.Set_Compliance(Me.Fields.Count >= 2)
+        Dim fields_check As New Consistency_Check_Report_Item(Me, Record_Type.Fields_Rule)
+        report.Add_Item(fields_check)
+        fields_check.Set_Compliance(Me.Fields.Count >= 2)
+
+        Dim fields_base_type_check As _
+            New Consistency_Check_Report_Item(Me, Fields_Base_Type_Rule)
+        report.Add_Item(fields_base_type_check)
+        Dim children_reference_me As Boolean = False
+        For Each f In Me.Fields
+            If f.Element_Ref = Me.Identifier Then
+                children_reference_me = True
+                fields_base_type_check.Set_Message("Referenced by : " & f.Name)
+                Exit For
+            End If
+        Next
+        fields_base_type_check.Set_Compliance(Not children_reference_me)
 
     End Sub
 
@@ -1062,10 +1079,6 @@ Public Class Record_Field
     Inherits Software_Element_With_Type_Reference
 
     Public Const Metaclass_Name As String = "Record_Field"
-
-    Private Shared ReadOnly Type_Ref_Not_Owner_Rule As New Modeling_Rule(
-        "Record_Field_Type_Ref_Not_Owner",
-        "Shall not reference its owner Record_Type.")
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -1151,19 +1164,5 @@ Public Class Record_Field
         Return Me.SVG_Content
     End Function
 
-
-    '----------------------------------------------------------------------------------------------'
-    ' Methods for model consistency checking
-    '----------------------------------------------------------------------------------------------'
-
-    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
-        MyBase.Check_Own_Consistency(report)
-
-        Dim type_ref_not_owner_check As New _
-            Consistency_Check_Report_Item(Me, Record_Field.Type_Ref_Not_Owner_Rule)
-        report.Add_Item(type_ref_not_owner_check)
-        type_ref_not_owner_check.Set_Compliance(Me.Element_Ref <> Me.Owner.Identifier)
-
-    End Sub
 
 End Class

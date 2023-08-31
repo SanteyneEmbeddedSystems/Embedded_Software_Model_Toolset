@@ -555,6 +555,11 @@ End Class
 Public MustInherit Class Software_Element_With_Type_Reference
     Inherits Software_Element_Wih_Reference
 
+    Private Shared ReadOnly Type_Rule As New Modeling_Rule(
+        "Type",
+        "Shall refernce one Type.")
+
+
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
     ' -------------------------------------------------------------------------------------------- '
@@ -583,5 +588,18 @@ Public MustInherit Class Software_Element_With_Type_Reference
     Protected Overrides Function Get_Referenceable_Element_Kind() As String
         Return "Type"
     End Function
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+        Dim type_check = New Consistency_Check_Report_Item(Me, Type_Rule)
+        report.Add_Item(type_check)
+        Dim referenced_type As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref)
+        type_check.Set_Compliance(TypeOf referenced_type Is Type)
+    End Sub
 
 End Class
