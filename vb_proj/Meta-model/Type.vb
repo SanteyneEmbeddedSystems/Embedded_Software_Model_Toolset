@@ -1,5 +1,6 @@
 ﻿Imports System.IO
 Imports System.Text.RegularExpressions
+Imports System.Globalization
 
 
 Public MustInherit Class Type
@@ -48,6 +49,14 @@ Public MustInherit Class Type
         ' Shall be overriden by Array_Type, Record_Type and Fixed_Point_Type
         Return Me.Needed_Elements
     End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Specific methods
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public MustOverride Function Is_Value_Valid(value_str As String) As Boolean
+
 
 End Class
 
@@ -118,18 +127,122 @@ End Class
 
 Public Class Basic_Integer_Type
     Inherits Basic_Type
+
+    Public Enum E_Signedness_Type
+        SIGNED
+        UNSIGNED
+    End Enum
+
+    Public Size As Integer ' number of bytes
+    Public Signedness As E_Signedness_Type
+
+    Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
+        Dim is_valid As Boolean = False
+        Select Case Me.Signedness
+            Case E_Signedness_Type.SIGNED
+                Dim is_int As Boolean
+                Dim value_int As Int64
+                is_int = Int64.TryParse(
+                    value_str,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    value_int)
+                If is_int = True Then
+                    Select Case Me.Size
+                        Case 1
+                            If value_int >= -128 And value_int <= 127 Then
+                                is_valid = True
+                            End If
+                        Case 2
+                            If value_int >= -32768 And value_int <= 32767 Then
+                                is_valid = True
+                            End If
+                        Case 4
+                            If value_int >= -2147483648 And value_int <= 2147483647 Then
+                                is_valid = True
+                            End If
+                        Case 8
+                            is_valid = True
+                    End Select
+                End If
+            Case E_Signedness_Type.UNSIGNED
+                Dim is_uint As Boolean
+                Dim value_uint As UInt64
+                is_uint = UInt64.TryParse(
+                    value_str,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    value_uint)
+                If is_uint = True Then
+                    Select Case Me.Size
+                        Case 1
+                            If value_uint <= 255 Then
+                                is_valid = True
+                            End If
+                        Case 2
+                            If value_uint <= 65535 Then
+                                is_valid = True
+                            End If
+                        Case 4
+                            If value_uint <= 4294967295 Then
+                                is_valid = True
+                            End If
+                        Case 8
+                            is_valid = True
+                    End Select
+                End If
+        End Select
+        Return is_valid
+    End Function
+
 End Class
 
 Public Class Basic_Carrier_Type
     Inherits Basic_Type
+
+    Public Size As Integer ' number of bytes
+
+    Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
+        Dim is_valid As Boolean = False
+        Dim is_uint As Boolean
+        Dim value_uint As UInt64
+        is_uint = UInt64.TryParse(
+                    value_str,
+                    NumberStyles.Integer,
+                    CultureInfo.InvariantCulture,
+                    value_uint)
+        If is_uint = True Then
+            If value_uint < Math.Pow(2, Me.Size * 8) - 1 Then
+                is_valid = True
+            End If
+        ElseIf Regex.IsMatch(value_str, "^0x[0-9A-F]{" & Me.size * 2 & "}$") Then
+            is_valid = True
+        End If
+        Return is_valid
+    End Function
+
 End Class
 
 Public Class Basic_Boolean_Type
     Inherits Basic_Type
+
+    Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
+        If Regex.IsMatch(value_str, "^(true|false)$", RegexOptions.IgnoreCase) Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
 End Class
 
 Public Class Basic_Character_Type
     Inherits Basic_Type
+
+    Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
+        Return True
+    End Function
+
 End Class
 
 
@@ -206,6 +319,77 @@ Public Class Array_Type
             End If
         End If
         Return Me.Needed_Elements
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Type
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
+        Dim is_valid As Boolean = True
+
+        Dim validation_regexp_str As String = "\s*(?<data>[a-zA-Z_0-9,.]+)\s*"
+
+        Dim min As String
+        Dim max As String
+        Dim occurence As String
+
+        If Not Me.Third_Dimension.Is_One() Then
+            min = Me.Third_Dimension.Get_Minimum().ToString
+            If Me.Third_Dimension.Is_Max_Any() Then
+                max = ""
+            Else
+                max = Me.Third_Dimension.Get_Maximum().ToString
+            End If
+            occurence = "{" & min & "," & max & "}"
+            validation_regexp_str = "\s*\[(?:" & validation_regexp_str & ")" & occurence & "\s*\]"
+        End If
+
+        If Not Me.Second_Dimension.Is_One() Then
+            min = Me.Second_Dimension.Get_Minimum().ToString
+            If Me.Second_Dimension.Is_Max_Any() Then
+                max = ""
+            Else
+                max = Me.Second_Dimension.Get_Maximum().ToString
+            End If
+            occurence = "{" & min & "," & max & "}"
+            validation_regexp_str = "\s*\[(?:" & validation_regexp_str & ")" & occurence & "\s*\]"
+        End If
+
+        min = Me.First_Dimension.Get_Minimum().ToString
+        If Me.First_Dimension.Is_Max_Any() Then
+            max = ""
+        Else
+            max = Me.First_Dimension.Get_Maximum().ToString
+        End If
+        occurence = "{" & min & "," & max & "}"
+        validation_regexp_str = "^\s*\[(?:" & validation_regexp_str & ")" & occurence & "\s*\]$"
+
+        Dim validation_regexp As New Regex(validation_regexp_str)
+
+        Dim regex_match As Match
+        regex_match = validation_regexp.Match(value_str)
+
+        If regex_match.Success = True Then
+            Dim element_match As MatchCollection
+            element_match = Regex.Matches(regex_match.Value, "([a-zA-Z_0-9,.])+")
+            Dim base_type As Type = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref), Type)
+            If Not IsNothing(base_type) Then
+                For idx = 0 To element_match.Count - 1
+                    If Not base_type.Is_Value_Valid(element_match.Item(idx).Value) Then
+                        is_valid = False
+                        Exit For
+                    End If
+                Next
+            Else
+                is_valid = False
+            End If
+        Else
+            is_valid = False
+        End If
+
+        Return is_valid
     End Function
 
 
@@ -458,6 +642,22 @@ Public Class Enumerated_Type
 
 
     ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Type
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
+        Dim is_valid As Boolean = False
+        For Each current_enumeral In Me.Enumerals
+            If value_str = current_enumeral.Name Then
+                is_valid = True
+                Exit For
+            End If
+        Next
+        Return is_valid
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
     ' -------------------------------------------------------------------------------------------- '
 
@@ -603,6 +803,7 @@ Public Class Enumerated_Type
 
     End Sub
 
+
 End Class
 
 
@@ -715,10 +916,10 @@ Public Class Fixed_Point_Type
         Return result
     End Function
 
-    Public Shared Function Is_Offset_Valid(offset_str As String) As Boolean
+    Public Shared Function Is_Valid_Fixed_Point(fp_str As String) As Boolean
         Dim result As Boolean
         Dim regex_match As Match
-        regex_match = Fixed_Point_Type.Valid_Decimal_Ratio_Regex.Match(offset_str)
+        regex_match = Fixed_Point_Type.Valid_Decimal_Ratio_Regex.Match(fp_str)
         If regex_match.Success = True Then
             result = True
             If Not IsNothing(regex_match.Groups.Item("Den")) Then
@@ -728,9 +929,15 @@ Public Class Fixed_Point_Type
                 End If
             End If
         Else
-            result = Fixed_Point_Type.Valid_Power_Two_Regex.Match(offset_str).Success
+            result = Fixed_Point_Type.Valid_Power_Two_Regex.Match(fp_str).Success
         End If
         Return result
+
+
+    End Function
+
+    Public Shared Function Is_Offset_Valid(offset_str As String) As Boolean
+        Return Is_Valid_Fixed_Point(offset_str)
     End Function
 
 
@@ -755,6 +962,21 @@ Public Class Fixed_Point_Type
             Me.Needed_Elements.Add(data_type)
         End If
         Return Me.Needed_Elements
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Type
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
+        Dim is_valid As Boolean = False
+        Dim is_value_decimal As Boolean = Is_Valid_Fixed_Point(value_str)
+
+        is_valid = is_value_decimal
+        ' need to test if value can be reached knowing Resolutio, Offset and Base_Type
+
+        Return is_valid
     End Function
 
 
@@ -956,6 +1178,37 @@ Public Class Record_Type
             End If
         Next
         Return Me.Needed_Elements
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Type
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
+        Dim all_valid As Boolean = False
+        Dim struct_match As Match
+        struct_match = Regex.Match(value_str, "^\s*\{([\d|\D]*)\}\s*$")
+        If struct_match.Success = True Then
+            Dim struct_fields_match As MatchCollection
+            struct_fields_match = Regex.Matches(struct_match.Groups(1).Value, "([^;])+")
+            Dim fields_list As New List(Of String)
+            For idx = 0 To struct_fields_match.Count - 1
+                fields_list.Add(struct_fields_match.Item(idx).Value.Trim)
+            Next
+            If fields_list.Count = CDbl(Me.Fields.Count) Then
+                all_valid = True
+                For idx = 0 To fields_list.Count - 1
+                    Dim field_type_id As Guid = Me.Fields(idx).Element_Ref
+                    Dim field_type As Type = CType(Get_Elmt_From_Prj_By_Id(field_type_id), Type)
+                    If field_type.Is_Value_Valid(fields_list(idx)) = False Then
+                        all_valid = False
+                        Exit For
+                    End If
+                Next
+            End If
+        End If
+        Return all_valid
     End Function
 
 

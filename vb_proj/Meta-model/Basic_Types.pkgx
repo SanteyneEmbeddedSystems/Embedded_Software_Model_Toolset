@@ -8,60 +8,78 @@
       <Name>sint8</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a signed integer value from -128 to 127.</Description>
       <Identifier>e6f0bcaa-8b2b-43b6-b1e5-553b4a3f74d0</Identifier>
+      <Size>1</Size>
+      <Signedness>SIGNED</Signedness>
     </Basic_Integer_Type>
 
     <Basic_Integer_Type>
       <Name>uint8</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a unsigned integer value from 0 to 255.</Description>
       <Identifier>058963e7-375f-4f57-aceb-5a2f36b75490</Identifier>
+      <Size>1</Size>
+      <Signedness>UNSIGNED</Signedness>
     </Basic_Integer_Type>
 
     <Basic_Integer_Type>
       <Name>sint16</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a signed integer value from -32768 to 32767.</Description>
-    <Identifier>ebb36a0f-a588-4dc2-b4ff-03b59b7f0451</Identifier>
+      <Identifier>ebb36a0f-a588-4dc2-b4ff-03b59b7f0451</Identifier>
+      <Size>2</Size>
+      <Signedness>SIGNED</Signedness>
     </Basic_Integer_Type>
 
     <Basic_Integer_Type>
       <Name>uint16</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a unsigned integer value from 0 to 65535.</Description>
       <Identifier>0d6a9487-2e1a-4d71-8dcb-52824fa8170d</Identifier>
+      <Size>2</Size>
+      <Signedness>UNSIGNED</Signedness>
     </Basic_Integer_Type>
 
     <Basic_Integer_Type>
       <Name>sint32</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a signed integer value from -2147483648 to 2147483647.</Description>
       <Identifier>874ecc76-8567-4d26-babc-0a38a4c8e1df</Identifier>
+      <Size>4</Size>
+      <Signedness>SIGNED</Signedness>
     </Basic_Integer_Type>
 
     <Basic_Integer_Type>
       <Name>uint32</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a unsigned integer value from 0 to 4294967295.</Description>
       <Identifier>3f1b684a-51d5-4374-a479-56bd195faa9e</Identifier>
+      <Size>4</Size>
+      <Signedness>UNSIGNED</Signedness>
     </Basic_Integer_Type>
 
     <Basic_Integer_Type>
       <Name>sint64</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a signed integer value from -9223372036854775808 to 9223372036854775807.</Description>
       <Identifier>417d1937-91ff-4bc6-ad20-46b03d49d6b5</Identifier>
+      <Size>8</Size>
+      <Signedness>SIGNED</Signedness>
     </Basic_Integer_Type>
 
     <Basic_Integer_Type>
       <Name>uint64</Name>
       <Description>Pre-defined basic data type which allows to model a data representing a unsigned integer value from 0 to 18446744073709551616.</Description>
       <Identifier>f49b3ace-96bc-463c-8444-5436f4a801f1</Identifier>
+      <Size>8</Size>
+      <Signedness>UNSIGNED</Signedness>
     </Basic_Integer_Type>
 
     <Basic_Carrier_Type>
       <Name>byte</Name>
       <Description>Pre-defined basic data type which allows to model a data stored on 8 bits, without arithmetic purposes.</Description>
       <Identifier>97d8da02-29ed-4ba2-9d78-07fff6147434</Identifier>
+      <Size>1</Size>
     </Basic_Carrier_Type>
 
     <Basic_Carrier_Type>
       <Name>word</Name>
       <Description>Pre-defined basic data type which allows to model a data stored on 16 bits, without arithmetic purposes.</Description>
       <Identifier>c8b4d816-ce0c-424d-98c3-a7f91dd1dd88</Identifier>
+      <Size>2</Size>
     </Basic_Carrier_Type>
 
     <Basic_Boolean_Type>

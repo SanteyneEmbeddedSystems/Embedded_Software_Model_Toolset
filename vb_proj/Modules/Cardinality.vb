@@ -156,6 +156,10 @@ Public Class Cardinality
         End If
     End Function
 
+    Public Function Is_Max_Any() As Boolean
+        Return Get_Maximum() = ANY
+    End Function
+
     Public Function Get_Value() As String
         If Not Me.Is_Computed Then
             Me.Compute_From_Text()

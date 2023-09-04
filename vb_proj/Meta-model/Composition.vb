@@ -9,6 +9,16 @@
 
     Private Shared ReadOnly Context_Menu As New Composition_Context_Menu()
 
+    Private Shared ReadOnly Parts_Rule As New Modeling_Rule(
+        "Parts",
+        "Shall Aggregate at least two Component_Prototypes.")
+    Private Shared ReadOnly Links_Rule As New Modeling_Rule(
+        "Links",
+        "Shall Aggregate at least one Connextor.")
+    Private Shared ReadOnly Tasks_Rule As New Modeling_Rule(
+        "Tasks",
+        "Shall Aggregate at least one Task.")
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -155,13 +165,31 @@
         End If
     End Sub
 
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+        Dim parts_check As New Consistency_Check_Report_Item(Me, Parts_Rule)
+        report.Add_Item(parts_check)
+        parts_check.Set_Compliance(Me.Parts.Count >= 2)
+        Dim links_check As New Consistency_Check_Report_Item(Me, Links_Rule)
+        report.Add_Item(links_check)
+        links_check.Set_Compliance(Me.Links.Count >= 1)
+        Dim tasks_check As New Consistency_Check_Report_Item(Me, Tasks_Rule)
+        report.Add_Item(tasks_check)
+        tasks_check.Set_Compliance(Me.Tasks.Count >= 1)
+    End Sub
+
 End Class
 
 
 Public Class Component_Prototype
     Inherits Software_Element_Wih_Reference
 
-    Public Const Metaclass_Name As String = "Component_Protoype"
+    Public Const Metaclass_Name As String = "Component_Prototype"
 
     Public Configuration_Values As New List(Of Configuration_Value)
 
@@ -169,6 +197,26 @@ Public Class Component_Prototype
 
     Private Const SVG_CONNECTOR_WIDTH = 600 ' ~ 4 * Get_Text_Width(NB_CHARS_MAX_FOR_SYMBOL)
     Private Const SVG_SWC_MARGIN = 40
+
+    Private Shared ReadOnly List_Of_Configurations_Rule As New Modeling_Rule(
+        "List_Of_Configurations",
+        "Shall aggregate a Configuration_Value for each Configuration_Parameter aggregated by
+        the referenced Component_Type.")
+
+    Private Shared ReadOnly Configuration_Rule As New Modeling_Rule(
+            "Configuration",
+            "Configuration_Value shall reference one Configuration_Parameter.")
+
+    Private Shared ReadOnly Value_Content_Rule As New Modeling_Rule(
+            "Value_Content",
+            "Value of Configuration_Value shall be compatible with the Type of the referenced
+            Configuration_Parameter.")
+
+    Private Shared ReadOnly Configuration_Parent_Rule As New Modeling_Rule(
+            "Configuration_Parent",
+            "Configuration_Parameter referenced by Configuration_Value shall belong to the
+            referenced Component_Type.")
+
 
     Public Class Configuration_Value
 
@@ -184,6 +232,7 @@ Public Class Component_Prototype
         End Sub
 
     End Class
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -506,6 +555,95 @@ Public Class Component_Prototype
 
         Return Me.SVG_Content
     End Function
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+
+        Dim list_of_conf_check As New Consistency_Check_Report_Item(Me, List_Of_Configurations_Rule)
+        report.Add_Item(list_of_conf_check)
+        Dim swct As Component_Type
+        swct = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref), Component_Type)
+        If IsNothing(swct) Then
+            list_of_conf_check.Set_Compliance(False)
+            list_of_conf_check.Set_Message("Component_Type not found.")
+        Else
+            Dim message As String = "Value not found for : "
+            Dim all_found As Boolean = True
+            For Each conf_param In swct.Configurations
+                Dim found As Boolean = False
+                For Each conf_value In Me.Configuration_Values
+                    If conf_value.Configuration_Ref = conf_param.Identifier Then
+                        found = True
+                        Exit For
+                    End If
+                Next
+                If found = False Then
+                    all_found = False
+                    list_of_conf_check.Set_Compliance(False)
+                    message &= conf_param.Name & " "
+                End If
+            Next
+            If all_found = False Then
+                list_of_conf_check.Set_Message(message)
+            Else
+                list_of_conf_check.Set_Compliance(True)
+            End If
+        End If
+
+        Dim conf_check As New Consistency_Check_Report_Item(Me, Configuration_Rule)
+        report.Add_Item(conf_check)
+
+        Dim value_check As New Consistency_Check_Report_Item(Me, Value_Content_Rule)
+        report.Add_Item(value_check)
+        Dim value_check_message As String = "Configurations with wrong value : "
+        Dim all_values_ok As Boolean = True
+
+        Dim conf_parent_check As New Consistency_Check_Report_Item(Me, Configuration_Parent_Rule)
+        report.Add_Item(conf_parent_check)
+
+        For Each conf_value In Me.Configuration_Values
+            ' Look for the referenced Configuration_Parameter
+            Dim ref_conf_param As Software_Element
+            ref_conf_param = Owner.Get_Elmt_From_Prj_By_Id(conf_value.Configuration_Ref)
+
+            If TypeOf ref_conf_param Is Configuration_Parameter Then
+                conf_check.Set_Compliance(True)
+
+                ' Look for the type of the referenced Configuration_Parameter
+                Dim conf_param As Configuration_Parameter =
+                    CType(ref_conf_param, Configuration_Parameter)
+                Dim conf_type As Type =
+                    CType(Owner.Get_Elmt_From_Prj_By_Id(conf_param.Element_Ref), Type)
+
+                If Not IsNothing(conf_type) Then
+                    ' Check value of configurations
+                    If conf_type.Is_Value_Valid(conf_value.Value) Then
+                        value_check.Set_Compliance(True)
+                    Else
+                        value_check.Set_Compliance(False)
+                        value_check_message &= ref_conf_param.Name & " "
+                        all_values_ok = False
+                    End If
+
+                    ' Check parent of configuration
+                    conf_parent_check.Set_Compliance(conf_param.Get_Owner() Is swct)
+                End If
+
+            Else
+                conf_check.Set_Compliance(False)
+            End If
+        Next
+
+        If all_values_ok = False Then
+            value_check.Set_Message(value_check_message)
+        End If
+
+    End Sub
 
 End Class
 
