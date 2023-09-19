@@ -658,6 +658,14 @@ Public Class Connector
 
     Public Const Metaclass_Name As String = "Connector"
 
+    Private Shared ReadOnly If_Consistency_Rule As New Modeling_Rule(
+        "Interface_Consistency",
+        "Shall connect 2 ports referencing the same Interface.")
+
+    Private Shared ReadOnly Components_Different_Rule As New Modeling_Rule(
+        "Components_Different",
+        "Shall connect different Component_Prototypes.")
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -755,7 +763,25 @@ Public Class Connector
 
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         ' Do not call MyBase implementation of Check_Own_Consistency
-        ' Name pattern is notthe same
+        ' Name pattern is not the same
+        ' Description is useless
+
+        Dim if_consistency_check As New Consistency_Check_Report_Item(Me, If_Consistency_Rule)
+        report.Add_Item(if_consistency_check)
+        Dim prov_port As Provider_Port
+        prov_port = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Provider_Port_Ref), Provider_Port)
+        Dim req_port As Requirer_Port
+        req_port = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Requirer_Port_Ref), Requirer_Port)
+        If Not IsNothing(prov_port) And Not IsNothing(req_port) Then
+            If prov_port.Element_Ref <> Guid.Empty Then
+                if_consistency_check.Set_Compliance(prov_port.Element_Ref = req_port.Element_Ref)
+            End If
+        End If
+
+        Dim swc_diff_check As New Consistency_Check_Report_Item(Me, Components_Different_Rule)
+        report.Add_Item(swc_diff_check)
+        swc_diff_check.Set_Compliance(Me.Provider_Component_Ref <> Me.Requirer_Component_Ref)
+
     End Sub
 
 End Class
@@ -862,6 +888,9 @@ Public Class Call_OS_Operation
 
     Public Const Metaclass_Name As String = "Call_OS_Operation"
 
+    Private Shared ReadOnly Operation_Owner_Rule As New Modeling_Rule(
+        "Operation_Owner",
+        "The referenced operation shall belong to the referenced component.")
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -954,7 +983,29 @@ Public Class Call_OS_Operation
 
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         ' Do not call MyBase implementation of Check_Own_Consistency
-        ' Name pattern is notthe same
+        ' Name pattern is not the same
+
+        Dim op_owner_check As New Consistency_Check_Report_Item(Me, Operation_Owner_Rule)
+        report.Add_Item(op_owner_check)
+        If Me.OS_Operation_Ref <> Guid.Empty Then
+            Dim swc As Component_Prototype
+            swc = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Component_Prototype_Ref), Component_Prototype)
+            If Not IsNothing(swc) Then
+                Dim swct As Component_Type
+                swct = CType(Me.Get_Elmt_From_Prj_By_Id(swc.Element_Ref), Component_Type)
+                If Not IsNothing(swct) Then
+                    Dim found As Boolean = False
+                    For Each op In swct.Operations
+                        If op.Identifier = Me.OS_Operation_Ref Then
+                            found = True
+                            Exit For
+                        End If
+                    Next
+                    op_owner_check.Set_Compliance(found)
+                End If
+            End If
+        End If
+
     End Sub
 
 End Class
