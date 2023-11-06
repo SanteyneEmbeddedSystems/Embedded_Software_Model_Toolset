@@ -514,11 +514,7 @@ Public Class Array_Type
         Dim base_type_check = New Consistency_Check_Report_Item(Me, Array_Type.Base_Type_Rule)
         report.Add_Item(base_type_check)
         Dim base_type As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref)
-        If Not IsNothing(base_type) Then
-            If TypeOf base_type Is Type Then
-                base_type_check.Set_Compliance(True)
-            End If
-        End If
+        base_type_check.Set_Compliance(TypeOf base_type Is Type)
 
         Dim array_base_not_self_check =
             New Consistency_Check_Report_Item(Me, Array_Type.Array_Base_Not_Self_Rule)
@@ -533,6 +529,7 @@ Public Class Array_Type
         Dim third_dimension_used_check =
             New Consistency_Check_Report_Item(Me, Array_Type.Third_Dimension_Used_Rule)
         report.Add_Item(third_dimension_used_check)
+        third_dimension_used_check.Set_Compliance(False)
         If Not Me.Third_Dimension.Is_One() Then
             If Not Me.Second_Dimension.Is_One() Then
                 third_dimension_used_check.Set_Compliance(True)
@@ -551,6 +548,8 @@ Public Class Array_Type
             Or Me.Second_Dimension.Is_Any() _
             Or Me.Third_Dimension.Is_Any()) Then
             dimensions_not_zero_rule_check.Set_Compliance(True)
+        Else
+            dimensions_not_zero_rule_check.Set_Compliance(False)
         End If
     End Sub
 

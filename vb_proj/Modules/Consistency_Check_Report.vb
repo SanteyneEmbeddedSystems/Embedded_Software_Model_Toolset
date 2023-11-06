@@ -181,7 +181,7 @@ Public Class Consistency_Check_Report
             element_id As Guid,
             rule_id As String,
             ByRef check_found As Boolean,
-            ByRef check_result As Boolean)
+            ByRef check_result As Consistency_Check_Report_Item.Test_Status)
 
         check_found = False
 
@@ -191,7 +191,7 @@ Public Class Consistency_Check_Report
             If items_by_rule.ContainsKey(rule_id) Then
                 check_found = True
                 Dim item As Consistency_Check_Report_Item = items_by_rule(rule_id)
-                check_result = item.Get_Compliance()
+                check_result = item.Get_Status()
             End If
         End If
 
@@ -226,14 +226,21 @@ Public Class Consistency_Check_Report_Item
 
     Private ReadOnly Element As Software_Element
     Private ReadOnly Rule As Modeling_Rule
-    Private Rule_Complied As Boolean
+    Private Status As Test_Status
     Private Message As String
 
+    Public Enum Test_Status
+        PASSED
+        FAILED
+        NOT_TESTED ' Check is not implemented
+        NOT_AVAILABLE ' Check is not possible
+    End Enum
 
     Public Sub New(element As Software_Element, rule As Modeling_Rule)
         Me.Element = element
         Me.Rule = rule
-        Me.Rule_Complied = False
+        Me.Status = Test_Status.NOT_TESTED
+        Me.Message = ""
     End Sub
 
     Public Sub Write_In_CSV(
@@ -241,14 +248,14 @@ Public Class Consistency_Check_Report_Item
             show_only_not_compliant_checkings As Boolean,
             add_rules_description As Boolean)
 
-        If show_only_not_compliant_checkings = True And Me.Rule_Complied = True Then
+        If show_only_not_compliant_checkings = True And Me.Status = Test_Status.PASSED Then
             Exit Sub
         End If
 
         file_stream.Write(Me.Element.Get_Path() & vbTab)
         file_stream.Write(Me.Element.Get_Metaclass_Name() & vbTab)
         file_stream.Write(Me.Rule.Get_Identifier() & vbTab)
-        file_stream.Write(Me.Rule_Complied & vbTab)
+        file_stream.Write(Me.Status.ToString() & vbTab)
         If add_rules_description = True Then
             file_stream.Write(Me.Rule.Get_Description() & vbTab)
         End If
@@ -263,7 +270,7 @@ Public Class Consistency_Check_Report_Item
             show_only_not_compliant_checkings As Boolean,
             add_rules_description As Boolean)
 
-        If show_only_not_compliant_checkings = True And Me.Rule_Complied = True Then
+        If show_only_not_compliant_checkings = True And Me.Status = Test_Status.PASSED Then
             Exit Sub
         End If
 
@@ -283,7 +290,7 @@ Public Class Consistency_Check_Report_Item
         html_row.AppendChild(rule_id_cell)
 
         Dim compliance_cell As XmlElement = report.CreateElement("td")
-        compliance_cell.AppendChild(report.CreateTextNode(Me.Rule_Complied.ToString()))
+        compliance_cell.AppendChild(report.CreateTextNode(Me.Status.ToString()))
         html_row.AppendChild(compliance_cell)
 
         If add_rules_description = True Then
@@ -298,12 +305,20 @@ Public Class Consistency_Check_Report_Item
 
     End Sub
 
-    Public Sub Set_Compliance(rule_compliance As Boolean)
-        Me.Rule_Complied = rule_compliance
+    Public Sub Set_Status(status As Test_Status)
+        Me.Status = status
     End Sub
 
-    Public Function Get_Compliance() As Boolean
-        Return Me.Rule_Complied
+    Public Sub Set_Compliance(rule_compliance As Boolean)
+        If rule_compliance = True Then
+            Me.Status = Test_Status.PASSED
+        Else
+            Me.Status = Test_Status.FAILED
+        End If
+    End Sub
+
+    Public Function Get_Status() As Test_Status
+        Return Me.Status
     End Function
 
     Public Sub Set_Message(message As String)

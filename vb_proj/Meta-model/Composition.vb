@@ -569,7 +569,7 @@ Public Class Component_Prototype
         Dim swct As Component_Type
         swct = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref), Component_Type)
         If IsNothing(swct) Then
-            list_of_conf_check.Set_Compliance(False)
+            list_of_conf_check.Set_Status(Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
             list_of_conf_check.Set_Message("Component_Type not found.")
         Else
             Dim message As String = "Value not found for : "
@@ -766,16 +766,39 @@ Public Class Connector
         ' Name pattern is not the same
         ' Description is useless
 
+        Dim test_is_feasable As Boolean = True
         Dim if_consistency_check As New Consistency_Check_Report_Item(Me, If_Consistency_Rule)
         report.Add_Item(if_consistency_check)
         Dim prov_port As Provider_Port
         prov_port = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Provider_Port_Ref), Provider_Port)
         Dim req_port As Requirer_Port
         req_port = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Requirer_Port_Ref), Requirer_Port)
-        If Not IsNothing(prov_port) And Not IsNothing(req_port) Then
-            If prov_port.Element_Ref <> Guid.Empty Then
-                if_consistency_check.Set_Compliance(prov_port.Element_Ref = req_port.Element_Ref)
+        If IsNothing(prov_port) Then
+            if_consistency_check.Set_Status(Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
+            if_consistency_check.Set_Message("Provider_Port is not found.")
+            test_is_feasable = False
+        Else
+            If prov_port.Element_Ref = Guid.Empty Then
+                if_consistency_check.Set_Status(
+                    Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
+                if_consistency_check.Set_Message("Provider_Port has not Interface.")
+                test_is_feasable = False
             End If
+        End If
+        If IsNothing(req_port) Then
+            if_consistency_check.Set_Status(Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
+            if_consistency_check.Set_Message("Requirer_Port is not found.")
+            test_is_feasable = False
+        Else
+            If req_port.Element_Ref = Guid.Empty Then
+                if_consistency_check.Set_Status(
+                    Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
+                if_consistency_check.Set_Message("Requirer_Port has not Interface.")
+                test_is_feasable = False
+            End If
+        End If
+        If test_is_feasable Then
+            if_consistency_check.Set_Compliance(prov_port.Element_Ref = req_port.Element_Ref)
         End If
 
         Dim swc_diff_check As New Consistency_Check_Report_Item(Me, Components_Different_Rule)
@@ -1003,7 +1026,12 @@ Public Class Call_OS_Operation
                     Next
                     op_owner_check.Set_Compliance(found)
                 End If
+            Else
+                op_owner_check.Set_Status(Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
+                op_owner_check.Set_Message("Component_Prototype not found.")
             End If
+        Else
+            ' TODO
         End If
 
     End Sub
