@@ -75,7 +75,7 @@
         Me.Needed_Elements.Clear()
         For Each swc In Me.Parts
             Dim swct As Component_Type
-            swct = CType(Me.Get_Elmt_From_Prj_By_Id(swc.Element_Ref), Component_Type)
+            swct = CType(Me.Get_Elmt_From_Prj_By_Id(swc.Ref_Component_Type_Id), Component_Type)
             If Not IsNothing(swct) Then
                 If Not Me.Needed_Elements.Contains(swct) Then
                     Me.Needed_Elements.Add(swct)
@@ -187,7 +187,9 @@ End Class
 
 
 Public Class Component_Prototype
-    Inherits Software_Element_Wih_Reference
+    Inherits Described_Element
+
+    Public Ref_Component_Type_Id As Guid
 
     Public Const Metaclass_Name As String = "Component_Prototype"
 
@@ -247,7 +249,8 @@ Public Class Component_Prototype
             owner As Software_Element,
             parent_node As TreeNode,
             component_type_ref As Guid)
-        MyBase.New(name, description, owner, parent_node, component_type_ref)
+        MyBase.New(name, description, owner, parent_node)
+        Me.Ref_Component_Type_Id = component_type_ref
     End Sub
 
 
@@ -275,19 +278,6 @@ Public Class Component_Prototype
 
 
     ' -------------------------------------------------------------------------------------------- '
-    ' Methods from Software_Element_Wih_Reference
-    ' -------------------------------------------------------------------------------------------- '
-
-    Protected Overrides Function Get_Referenceable_Element_List() As List(Of Software_Element)
-        Return Me.Get_All_Component_Types_From_Project()
-    End Function
-
-    Protected Overrides Function Get_Referenceable_Element_Kind() As String
-        Return "Component_Type"
-    End Function
-
-
-    ' -------------------------------------------------------------------------------------------- '
     ' Specific methods
     ' -------------------------------------------------------------------------------------------- '
 
@@ -308,7 +298,7 @@ Public Class Component_Prototype
 
     Public Function Create_Config_Data_Table() As DataTable
         Dim swct As Component_Type
-        swct = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref), Component_Type)
+        swct = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Ref_Component_Type_Id), Component_Type)
         Dim config_table As New DataTable
         With config_table
             .Columns.Add("Configuration", GetType(String))
@@ -360,7 +350,7 @@ Public Class Component_Prototype
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
-            Me.Get_Referenced_Element_Path(),
+            Me.Get_Elmt_Path_From_Proj_By_Id(Me.Ref_Component_Type_Id),
             Me.Get_All_Component_Types_From_Project(),
             config_table)
         Dim edit_result As DialogResult
@@ -369,7 +359,7 @@ Public Class Component_Prototype
             Me.Name = edit_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Element_Ref = edit_form.Get_Ref_Element_Identifier()
+            Me.Ref_Component_Type_Id = edit_form.Get_Ref_Element_Identifier()
             Me.Update_Configurations_Value(edit_form.Get_Config_Data())
             Me.Update_Views()
         End If
@@ -382,7 +372,7 @@ Public Class Component_Prototype
             Me.Identifier.ToString(),
             Me.Name,
             Me.Description,
-            Me.Get_Referenced_Element_Path(),
+            Me.Get_Elmt_Path_From_Proj_By_Id(Me.Ref_Component_Type_Id),
             Me.Get_All_Component_Types_From_Project(),
             config_table)
         view_form.ShowDialog()
@@ -567,7 +557,7 @@ Public Class Component_Prototype
         Dim list_of_conf_check As New Consistency_Check_Report_Item(Me, List_Of_Configurations_Rule)
         report.Add_Item(list_of_conf_check)
         Dim swct As Component_Type
-        swct = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref), Component_Type)
+        swct = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Ref_Component_Type_Id), Component_Type)
         If IsNothing(swct) Then
             list_of_conf_check.Set_Status(Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
             list_of_conf_check.Set_Message("Component_Type not found.")
@@ -618,7 +608,7 @@ Public Class Component_Prototype
                 Dim conf_param As Configuration_Parameter =
                     CType(ref_conf_param, Configuration_Parameter)
                 Dim conf_type As Type =
-                    CType(Owner.Get_Elmt_From_Prj_By_Id(conf_param.Element_Ref), Type)
+                    CType(Owner.Get_Elmt_From_Prj_By_Id(conf_param.Referenced_Type_Id), Type)
 
                 If Not IsNothing(conf_type) Then
                     ' Check value of configurations
@@ -762,9 +752,7 @@ Public Class Connector
     '----------------------------------------------------------------------------------------------'
 
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
-        ' Do not call MyBase implementation of Check_Own_Consistency
-        ' Name pattern is not the same
-        ' Description is useless
+        MyBase.Check_Own_Consistency(report)
 
         Dim test_is_feasable As Boolean = True
         Dim if_consistency_check As New Consistency_Check_Report_Item(Me, If_Consistency_Rule)
@@ -778,7 +766,7 @@ Public Class Connector
             if_consistency_check.Set_Message("Provider_Port is not found.")
             test_is_feasable = False
         Else
-            If prov_port.Element_Ref = Guid.Empty Then
+            If prov_port.Referenced_Interface_Id = Guid.Empty Then
                 if_consistency_check.Set_Status(
                     Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
                 if_consistency_check.Set_Message("Provider_Port has not Interface.")
@@ -790,7 +778,7 @@ Public Class Connector
             if_consistency_check.Set_Message("Requirer_Port is not found.")
             test_is_feasable = False
         Else
-            If req_port.Element_Ref = Guid.Empty Then
+            If req_port.Referenced_Interface_Id = Guid.Empty Then
                 if_consistency_check.Set_Status(
                     Consistency_Check_Report_Item.Test_Status.NOT_AVAILABLE)
                 if_consistency_check.Set_Message("Requirer_Port has not Interface.")
@@ -798,7 +786,8 @@ Public Class Connector
             End If
         End If
         If test_is_feasable Then
-            if_consistency_check.Set_Compliance(prov_port.Element_Ref = req_port.Element_Ref)
+            if_consistency_check.Set_Compliance(
+                prov_port.Referenced_Interface_Id = req_port.Referenced_Interface_Id)
         End If
 
         Dim swc_diff_check As New Consistency_Check_Report_Item(Me, Components_Different_Rule)
@@ -811,7 +800,7 @@ End Class
 
 
 Public Class Composition_Task
-    Inherits Must_Describe_Software_Element
+    Inherits Described_Element
 
     Public Calls As New List(Of Call_OS_Operation)
 
@@ -1005,8 +994,7 @@ Public Class Call_OS_Operation
     '----------------------------------------------------------------------------------------------'
 
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
-        ' Do not call MyBase implementation of Check_Own_Consistency
-        ' Name pattern is not the same
+        MyBase.Check_Own_Consistency(report)
 
         Dim op_owner_check As New Consistency_Check_Report_Item(Me, Operation_Owner_Rule)
         report.Add_Item(op_owner_check)
@@ -1015,7 +1003,7 @@ Public Class Call_OS_Operation
             swc = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Component_Prototype_Ref), Component_Prototype)
             If Not IsNothing(swc) Then
                 Dim swct As Component_Type
-                swct = CType(Me.Get_Elmt_From_Prj_By_Id(swc.Element_Ref), Component_Type)
+                swct = CType(Me.Get_Elmt_From_Prj_By_Id(swc.Ref_Component_Type_Id), Component_Type)
                 If Not IsNothing(swct) Then
                     Dim found As Boolean = False
                     For Each op In swct.Operations

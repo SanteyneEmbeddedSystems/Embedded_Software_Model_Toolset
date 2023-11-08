@@ -1,6 +1,6 @@
 ﻿Public MustInherit Class Classifier
 
-    Inherits Must_Describe_Software_Element
+    Inherits Described_Element
 
     Protected Needed_Elements As New List(Of Classifier)
 

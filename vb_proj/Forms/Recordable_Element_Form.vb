@@ -153,7 +153,7 @@ Public Class Recordable_Element_Form
                                 - Me.Element_File_Extension.Length
         Dim file_name_wo_ext As String
         file_name_wo_ext = Me.File_Name_TextBox.Text.Substring(0, file_name_wo_ext_length)
-        If Not Software_Element.Is_Symbol_Valid(file_name_wo_ext) Then
+        If Not Named_Element.Is_Symbol_Valid(file_name_wo_ext) Then
             MsgBox("Invalid file name", MsgBoxStyle.Exclamation)
             file_name_is_valid = False
         End If

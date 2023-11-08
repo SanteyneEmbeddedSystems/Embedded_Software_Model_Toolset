@@ -178,7 +178,7 @@
             Return Nothing
         Else
             Dim prov_swct As Component_Type
-            prov_swct = CType(prov_swc.Get_Elmt_From_Prj_By_Id(prov_swc.Element_Ref),
+            prov_swct = CType(prov_swc.Get_Elmt_From_Prj_By_Id(prov_swc.Ref_Component_Type_Id),
                 Component_Type)
             If IsNothing(prov_swct) Then
                 Return Nothing
@@ -202,7 +202,7 @@
             Return Nothing
         Else
             Dim req_swct As Component_Type
-            req_swct = CType(req_swc.Get_Elmt_From_Prj_By_Id(req_swc.Element_Ref),
+            req_swct = CType(req_swc.Get_Elmt_From_Prj_By_Id(req_swc.Ref_Component_Type_Id),
                 Component_Type)
             If IsNothing(req_swct) Then
                 Return Nothing
@@ -217,7 +217,7 @@
         Dim prov_swc As Component_Prototype = Get_Provider_Swc()
         If Not IsNothing(prov_swc) Then
             Dim prov_swct As Component_Type
-            prov_swct = CType(prov_swc.Get_Elmt_From_Prj_By_Id(prov_swc.Element_Ref),
+            prov_swct = CType(prov_swc.Get_Elmt_From_Prj_By_Id(prov_swc.Ref_Component_Type_Id),
                 Component_Type)
             If Not IsNothing(prov_swct) Then
                 For Each prov_port In prov_swct.Provider_Ports
@@ -232,7 +232,7 @@
         Dim req_swc As Component_Prototype = Get_Requirer_Swc()
         If Not IsNothing(req_swc) Then
             Dim req_swct As Component_Type
-            req_swct = CType(req_swc.Get_Elmt_From_Prj_By_Id(req_swc.Element_Ref),
+            req_swct = CType(req_swc.Get_Elmt_From_Prj_By_Id(req_swc.Ref_Component_Type_Id),
                 Component_Type)
             If Not IsNothing(req_swct) Then
                 For Each req_port In req_swct.Requirer_Ports

@@ -12,21 +12,12 @@ Public MustInherit Class Software_Element
     Protected Owner As Software_Element = Nothing
     Protected Children As New List(Of Software_Element)
 
-    Public Const NB_CHARS_MAX_FOR_SYMBOL As Integer = 32
-    Protected Shared Valid_Symbol_Regex As String =
-        "^[a-zA-Z][a-zA-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
-
     Protected Shared ReadOnly Read_Only_Context_Menu As New Read_Only_Context_Menu
     Private Shared ReadOnly Leaf_Context_Menu As New Leaf_Context_Menu
 
-    Protected Shared ReadOnly Name_Pattern_Rule As New Modeling_Rule(
-        "Name_Pattern",
-        "Name shall match " & Valid_Symbol_Regex)
     Private Shared ReadOnly Brother_Rule As New Modeling_Rule(
         "Brother_Name",
         "Elements aggregated by the same owner shall have a different name.")
-
-    Protected Const SVG_MIN_CHAR_PER_LINE As Integer = NB_CHARS_MAX_FOR_SYMBOL
 
     Protected SVG_Content As String = ""
     Protected SVG_Width As Integer = 0
@@ -53,14 +44,6 @@ Public MustInherit Class Software_Element
         parent_node.Nodes.Add(Me.Node)
     End Sub
 
-
-    ' -------------------------------------------------------------------------------------------- '
-    ' Shared
-    ' -------------------------------------------------------------------------------------------- '
-
-    Public Shared Function Is_Symbol_Valid(symbol As String) As Boolean
-        Return Regex.IsMatch(symbol, Software_Element.Valid_Symbol_Regex)
-    End Function
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -342,30 +325,7 @@ Public MustInherit Class Software_Element
     End Function
 
     Public Overridable Function Compute_SVG_Content() As String
-        Me.SVG_Width = Get_Box_Width(SVG_MIN_CHAR_PER_LINE)
-
-        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
-
-        ' Add title (Name + stereotype) compartment
-        Me.SVG_Content &= Get_Title_Rectangle(0, 0, Me.Name,
-            "lightblue", Me.SVG_Width, Me.Get_Metaclass_Name)
-
-        ' Add description compartment
-        Dim desc_rect_height As Integer = 0
-        Dim split_description As List(Of String)
-        split_description = Split_String(Me.Description, SVG_MIN_CHAR_PER_LINE)
-        Me.SVG_Content &= Get_Multi_Line_Rectangle(
-            0,
-            SVG_TITLE_HEIGHT,
-            split_description,
-            "lightblue",
-            Me.SVG_Width,
-            desc_rect_height)
-
-        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
-        Me.SVG_Height = desc_rect_height + SVG_TITLE_HEIGHT
-        Return Me.SVG_Content
-
+        Return ""
     End Function
 
     Public Function Get_SVG_Content() As String
@@ -399,25 +359,72 @@ Public MustInherit Class Software_Element
     End Sub
 
     Protected Overridable Sub Check_Own_Consistency(report As Consistency_Check_Report)
-
-        Dim name_check As New Consistency_Check_Report_Item(Me, Software_Element.Name_Pattern_Rule)
-        report.Add_Item(name_check)
-        name_check.Set_Compliance(Software_Element.Is_Symbol_Valid(Me.Name))
-
         Dim brother_check As New Consistency_Check_Report_Item(Me, Software_Element.Brother_Rule)
         report.Add_Item(brother_check)
         Dim brothers_name As List(Of String) = Me.Get_Forbidden_Name_List()
         brother_check.Set_Compliance(Not brothers_name.Contains(Me.Name))
-
     End Sub
 
 End Class
 
 
-Public MustInherit Class Must_Describe_Software_Element
+Public MustInherit Class Named_Element
     Inherits Software_Element
 
-    Private Shared ReadOnly Desc_Rule As New Modeling_Rule(
+    Public Const NB_CHARS_MAX_FOR_SYMBOL As Integer = 32
+    Protected Shared Valid_Symbol_Regex As String =
+        "^[a-zA-Z][a-zA-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
+
+    Protected Shared ReadOnly Name_Pattern_Rule As New Modeling_Rule(
+        "Name_Pattern",
+        "Name shall match " & Valid_Symbol_Regex)
+
+    Protected Const SVG_MIN_CHAR_PER_LINE As Integer = NB_CHARS_MAX_FOR_SYMBOL
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+        name As String,
+        description As String,
+        owner As Software_Element,
+        parent_node As TreeNode)
+        MyBase.New(name, description, owner, parent_node)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Shared
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Shared Function Is_Symbol_Valid(symbol As String) As Boolean
+        Return Regex.IsMatch(symbol, Named_Element.Valid_Symbol_Regex)
+    End Function
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+        Dim name_check As New Consistency_Check_Report_Item(Me, Named_Element.Name_Pattern_Rule)
+        report.Add_Item(name_check)
+        name_check.Set_Compliance(Named_Element.Is_Symbol_Valid(Me.Name))
+    End Sub
+
+End Class
+
+
+Public MustInherit Class Described_Element
+    Inherits Named_Element
+
+    Private Shared ReadOnly Description_Mandatory_Rule As New Modeling_Rule(
         "Description_Mandatory",
         "Description is mandatory.")
 
@@ -445,7 +452,7 @@ Public MustInherit Class Must_Describe_Software_Element
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
         MyBase.Check_Own_Consistency(report)
         Dim desc_check As New _
-            Consistency_Check_Report_Item(Me, Must_Describe_Software_Element.Desc_Rule)
+            Consistency_Check_Report_Item(Me, Described_Element.Description_Mandatory_Rule)
         report.Add_Item(desc_check)
         desc_check.Set_Compliance(Me.Description <> "")
     End Sub
@@ -453,10 +460,14 @@ Public MustInherit Class Must_Describe_Software_Element
 End Class
 
 
-Public MustInherit Class Software_Element_Wih_Reference
-    Inherits Must_Describe_Software_Element
+Public MustInherit Class Typed_Element
+    Inherits Described_Element
 
-    Public Element_Ref As Guid
+    Public Referenced_Type_Id As Guid
+
+    Private Shared ReadOnly Type_Rule As New Modeling_Rule(
+        "Type",
+        "Shall reference one Type.")
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -473,13 +484,20 @@ Public MustInherit Class Software_Element_Wih_Reference
             parent_node As TreeNode,
             element_ref As Guid)
         MyBase.New(name, description, owner, parent_node)
-        Me.Element_Ref = element_ref
+        Me.Referenced_Type_Id = element_ref
     End Sub
 
+    '----------------------------------------------------------------------------------------------'
+    ' Specific methods
+    '----------------------------------------------------------------------------------------------'
 
-    ' -------------------------------------------------------------------------------------------- '
-    ' Methods from Software_Element
-    ' -------------------------------------------------------------------------------------------- '
+    Public Function Get_Referenced_Type_Name() As String
+        Return Get_Elmt_Name_From_Proj_By_Id(Me.Referenced_Type_Id)
+    End Function
+
+    Public Function Get_Referenced_Type_Path() As String
+        Return Get_Elmt_Path_From_Proj_By_Id(Me.Referenced_Type_Id)
+    End Function
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -494,9 +512,9 @@ Public MustInherit Class Software_Element_Wih_Reference
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Me.Get_Referenceable_Element_Kind(),
-            Me.Get_Referenced_Element_Path(),
-            Me.Get_Referenceable_Element_List())
+            "Type",
+            Me.Get_Elmt_Path_From_Proj_By_Id(Me.Referenced_Type_Id),
+            Me.Get_All_Types_From_Project())
 
         Dim edition_form_result As DialogResult = edit_form.ShowDialog()
 
@@ -507,7 +525,7 @@ Public MustInherit Class Software_Element_Wih_Reference
             Me.Name = edit_form.Get_Element_Name()
             Me.Node.Text = Me.Name
             Me.Description = edit_form.Get_Element_Description()
-            Me.Element_Ref = edit_form.Get_Ref_Element_Identifier()
+            Me.Referenced_Type_Id = edit_form.Get_Ref_Element_Identifier()
 
             Me.Update_Views()
         End If
@@ -521,73 +539,11 @@ Public MustInherit Class Software_Element_Wih_Reference
             Me.Identifier.ToString,
             Me.Name,
             Me.Description,
-            Me.Get_Referenceable_Element_Kind(),
-            Me.Get_Referenced_Element_Path(),
+            "Type",
+            Me.Get_Elmt_Path_From_Proj_By_Id(Me.Referenced_Type_Id),
             Nothing)
         elmt_view_form.ShowDialog()
     End Sub
-
-
-    '----------------------------------------------------------------------------------------------'
-    ' Methods for model consistency checking
-    '----------------------------------------------------------------------------------------------'
-
-
-    '----------------------------------------------------------------------------------------------'
-    ' Specific methods
-    '----------------------------------------------------------------------------------------------'
-
-    Public Function Get_Referenced_Element_Name() As String
-        Return Get_Elmt_Name_From_Proj_By_Id(Me.Element_Ref)
-    End Function
-
-    Public Function Get_Referenced_Element_Path() As String
-        Return Get_Elmt_Path_From_Proj_By_Id(Me.Element_Ref)
-    End Function
-
-    Protected MustOverride Function Get_Referenceable_Element_List() As List(Of Software_Element)
-
-    Protected MustOverride Function Get_Referenceable_Element_Kind() As String
-
-End Class
-
-
-Public MustInherit Class Software_Element_With_Type_Reference
-    Inherits Software_Element_Wih_Reference
-
-    Private Shared ReadOnly Type_Rule As New Modeling_Rule(
-        "Type",
-        "Shall refernce one Type.")
-
-
-    ' -------------------------------------------------------------------------------------------- '
-    ' Constructors
-    ' -------------------------------------------------------------------------------------------- '
-
-    Public Sub New()
-    End Sub
-
-    Public Sub New(
-            name As String,
-            description As String,
-            owner As Software_Element,
-            parent_node As TreeNode,
-            element_ref As Guid)
-        MyBase.New(name, description, owner, parent_node, element_ref)
-    End Sub
-
-
-    ' -------------------------------------------------------------------------------------------- '
-    ' Methods from Software_Element_Wih_Reference
-    ' -------------------------------------------------------------------------------------------- '
-
-    Protected Overrides Function Get_Referenceable_Element_List() As List(Of Software_Element)
-        Return Me.Get_All_Types_From_Project()
-    End Function
-
-    Protected Overrides Function Get_Referenceable_Element_Kind() As String
-        Return "Type"
-    End Function
 
 
     '----------------------------------------------------------------------------------------------'
@@ -598,7 +554,7 @@ Public MustInherit Class Software_Element_With_Type_Reference
         MyBase.Check_Own_Consistency(report)
         Dim type_check = New Consistency_Check_Report_Item(Me, Type_Rule)
         report.Add_Item(type_check)
-        Dim referenced_type As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref)
+        Dim referenced_type As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Referenced_Type_Id)
         type_check.Set_Compliance(TypeOf referenced_type Is Type)
     End Sub
 

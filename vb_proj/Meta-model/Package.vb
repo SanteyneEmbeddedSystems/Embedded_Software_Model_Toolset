@@ -1,7 +1,7 @@
 ﻿Imports System.Xml.Serialization
 
 Public Class Package
-    Inherits Must_Describe_Software_Element
+    Inherits Described_Element
 
     Public Packages As New List(Of Package)
 

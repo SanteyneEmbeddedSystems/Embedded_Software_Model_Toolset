@@ -77,7 +77,7 @@ Public Class Component_Type
         Me.Needed_Elements.Clear()
         For Each port In Me.Provider_Ports
             Dim sw_if As Software_Interface
-            sw_if = CType(Me.Get_Elmt_From_Prj_By_Id(port.Element_Ref),
+            sw_if = CType(Me.Get_Elmt_From_Prj_By_Id(port.Referenced_Interface_Id),
                 Software_Interface)
             If Not IsNothing(sw_if) Then
                 If Not Me.Needed_Elements.Contains(sw_if) Then
@@ -87,7 +87,7 @@ Public Class Component_Type
         Next
         For Each port In Me.Requirer_Ports
             Dim sw_if As Software_Interface
-            sw_if = CType(Me.Get_Elmt_From_Prj_By_Id(port.Element_Ref),
+            sw_if = CType(Me.Get_Elmt_From_Prj_By_Id(port.Referenced_Interface_Id),
                 Software_Interface)
             If Not IsNothing(sw_if) Then
                 If Not Me.Needed_Elements.Contains(sw_if) Then
@@ -97,7 +97,7 @@ Public Class Component_Type
         Next
         For Each conf In Me.Configurations
             Dim data_type As Type
-            data_type = CType(Me.Get_Elmt_From_Prj_By_Id(conf.Element_Ref), Type)
+            data_type = CType(Me.Get_Elmt_From_Prj_By_Id(conf.Referenced_Type_Id), Type)
             If Not IsNothing(data_type) Then
                 If Not Me.Needed_Elements.Contains(data_type) Then
                     Me.Needed_Elements.Add(data_type)
@@ -256,7 +256,7 @@ Public Class Component_Type
         Dim config_lines As New List(Of String)
         For Each config In Me.Configurations
             Dim config_line As String = "+ " & config.Name & " : " &
-                config.Get_Referenced_Element_Name()
+                config.Get_Referenced_Type_Name()
             config_lines.Add(config_line)
         Next
         Dim nb_max_char_per_line As Integer
@@ -388,7 +388,7 @@ End Class
 
 
 Public Class Configuration_Parameter
-    Inherits Software_Element_With_Type_Reference
+    Inherits Typed_Element
 
     Public Const Metaclass_Name As String = "Configuration_Parameter"
 
@@ -436,7 +436,7 @@ End Class
 
 
 Public Class OS_Operation
-    Inherits Must_Describe_Software_Element
+    Inherits Described_Element
 
     Public Const Metaclass_Name As String = "OS_Operation"
 
@@ -483,7 +483,9 @@ End Class
 
 
 Public MustInherit Class Port
-    Inherits Software_Element_Wih_Reference
+    Inherits Named_Element
+
+    Public Referenced_Interface_Id As Guid
 
     Public Const PORT_SIDE As Integer = 16
     Protected Const LOLLIPOP_RADIUS As Integer = PORT_SIDE \ 2
@@ -508,7 +510,8 @@ Public MustInherit Class Port
             owner As Software_Element,
             parent_node As TreeNode,
             interface_ref As Guid)
-        MyBase.New(name, description, owner, parent_node, interface_ref)
+        MyBase.New(name, description, owner, parent_node)
+        Me.Referenced_Interface_Id = interface_ref
     End Sub
 
 
@@ -521,17 +524,55 @@ Public MustInherit Class Port
     End Function
 
 
-    ' -------------------------------------------------------------------------------------------- '
-    ' Methods from Software_Element_Wih_Reference
-    ' -------------------------------------------------------------------------------------------- '
 
-    Protected Overrides Function Get_Referenceable_Element_List() As List(Of Software_Element)
-        Return Me.Get_All_Interfaces_From_Project()
+    Protected Function Get_Referenced_Interface_Name() As String
+        Return Me.Get_Elmt_Name_From_Proj_By_Id(Me.Referenced_Interface_Id)
     End Function
 
-    Protected Overrides Function Get_Referenceable_Element_Kind() As String
-        Return "Interface"
-    End Function
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for contextual menu
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Sub Edit()
+
+        Dim edit_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.EDITION_FORM,
+            Me.Get_Metaclass_Name(),
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            "Interface",
+            Get_Elmt_Path_From_Proj_By_Id(Me.Referenced_Interface_Id),
+            Me.Get_All_Interfaces_From_Project())
+
+        Dim edition_form_result As DialogResult = edit_form.ShowDialog()
+
+        ' Treat edition form result
+        If edition_form_result = DialogResult.OK Then
+
+            ' Update Me
+            Me.Name = edit_form.Get_Element_Name()
+            Me.Node.Text = Me.Name
+            Me.Description = edit_form.Get_Element_Description()
+            Me.Referenced_Interface_Id = edit_form.Get_Ref_Element_Identifier()
+
+            Me.Update_Views()
+        End If
+
+    End Sub
+
+    Public Overrides Sub View()
+        Dim elmt_view_form As New Element_With_Ref_Form(
+            Element_Form.E_Form_Kind.VIEW_FORM,
+            Me.Get_Metaclass_Name(),
+            Me.Identifier.ToString,
+            Me.Name,
+            Me.Description,
+            "Interface",
+            Me.Get_Elmt_Path_From_Proj_By_Id(Me.Referenced_Interface_Id),
+            Nothing)
+        elmt_view_form.ShowDialog()
+    End Sub
 
 
     '----------------------------------------------------------------------------------------------'
@@ -539,15 +580,10 @@ Public MustInherit Class Port
     '----------------------------------------------------------------------------------------------'
 
     Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
-        ' Do not call MyBase implementation of Check_Own_Consistency
-        ' Description is not mandatory for a port
-        Dim name_pattern_check As New Consistency_Check_Report_Item(Me, Name_Pattern_Rule)
-        report.Add_Item(name_pattern_check)
-        name_pattern_check.Set_Compliance(Is_Symbol_Valid(Me.Name))
-
+        MyBase.Check_Own_Consistency(report)
         Dim interface_check As New Consistency_Check_Report_Item(Me, Interface_Rule)
         report.Add_Item(interface_check)
-        Dim sw_if As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Element_Ref)
+        Dim sw_if As Software_Element = Me.Get_Elmt_From_Prj_By_Id(Me.Referenced_Interface_Id)
         interface_check.Set_Compliance(TypeOf sw_if Is Software_Interface)
     End Sub
 
@@ -605,7 +641,7 @@ Public Class Provider_Port
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
-        Dim port_text As String = Me.Name & ":" & Me.Get_Referenced_Element_Name()
+        Dim port_text As String = Me.Name & ":" & Me.Get_Referenced_Interface_Name()
         Dim port_text_x_pos As Integer = Get_Text_Width(port_text.Count) + SVG_TEXT_MARGIN
         Dim port_text_y_pos As Integer = SVG_TEXT_LINE_HEIGHT
 
@@ -702,7 +738,7 @@ Public Class Requirer_Port
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
-        Dim port_text As String = Me.Name & ":" & Me.Get_Referenced_Element_Name()
+        Dim port_text As String = Me.Name & ":" & Me.Get_Referenced_Interface_Name()
         Dim port_text_y_pos As Integer = SVG_TEXT_LINE_HEIGHT
 
         Me.SVG_Content &= Get_SVG_Text(

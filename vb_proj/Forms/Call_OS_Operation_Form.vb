@@ -152,7 +152,7 @@
         Dim swc As Component_Prototype = Get_Swc()
         If Not IsNothing(swc) Then
             Dim swct As Component_Type
-            swct = CType(swc.Get_Elmt_From_Prj_By_Id(swc.Element_Ref), Component_Type)
+            swct = CType(swc.Get_Elmt_From_Prj_By_Id(swc.Ref_Component_Type_Id), Component_Type)
             If Not IsNothing(swct) Then
                 For Each op In swct.Operations
                     Me.Op_By_Name.Add(op.Name, op)

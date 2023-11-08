@@ -1169,7 +1169,7 @@ Public Class Record_Type
         Me.Needed_Elements.Clear()
         For Each fd In Me.Fields
             Dim data_type As Type
-            data_type = CType(Me.Get_Elmt_From_Prj_By_Id(fd.Element_Ref), Type)
+            data_type = CType(Me.Get_Elmt_From_Prj_By_Id(fd.Referenced_Type_Id), Type)
             If Not IsNothing(data_type) Then
                 If Not Me.Needed_Elements.Contains(data_type) Then
                     Me.Needed_Elements.Add(data_type)
@@ -1198,7 +1198,7 @@ Public Class Record_Type
             If fields_list.Count = CDbl(Me.Fields.Count) Then
                 all_valid = True
                 For idx = 0 To fields_list.Count - 1
-                    Dim field_type_id As Guid = Me.Fields(idx).Element_Ref
+                    Dim field_type_id As Guid = Me.Fields(idx).Referenced_Type_Id
                     Dim field_type As Type = CType(Get_Elmt_From_Prj_By_Id(field_type_id), Type)
                     If field_type.Is_Value_Valid(fields_list(idx)) = False Then
                         all_valid = False
@@ -1255,7 +1255,7 @@ Public Class Record_Type
         ' Build the lines of the fields compartment
         Dim fields_lines As New List(Of String)
         For Each field In Me.Fields
-            Dim referenced_type_name As String = field.Get_Referenced_Element_Name()
+            Dim referenced_type_name As String = field.Get_Referenced_Type_Name()
             fields_lines.Add("+ " & field.Name & " : " & referenced_type_name)
         Next
 
@@ -1314,7 +1314,7 @@ Public Class Record_Type
         report.Add_Item(fields_base_type_check)
         Dim children_reference_me As Boolean = False
         For Each f In Me.Fields
-            If f.Element_Ref = Me.Identifier Then
+            If f.Referenced_Type_Id = Me.Identifier Then
                 children_reference_me = True
                 fields_base_type_check.Set_Message("Referenced by : " & f.Name)
                 Exit For
@@ -1328,7 +1328,7 @@ End Class
 
 
 Public Class Record_Field
-    Inherits Software_Element_With_Type_Reference
+    Inherits Typed_Element
 
     Public Const Metaclass_Name As String = "Record_Field"
 
@@ -1381,7 +1381,7 @@ Public Class Record_Field
     Public Overrides Function Compute_SVG_Content() As String
 
         Dim attr_lines As New List(Of String) From {
-            "Base : " & Me.Get_Referenced_Element_Path()}
+            "Base : " & Me.Get_Referenced_Type_Path()}
 
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Math.Max(attr_lines(0).Length, SVG_MIN_CHAR_PER_LINE)
