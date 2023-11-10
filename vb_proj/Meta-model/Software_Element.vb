@@ -15,6 +15,8 @@ Public MustInherit Class Software_Element
     Protected Shared ReadOnly Read_Only_Context_Menu As New Read_Only_Context_Menu
     Private Shared ReadOnly Leaf_Context_Menu As New Leaf_Context_Menu
 
+    Public Const NB_CHARS_MAX_FOR_SYMBOL As Integer = 32
+
     Private Shared ReadOnly Brother_Rule As New Modeling_Rule(
         "Brother_Name",
         "Elements aggregated by the same owner shall have a different name.")
@@ -371,7 +373,6 @@ End Class
 Public MustInherit Class Named_Element
     Inherits Software_Element
 
-    Public Const NB_CHARS_MAX_FOR_SYMBOL As Integer = 32
     Protected Shared Valid_Symbol_Regex As String =
         "^[a-zA-Z][a-zA-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
 

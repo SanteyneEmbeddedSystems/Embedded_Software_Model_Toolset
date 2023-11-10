@@ -99,6 +99,9 @@
     <Compile Include="Context_Menus\Element_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Context_Menus\Enumerated_Type_Context_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Context_Menus\Event_Interface_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
@@ -144,9 +147,7 @@
     <Compile Include="Forms\Connector_Form.vb">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Forms\Enumerated_Type_Form.vb">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Forms\Enumerated_Type_Form.vb" />
     <Compile Include="Forms\ESMT_Form.vb">
       <SubType>Form</SubType>
     </Compile>
@@ -299,6 +300,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Grey_Cross.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Enumeral.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

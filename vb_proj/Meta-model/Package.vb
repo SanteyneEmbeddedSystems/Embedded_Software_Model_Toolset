@@ -163,18 +163,12 @@ Public Class Package
 
     Public Sub Add_Enumerated_Type()
 
-        Dim enumerals_table As New DataTable
-        With enumerals_table
-            .Columns.Add("Name", GetType(String))
-            .Columns.Add("Description", GetType(String))
-        End With
-
-        Dim creation_form As New Enumerated_Type_Form(
+        Dim creation_form As New Element_Form(
             Element_Form.E_Form_Kind.CREATION_FORM,
-            "",
             Enumerated_Type.Metaclass_Name,
             "",
-            enumerals_table)
+            Enumerated_Type.Metaclass_Name,
+            "")
 
         Dim creation_form_result As DialogResult = creation_form.ShowDialog()
         If creation_form_result = DialogResult.OK Then
@@ -182,8 +176,7 @@ Public Class Package
                     creation_form.Get_Element_Name(),
                     creation_form.Get_Element_Description(),
                     Me,
-                    Me.Node,
-                    enumerals_table)
+                    Me.Node)
             Me.Types.Add(new_enumeration)
             Me.Children.Add(new_enumeration)
             Me.Get_Project().Add_Element_To_Project(new_enumeration)

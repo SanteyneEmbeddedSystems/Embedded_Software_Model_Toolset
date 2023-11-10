@@ -68,6 +68,7 @@
             .Add(Basic_Type.Metaclass_Name, My.Resources.Basic_Type)
             .Add(Array_Type.Metaclass_Name, My.Resources.Array_Type)
             .Add(Enumerated_Type.Metaclass_Name, My.Resources.Enumerated_Type)
+            .Add(Enumeral.Metaclass_Name, My.Resources.Enumeral)
             .Add(Fixed_Point_Type.Metaclass_Name, My.Resources.Fixed_Point_Type)
             .Add(Record_Type.Metaclass_Name, My.Resources.Record_Type)
             .Add(Record_Field.Metaclass_Name, My.Resources.Record_Field)

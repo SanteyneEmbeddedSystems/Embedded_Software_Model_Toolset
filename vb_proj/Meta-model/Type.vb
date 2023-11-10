@@ -563,6 +563,8 @@ Public Class Enumerated_Type
 
     Public Const Metaclass_Name As String = "Enumerated_Type"
 
+    Private Shared ReadOnly Context_Menu As New Enumerated_Type_Context_Menu()
+
     Private Shared ReadOnly Enumerals_Rule As New Modeling_Rule(
         "Enumerals",
         "Shall aggregate at least two Enumerals.")
@@ -570,27 +572,6 @@ Public Class Enumerated_Type
     Private Shared ReadOnly Unique_Enumeral_Name_Rule As New Modeling_Rule(
         "Unique_Enumeral_Name",
         "Name of Enumerals shall be unique.")
-
-    Private Shared ReadOnly Valid_Enumeral_Name_Regex As String =
-        "^[A-Z][A-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
-    Private Shared ReadOnly Enumeral_Name_Rule As New Modeling_Rule(
-        "Enumeral_Name",
-        "Name shall match " & Valid_Enumeral_Name_Regex)
-
-
-    Public Class Enumeral
-        Public Name As String
-        Public Description As String
-
-        Public Sub New()
-        End Sub
-
-        Public Sub New(name As String, description As String)
-            Me.Name = name
-            Me.Description = description
-        End Sub
-
-    End Class
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -604,30 +585,8 @@ Public Class Enumerated_Type
             name As String,
             description As String,
             owner As Software_Element,
-            parent_node As TreeNode,
-            enumerals_table As DataTable)
+            parent_node As TreeNode)
         MyBase.New(name, description, owner, parent_node)
-        Update_Enumerals(enumerals_table)
-    End Sub
-
-    Private Sub Update_Enumerals(enumerals_table As DataTable)
-        Me.Enumerals.Clear()
-        Dim row As DataRow
-        For Each row In enumerals_table.Rows
-            Dim enumeral_name As String
-            If Not IsDBNull(row("Name")) Then
-                enumeral_name = CStr(row("Name"))
-            Else
-                enumeral_name = ""
-            End If
-            Dim enumeral_description As String
-            If Not IsDBNull(row("Description")) Then
-                enumeral_description = CStr(row("Description"))
-            Else
-                enumeral_description = ""
-            End If
-            Me.Enumerals.Add(New Enumeral(enumeral_name, enumeral_description))
-        Next
     End Sub
 
 
@@ -637,6 +596,15 @@ Public Class Enumerated_Type
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Enumerated_Type.Metaclass_Name
+    End Function
+
+    Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
+        Return Enumerated_Type.Context_Menu
+    End Function
+
+    Protected Overrides Function Compute_Children_For_Post_Treat() As List(Of Software_Element)
+        Me.Children.AddRange(Me.Enumerals)
+        Return Me.Children
     End Function
 
 
@@ -660,54 +628,29 @@ Public Class Enumerated_Type
     ' Methods for contextual menu
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Sub Edit()
+    Public Sub Add_Enumeral()
 
-        Dim enumerals_table As New DataTable
-        With enumerals_table
-            .Columns.Add("Name", GetType(String))
-            .Columns.Add("Description", GetType(String))
-        End With
-        For Each enumeral In Me.Enumerals
-            enumerals_table.Rows.Add(enumeral.Name, enumeral.Description)
-        Next
+        Dim creation_form As New Element_Form(
+            Element_Form.E_Form_Kind.CREATION_FORM,
+            Enumeral.Metaclass_Name,
+            "",
+            "ENUMERAL",
+            "")
 
-        Dim edit_form As New Enumerated_Type_Form(
-            Element_Form.E_Form_Kind.EDITION_FORM,
-            Me.Identifier.ToString(),
-            Me.Name,
-            Me.Description,
-            enumerals_table)
+        Dim creation_form_result As DialogResult = creation_form.ShowDialog()
 
-        Dim edit_result As DialogResult
-        edit_result = edit_form.ShowDialog()
-        If edit_result = DialogResult.OK Then
-            Me.Name = edit_form.Get_Element_Name()
-            Me.Node.Text = Me.Name
-            Me.Description = edit_form.Get_Element_Description()
-            Me.Update_Enumerals(enumerals_table)
+        If creation_form_result = DialogResult.OK Then
+            Dim new_enumeral As New Enumeral(
+                creation_form.Get_Element_Name(),
+                creation_form.Get_Element_Description(),
+                Me,
+                Me.Node)
+            Me.Enumerals.Add(new_enumeral)
+            Me.Children.Add(new_enumeral)
+            Me.Get_Project().Add_Element_To_Project(new_enumeral)
             Me.Update_Views()
         End If
 
-    End Sub
-
-    Public Overrides Sub View()
-
-        Dim enumerals_table As New DataTable
-        With enumerals_table
-            .Columns.Add("Name", GetType(String))
-            .Columns.Add("Description", GetType(String))
-        End With
-        For Each enumeral In Me.Enumerals
-            enumerals_table.Rows.Add(enumeral.Name, enumeral.Description)
-        Next
-
-        Dim view_form As New Enumerated_Type_Form(
-            Element_Form.E_Form_Kind.VIEW_FORM,
-            Me.Identifier.ToString(),
-            Me.Name,
-            Me.Description,
-            enumerals_table)
-        view_form.ShowDialog()
     End Sub
 
 
@@ -784,22 +727,75 @@ Public Class Enumerated_Type
         Next
         unique_enumeral_name_check.Set_Compliance(is_compliant)
 
-        Dim enumeral_name_check As New _
-            Consistency_Check_Report_Item(Me, Enumerated_Type.Enumeral_Name_Rule)
-        report.Add_Item(enumeral_name_check)
-        Dim enumerals_name_are_ok As Boolean = True
-        Dim message As String = "Wrong Name(s) :"
-        For Each enumeral In Me.Enumerals
-            If Not Regex.IsMatch(enumeral.Name, Enumerated_Type.Valid_Enumeral_Name_Regex) Then
-                enumerals_name_are_ok = False
-                message &= " " & enumeral.Name
-            End If
-        Next
-        If Not enumerals_name_are_ok Then
-            enumeral_name_check.Set_Message(message)
-        End If
-        enumeral_name_check.Set_Compliance(enumerals_name_are_ok)
+    End Sub
 
+
+End Class
+
+
+Public Class Enumeral
+    Inherits Software_Element
+
+    Public Const Metaclass_Name As String = "Enumeral"
+
+
+    Private Shared ReadOnly Valid_Enumeral_Name_Regex As String =
+        "^[A-Z][A-Z0-9_]{1," & NB_CHARS_MAX_FOR_SYMBOL - 1 & "}$"
+
+    Private Shared ReadOnly Enumeral_Name_Rule As New Modeling_Rule(
+        "Enumeral_Name",
+        "Name shall match " & Valid_Enumeral_Name_Regex)
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Constructors
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Sub New()
+    End Sub
+
+    Public Sub New(
+            name As String,
+            description As String,
+            owner As Software_Element,
+            parent_node As TreeNode)
+        MyBase.New(name, description, owner, parent_node)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Protected Overrides Sub Move_Me(new_parent As Software_Element)
+        CType(Me.Owner, Enumerated_Type).Enumerals.Remove(Me)
+        CType(new_parent, Enumerated_Type).Enumerals.Add(Me)
+    End Sub
+
+    Protected Overrides Sub Remove_Me()
+        Dim parent_enum_type As Enumerated_Type = CType(Me.Owner, Enumerated_Type)
+        Me.Node.Remove()
+        parent_enum_type.Enumerals.Remove(Me)
+    End Sub
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Enumeral.Metaclass_Name
+    End Function
+
+    Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
+        Return TypeOf parent Is Enumerated_Type
+    End Function
+
+
+    '----------------------------------------------------------------------------------------------'
+    ' Methods for model consistency checking
+    '----------------------------------------------------------------------------------------------'
+
+    Protected Overrides Sub Check_Own_Consistency(report As Consistency_Check_Report)
+        MyBase.Check_Own_Consistency(report)
+        Dim enumeral_name_check As New Consistency_Check_Report_Item(Me, Enumeral_Name_Rule)
+        report.Add_Item(enumeral_name_check)
+        enumeral_name_check.Set_Compliance(Regex.IsMatch(Me.Name, Valid_Enumeral_Name_Regex))
     End Sub
 
 
