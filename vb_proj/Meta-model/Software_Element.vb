@@ -182,6 +182,10 @@ Public MustInherit Class Software_Element
         Return Software_Element.Leaf_Context_Menu
     End Function
 
+    Protected Overridable Function Get_Read_Only_Context_Menu() As ContextMenuStrip
+        Return Software_Element.Read_Only_Context_Menu
+    End Function
+
     Protected Sub Create_Node()
         Me.Node = New TreeNode(Me.Name) With {
             .ImageKey = Me.Get_Metaclass_Name(),
@@ -216,7 +220,7 @@ Public MustInherit Class Software_Element
     End Sub
 
     Public Sub Apply_Read_Only_Context_Menu()
-        Me.Node.ContextMenuStrip = Software_Element.Read_Only_Context_Menu
+        Me.Node.ContextMenuStrip = Get_Read_Only_Context_Menu()
         If Not IsNothing(Me.Children) Then
             For Each child In Me.Children
                 child.Apply_Read_Only_Context_Menu()
@@ -289,9 +293,12 @@ Public MustInherit Class Software_Element
         Return Me.Identifier.ToString()
     End Function
 
-    Protected Function Get_SVG_Def_Group_Header() As String
-        Return "  <defs>" & vbCrLf &
-              "  <g id=""" & Me.Get_SVG_Id & """>" & vbCrLf
+    Protected Function Get_SVG_Def_Group_Header(Optional is_alt As Boolean = False) As String
+        If is_alt = False Then
+            Return "  <defs>" & vbCrLf & "  <g id=""" & Me.Get_SVG_Id & """>" & vbCrLf
+        Else
+            Return "  <defs>" & vbCrLf & "  <g id=""" & Me.Get_SVG_Id & "_alt"">" & vbCrLf
+        End If
     End Function
 
     Protected Shared Function Get_SVG_Def_Group_Footer() As String
@@ -302,11 +309,14 @@ Public MustInherit Class Software_Element
         Return Me.Get_Top_Package_Folder() & Path.DirectorySeparatorChar & Me.Get_SVG_Id() & ".svg"
     End Function
 
-    Public Overridable Function Update_SVG_Diagram() As String
+    Public Overridable Function Get_Alternative_SVG_File_Path() As String
+        Return Me.Get_Top_Package_Folder() & Path.DirectorySeparatorChar & Me.Get_SVG_Id() &
+            "_alt.svg"
+    End Function
 
+    Public Overridable Function Create_SVG_File() As String
         Dim svg_file_full_path As String = Me.Get_SVG_File_Path()
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
-
         file_stream.WriteLine("<?xml version=""1.0"" encoding=""UTF-8""?>")
         file_stream.WriteLine("<svg")
         file_stream.WriteLine("  Version=""1.1""")
@@ -316,22 +326,48 @@ Public MustInherit Class Software_Element
         file_stream.WriteLine("  width=""3000px"" height=""1000px"">")
         file_stream.WriteLine("  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
          "px;font-family:Consolas;fill:black;text-anchor:start;}</style>")
-        file_stream.WriteLine(Me.Compute_SVG_Content())
+        file_stream.WriteLine("  <style>svg { background-Color: white; color: black;}" &
+        "@media (prefers-color-scheme:dark) " &
+         "{ svg { background-Color: #606060; filter: invert(100%); } } </style>")
+        file_stream.WriteLine(Me.Get_SVG_Def_Group())
         file_stream.WriteLine("  <use xlink:href=""#" &
                               Me.Get_SVG_Id() &
                               """ transform=""translate(0,0)"" />")
         file_stream.WriteLine("</svg>")
         file_stream.Close()
         Return svg_file_full_path
-
     End Function
 
-    Public Overridable Function Compute_SVG_Content() As String
+    Public Function Create_Alternative_SVG_File() As String
+        Dim svg_file_full_path As String = Me.Get_Alternative_SVG_File_Path()
+        Dim file_stream As New StreamWriter(svg_file_full_path, False)
+        file_stream.WriteLine("<?xml version=""1.0"" encoding=""UTF-8""?>")
+        file_stream.WriteLine("<svg")
+        file_stream.WriteLine("  Version=""1.1""")
+        file_stream.WriteLine("  xmlns=""http://www.w3.org/2000/svg""")
+        file_stream.WriteLine("  xmlns:xlink=""http://www.w3.org/1999/xlink""")
+        file_stream.WriteLine("  xmlns:svg=""http://www.w3.org/2000/svg""")
+        file_stream.WriteLine("  width=""3000px"" height=""1000px"">")
+        file_stream.WriteLine("  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
+         "px;font-family:Consolas;fill:black;text-anchor:start;}</style>")
+        file_stream.WriteLine("  <style>svg { background-Color: white; color: black;}" &
+        "@media (prefers-color-scheme:dark) " &
+         "{ svg { background-Color: #606060; filter: invert(100%); } } </style>")
+        file_stream.WriteLine(Me.Get_Alternative_SVG_Def_Group())
+        file_stream.WriteLine("  <use xlink:href=""#" &
+                              Me.Get_SVG_Id() & "_alt" &
+                              """ transform=""translate(0,0)"" />")
+        file_stream.WriteLine("</svg>")
+        file_stream.Close()
+        Return svg_file_full_path
+    End Function
+
+    Public Overridable Function Get_SVG_Def_Group() As String
         Return ""
     End Function
 
-    Public Function Get_SVG_Content() As String
-        Return Me.SVG_Content
+    Public Overridable Function Get_Alternative_SVG_Def_Group() As String
+        Return ""
     End Function
 
     Public Function Get_SVG_Width() As Integer

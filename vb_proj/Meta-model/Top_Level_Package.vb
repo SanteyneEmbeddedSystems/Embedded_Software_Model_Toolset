@@ -114,6 +114,11 @@ Public Class Top_Level_Package
                 pkg.Post_Treat_After_Deserialization(parent_node)
                 If is_writable = False Then
                     pkg.Node.ContextMenuStrip = Top_Level_Package.Readable_Context_Menu
+                    If Not IsNothing(pkg.Children) Then
+                        For Each child In pkg.Children
+                            child.Apply_Read_Only_Context_Menu()
+                        Next
+                    End If
                 End If
             Catch
                 pkg = Top_Level_Package.Create_Corrupted_Package(parent_project, default_name, parent_node)
@@ -242,7 +247,7 @@ Public Class Top_Level_Package
         Me.Status = E_PACKAGE_STATUS.READABLE
         Me.Update_Display()
         Me.Node.ContextMenuStrip = Top_Level_Package.Readable_Context_Menu
-        If Not IsNothing(Children) Then
+        If Not IsNothing(Me.Children) Then
             For Each child In Me.Children
                 child.Apply_Read_Only_Context_Menu()
             Next

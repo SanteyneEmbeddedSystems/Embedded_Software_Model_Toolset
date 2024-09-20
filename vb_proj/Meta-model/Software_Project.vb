@@ -463,7 +463,12 @@ Public Class Software_Project
     End Sub
 
     Public Sub Update_Diagram(sw_elmnt As Software_Element)
-        Dim svg_file_path As String = sw_elmnt.Update_SVG_Diagram()
+        Dim svg_file_path As String = sw_elmnt.Create_SVG_File()
+        Me.Diagram_Viewer.Navigate(svg_file_path)
+    End Sub
+
+    Public Sub Update_Alternative_Diagram(sw_elmnt As Software_Element)
+        Dim svg_file_path As String = sw_elmnt.Create_Alternative_SVG_File()
         Me.Diagram_Viewer.Navigate(svg_file_path)
     End Sub
 
@@ -479,7 +484,7 @@ Public Class Software_Project
         Return svg_file_full_path
     End Function
 
-    Public Function Update_SVG_Diagram() As String
+    Public Function Create_SVG_File() As String
 
         Dim svg_file_full_path As String = Me.Get_SVG_File_Path()
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
@@ -541,7 +546,7 @@ Public Class Software_Project
             For Each pkg In pkg_list
                 Dim x_pos = pkg_idx * (Package.SVG_PKG_BOX_WIDTH + 20)
                 Dim y_pos = pkg_list_idx * 200
-                svg_content &= pkg.Compute_SVG_Content()
+                svg_content &= pkg.Get_SVG_Def_Group()
                 svg_content &= "  <use xlink:href=""#" & pkg.Get_SVG_Id() &
                                   """ transform=""translate(" & x_pos &
                                   "," & y_pos & ")"" />" & vbCrLf

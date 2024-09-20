@@ -1,4 +1,5 @@
 ﻿Imports System.Xml.Serialization
+Imports System.Math
 
 Public Class Package
     Inherits Described_Element
@@ -330,7 +331,7 @@ Public Class Package
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
         ' Add Name compartment
@@ -370,6 +371,81 @@ Public Class Package
         Me.SVG_Height = description_rectangle_height + title_rectangle_height
         Return Me.SVG_Content
     End Function
+
+
+    Public Overrides Function Get_Alternative_SVG_Def_Group() As String
+        Dim svg_content As String
+        svg_content = Me.Get_SVG_Def_Group_Header(True)
+
+        ' Add sub-Packages
+        Dim x_position As Integer = 0
+        Dim max_pkg_height As Integer = 0
+        For Each pkg In Me.Packages
+            svg_content &= pkg.Get_SVG_Def_Group()
+            svg_content &= "  <use xlink:href=""#" & pkg.Get_SVG_Id() &
+                           """ transform=""translate(" & x_position & ",0)"" />" & vbCrLf
+            x_position += pkg.Get_SVG_Width() + SVG_BOX_MARGIN
+            max_pkg_height = Max(max_pkg_height, pkg.Get_SVG_Height())
+        Next
+
+        ' Add Types
+        x_position = 0
+        Dim y_position As Integer = max_pkg_height + SVG_BOX_MARGIN
+        Dim max_type_height As Integer = 0
+        For Each type In Me.Types
+            svg_content &= type.Get_SVG_Def_Group()
+            svg_content &= "  <use xlink:href=""#" & type.Get_SVG_Id() &
+                           """ transform=""translate(" & x_position &
+                           "," & y_position & ")"" />" & vbCrLf
+            x_position += type.Get_SVG_Width() + SVG_BOX_MARGIN
+            max_type_height = Max(max_type_height, type.Get_SVG_Height())
+        Next
+
+        ' Add Interfaces
+        x_position = 0
+        y_position += max_type_height + SVG_BOX_MARGIN
+        Dim max_interface_height As Integer = 0
+        For Each sw_if In Me.Interfaces
+            svg_content &= sw_if.Get_SVG_Def_Group()
+            svg_content &= "  <use xlink:href=""#" & sw_if.Get_SVG_Id() &
+                           """ transform=""translate(" & x_position &
+                           "," & y_position & ")"" />" & vbCrLf
+            x_position += sw_if.Get_SVG_Width() + SVG_BOX_MARGIN
+            max_interface_height = Max(max_interface_height, sw_if.Get_SVG_Height())
+        Next
+
+        ' Add Component_Types
+        x_position = 0
+        y_position += max_interface_height + SVG_BOX_MARGIN
+        Dim max_swct_height As Integer = 0
+        For Each swct In Me.Component_Types
+            svg_content &= swct.Get_SVG_Def_Group()
+            svg_content &= "  <use xlink:href=""#" & swct.Get_SVG_Id() &
+                           """ transform=""translate(" & x_position &
+                           "," & y_position & ")"" />" & vbCrLf
+            x_position += swct.Get_SVG_Width() + SVG_BOX_MARGIN
+            max_swct_height = Max(max_swct_height, swct.Get_SVG_Height())
+        Next
+
+        ' Add Compositions
+        x_position = 0
+        y_position += max_swct_height + SVG_BOX_MARGIN
+        For Each compo In Me.Compositions
+            svg_content &= compo.Get_SVG_Def_Group()
+            svg_content &= "  <use xlink:href=""#" & compo.Get_SVG_Id() &
+                           """ transform=""translate(" & x_position &
+                           "," & y_position & ")"" />" & vbCrLf
+            x_position += compo.Get_SVG_Width() + SVG_BOX_MARGIN
+        Next
+
+        svg_content &= Get_SVG_Def_Group_Footer()
+        Return svg_content
+    End Function
+
+
+    Public Sub Show_Children_On_Diagram()
+        Me.Get_Project().Update_Alternative_Diagram(Me)
+    End Sub
 
 
     '----------------------------------------------------------------------------------------------'

@@ -268,10 +268,10 @@
         ' Update/Create SVG file for selected element
         If TypeOf e.Node.Tag Is Software_Element Then
             Dim sw_elmt As Software_Element = CType(e.Node.Tag, Software_Element)
-            diagram_full_path = sw_elmt.Update_SVG_Diagram()
+            diagram_full_path = sw_elmt.Create_SVG_File()
         Else
             Dim sw_proj As Software_Project = CType(e.Node.Tag, Software_Project)
-            diagram_full_path = sw_proj.Update_SVG_Diagram()
+            diagram_full_path = sw_proj.Create_SVG_File()
         End If
 
         ' Update diagram area

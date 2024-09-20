@@ -111,6 +111,9 @@
     <Compile Include="Context_Menus\Read_Only_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Context_Menus\Read_Only_SWCT_Contect_Menu.vb">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Context_Menus\Record_Type_Context_Menu.vb">
       <SubType>Component</SubType>
     </Compile>

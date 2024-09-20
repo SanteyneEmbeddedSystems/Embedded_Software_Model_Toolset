@@ -142,7 +142,7 @@ Public Class Client_Server_Interface
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         ' Compute Box width (it depends on the longuest line of the operations compartment)
         ' Build the lines of the operations compartment
@@ -579,7 +579,7 @@ Public Class Event_Interface
 
     End Sub
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         ' Compute Box width (it depends on the longuest line of the parameters compartment)
         ' Build the lines of the parameters compartment

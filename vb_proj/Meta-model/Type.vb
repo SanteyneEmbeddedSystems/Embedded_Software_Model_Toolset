@@ -95,7 +95,7 @@ Public MustInherit Class Basic_Type
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
         Me.SVG_Width = Get_Box_Width(SVG_MIN_CHAR_PER_LINE)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
@@ -449,7 +449,7 @@ Public Class Array_Type
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         ' Compute Box width (it depends on the longuest line of the attributes compartment)
         ' Build the lines of the attributes compartment
@@ -658,7 +658,7 @@ Public Class Enumerated_Type
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
         Me.SVG_Width = Get_Box_Width(SVG_MIN_CHAR_PER_LINE)
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
@@ -876,7 +876,7 @@ Public Class Fixed_Point_Type
         Return result
     End Function
 
-    Public Shared Function Is_Resolution_Valid(resolution_str As String) As Boolean
+    Protected Shared Function Is_Resolution_Valid(resolution_str As String) As Boolean
         Dim result As Boolean = False
         Dim regex_match As Match
         regex_match = Fixed_Point_Type.Valid_Decimal_Ratio_Regex.Match(resolution_str)
@@ -911,7 +911,7 @@ Public Class Fixed_Point_Type
         Return result
     End Function
 
-    Public Shared Function Is_Valid_Fixed_Point(fp_str As String) As Boolean
+    Protected Shared Function Is_Valid_Fixed_Point(fp_str As String) As Boolean
         Dim result As Boolean
         Dim regex_match As Match
         regex_match = Fixed_Point_Type.Valid_Decimal_Ratio_Regex.Match(fp_str)
@@ -931,7 +931,7 @@ Public Class Fixed_Point_Type
 
     End Function
 
-    Public Shared Function Is_Offset_Valid(offset_str As String) As Boolean
+    Protected Shared Function Is_Offset_Valid(offset_str As String) As Boolean
         Return Is_Valid_Fixed_Point(offset_str)
     End Function
 
@@ -1029,7 +1029,7 @@ Public Class Fixed_Point_Type
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
         ' Compute Box width (it depends on the longuest line of the attributes compartment)
         ' Build the lines of the attributes compartment
         Dim attr_lines As New List(Of String) From {
@@ -1245,7 +1245,7 @@ Public Class Record_Type
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         ' Compute Box width (it depends on the longuest line of the fields compartment)
         ' Build the lines of the fields compartment
@@ -1374,7 +1374,7 @@ Public Class Record_Field
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         Dim attr_lines As New List(Of String) From {
             "Base : " & Me.Get_Referenced_Type_Path()}

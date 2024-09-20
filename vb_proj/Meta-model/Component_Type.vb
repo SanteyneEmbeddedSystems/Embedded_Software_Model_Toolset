@@ -15,6 +15,7 @@ Public Class Component_Type
         + SVG_VERTICAL_MARGIN * 3
 
     Private Shared ReadOnly Context_Menu As New SWCT_Context_Menu()
+    Private Shared ReadOnly RO_Context_Menu As New Read_Only_SWCT_Context_Menu()
 
     Private Shared ReadOnly Nb_Ports_Rule As New Modeling_Rule(
         "Nb_Ports",
@@ -66,6 +67,10 @@ Public Class Component_Type
 
     Protected Overrides Function Get_Writable_Context_Menu() As ContextMenuStrip
         Return Component_Type.Context_Menu
+    End Function
+
+    Protected Overrides Function Get_Read_Only_Context_Menu() As ContextMenuStrip
+        Return Component_Type.RO_Context_Menu
     End Function
 
 
@@ -248,7 +253,7 @@ Public Class Component_Type
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         ' ---------------------------------------------------------------------------------------- '
         ' Compute Box width (it depends on the longuest line of the configurations compartment)
@@ -291,9 +296,8 @@ Public Class Component_Type
         ' Add provider ports
         Dim max_width As Integer = 0
         For Each pp In Me.Provider_Ports
-            Me.SVG_Content &= pp.Compute_SVG_Content()
+            Me.SVG_Content &= pp.Get_SVG_Def_Group()
             max_width = Max(max_width, pp.Get_SVG_Width())
-
         Next
         Dim port_idx As Integer = 0
         For Each pp In Me.Provider_Ports
@@ -348,13 +352,10 @@ Public Class Component_Type
         ' ---------------------------------------------------------------------------------------- '
         ' Add requirer ports
         max_width = 0
-        For Each rp In Me.Requirer_Ports
-            Me.SVG_Content &= rp.Compute_SVG_Content()
-            max_width = Max(max_width, rp.Get_SVG_Width())
-
-        Next
         port_idx = 0
         For Each rp In Me.Requirer_Ports
+            Me.SVG_Content &= rp.Get_SVG_Def_Group()
+            max_width = Max(max_width, rp.Get_SVG_Width())
             Dim port_x_pos As Integer = rectangle_x_pos + box_width
             Dim port_y_pos As Integer = PORT_SPACE \ 2 + port_idx * PORT_SPACE
             Me.SVG_Content &= "  <use xlink:href=""#" & rp.Get_SVG_Id() &
@@ -364,11 +365,65 @@ Public Class Component_Type
         Next
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
-        Me.SVG_Width = rectangle_x_pos + max_width
+        Me.SVG_Width = rectangle_x_pos + box_width + max_width
 
         Return Me.SVG_Content
 
     End Function
+
+    Public Overrides Function Get_Alternative_SVG_Def_Group() As String
+        Dim svg_content As String
+        svg_content = Me.Get_SVG_Def_Group_Header(True)
+
+        ' Add provided interfaces
+        Dim added_interfaces_list As New List(Of Software_Element)
+        Dim max_interface_width As Integer = 0
+        Dim y_position As Integer = 0
+        For Each pp In Me.Provider_Ports
+            Dim sw_if As Software_Element = Me.Get_Elmt_From_Prj_By_Id(pp.Referenced_Interface_Id)
+            If Not added_interfaces_list.Contains(sw_if) Then
+                added_interfaces_list.Add(sw_if)
+                svg_content &= sw_if.Get_SVG_Def_Group()
+                max_interface_width = Max(max_interface_width, sw_if.Get_SVG_Width())
+                svg_content &= "  <use xlink:href=""#" & sw_if.Get_SVG_Id() &
+                           """ transform=""translate(" & 0 &
+                           "," & y_position & ")"" />" & vbCrLf
+                y_position += sw_if.Get_SVG_Height + SVG_BOX_MARGIN
+            End If
+        Next
+
+        ' Add Component_Type (Me)
+        Dim swct_x_position As Integer = max_interface_width + SVG_BOX_MARGIN
+        If max_interface_width = 0 Then
+            swct_x_position = 0
+        End If
+        svg_content &= Me.Get_SVG_Def_Group()
+        svg_content &= "  <use xlink:href=""#" & Me.Get_SVG_Id() &
+                           """ transform=""translate(" & swct_x_position &
+                           "," & 0 & ")"" />" & vbCrLf
+
+        ' Add required interfaces
+        y_position = 0
+        Dim req_if_x_position As Integer = swct_x_position + Me.Get_SVG_Width() + SVG_BOX_MARGIN
+        For Each rp In Me.Requirer_Ports
+            Dim sw_if As Software_Element = Me.Get_Elmt_From_Prj_By_Id(rp.Referenced_Interface_Id)
+            If Not added_interfaces_list.Contains(sw_if) Then
+                added_interfaces_list.Add(sw_if)
+                svg_content &= sw_if.Get_SVG_Def_Group()
+                svg_content &= "  <use xlink:href=""#" & sw_if.Get_SVG_Id() &
+                           """ transform=""translate(" & req_if_x_position &
+                           "," & y_position & ")"" />" & vbCrLf
+                y_position += sw_if.Get_SVG_Height + SVG_BOX_MARGIN
+            End If
+        Next
+
+        svg_content &= Get_SVG_Def_Group_Footer()
+        Return svg_content
+    End Function
+
+    Public Sub Show_Dependencies_On_Diagram()
+        Me.Get_Project().Update_Alternative_Diagram(Me)
+    End Sub
 
 
     '----------------------------------------------------------------------------------------------'
@@ -524,10 +579,10 @@ Public MustInherit Class Port
     End Function
 
 
-
     Protected Function Get_Referenced_Interface_Name() As String
         Return Me.Get_Elmt_Name_From_Proj_By_Id(Me.Referenced_Interface_Id)
     End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
@@ -637,7 +692,7 @@ Public Class Provider_Port
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
@@ -734,7 +789,7 @@ Public Class Requirer_Port
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 

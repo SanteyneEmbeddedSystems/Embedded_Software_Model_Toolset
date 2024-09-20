@@ -7,7 +7,7 @@
     Public Const SVG_TEXT_MARGIN As Integer = 10
     Public Const SVG_TITLE_HEIGHT As Integer =
         SVG_TEXT_LINE_HEIGHT * 2 + SVG_VERTICAL_MARGIN + 2 * SVG_STROKE_WIDTH
-
+    Public Const SVG_BOX_MARGIN As Integer = 20
 
     Public Structure SVG_POINT
         Public X_Pos As Integer

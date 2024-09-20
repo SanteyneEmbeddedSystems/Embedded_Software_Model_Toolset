@@ -12,6 +12,7 @@
             Me.Menu_View,
             Me.Menu_Make_Writable,
             New ToolStripSeparator,
+            Me.Menu_Show_Content_On_Diagram,
             Me.Menu_Display_Dependencies})
     End Sub
 

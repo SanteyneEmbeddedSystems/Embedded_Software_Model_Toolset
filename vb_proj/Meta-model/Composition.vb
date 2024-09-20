@@ -19,6 +19,8 @@
         "Tasks",
         "Shall Aggregate at least one Task.")
 
+    Private Const SVG_COLOR As String = "rgb(127,127,127)"
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Constructors
@@ -166,6 +168,84 @@
     End Sub
 
 
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Get_SVG_Def_Group() As String
+
+        ' ---------------------------------------------------------------------------------------- '
+        ' Compute Box width (it depends on the longuest line of the Parts compartment)
+        ' Build the lines of the Parts compartment
+        Dim part_lines As New List(Of String)
+        For Each part In Me.Parts
+            part_lines.Add("+ " & part.Name & " : " & part.Get_Type_Name())
+        Next
+        Dim nb_max_char_per_line As Integer
+        nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(part_lines, SVG_MIN_CHAR_PER_LINE)
+        Dim box_width As Integer = Get_Box_Width(nb_max_char_per_line)
+
+        ' ---------------------------------------------------------------------------------------- '
+        ' Compute other boxes lines
+        Dim split_description As List(Of String)
+        split_description = Split_String(Me.Description, nb_max_char_per_line)
+
+        Dim task_lines As New List(Of String)
+        For Each task In Me.Tasks
+            Dim task_line As String = "+ " & task.Name & "()"
+            task_lines.Add(task_line)
+        Next
+
+        ' ---------------------------------------------------------------------------------------- '
+        ' Compute box height
+        ' do not count title lines
+        Dim box_nb_line As Integer = split_description.Count + part_lines.Count + task_lines.Count
+        Dim text_box_height As Integer = SVG_TITLE_HEIGHT + box_nb_line * SVG_TEXT_LINE_HEIGHT _
+            + SVG_STROKE_WIDTH * 4 + SVG_VERTICAL_MARGIN * 3
+        Me.SVG_Height = text_box_height
+
+        Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
+
+        ' ---------------------------------------------------------------------------------------- '
+        ' Add compartments
+
+        ' Add title (Name + stereotype) compartment
+        Me.SVG_Content &= Get_Title_Rectangle(0, 0, Me.Name,
+            Composition.SVG_COLOR, box_width, Metaclass_Name)
+
+        ' Add description compartment
+        Dim desc_rect_height As Integer = 0
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
+            0,
+            SVG_TITLE_HEIGHT,
+            split_description,
+            Composition.SVG_COLOR,
+            box_width,
+            desc_rect_height)
+
+        ' Add Parts compartement
+        Dim conf_rect_height As Integer = 0
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height,
+            part_lines,
+            Composition.SVG_COLOR,
+            box_width,
+            conf_rect_height)
+
+        ' Add operations compartement
+        Me.SVG_Content &= Get_Multi_Line_Rectangle(
+            0,
+            SVG_TITLE_HEIGHT + desc_rect_height + conf_rect_height,
+            task_lines,
+            Composition.SVG_COLOR,
+            box_width)
+
+        Me.SVG_Content &= Get_SVG_Def_Group_Footer()
+        Return Me.SVG_Content
+    End Function
+
+
     '----------------------------------------------------------------------------------------------'
     ' Methods for model consistency checking
     ' -------------------------------------------------------------------------------------------- '
@@ -281,6 +361,10 @@ Public Class Component_Prototype
     ' Specific methods
     ' -------------------------------------------------------------------------------------------- '
 
+    Public Function Get_Type_Name() As String
+        Return Me.Get_Elmt_Name_From_Proj_By_Id(Me.Ref_Component_Type_Id)
+    End Function
+
     Public Shared Function Create_Config_Data_Table(swct As Component_Type) As DataTable
         Dim config_table As New DataTable
         With config_table
@@ -383,7 +467,7 @@ Public Class Component_Prototype
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
 
-    Public Overrides Function Compute_SVG_Content() As String
+    Public Overrides Function Get_SVG_Def_Group() As String
 
         Dim compo As Composition = CType(Me.Owner, Composition)
 
@@ -404,7 +488,7 @@ Public Class Component_Prototype
 
 
         ' ---------------------------------------------------------------------------------------- '
-        ' Get the list of provider Component_Prototypes and Portss to draw
+        ' Get the list of provider Component_Prototypes and Ports to draw
         Dim prov_swc_list As New List(Of Component_Prototype)
         Dim prov_port_list_by_swc As New Dictionary(Of Component_Prototype, List(Of Provider_Port))
         Dim req_port_list_by_swc As New Dictionary(Of Component_Prototype, List(Of Requirer_Port))
@@ -472,7 +556,7 @@ Public Class Component_Prototype
             Dim port_idx As Integer = 0
             For Each pp In prov_port_list_by_swc(swc)
                 ' Draw provider port
-                Me.SVG_Content &= pp.Compute_SVG_Content()
+                Me.SVG_Content &= pp.Get_SVG_Def_Group()
                 Dim port_x_pos As Integer = prov_swc_x_pos - pp.Get_SVG_Width()
                 Dim port_y_pos As Integer = prov_swc_y_pos + Component_Type.PORT_SPACE \ 2 _
                     + port_idx * Component_Type.PORT_SPACE
@@ -482,7 +566,7 @@ Public Class Component_Prototype
 
                 ' Draw requirer port
                 Dim rp As Requirer_Port = req_port_list_by_swc(swc).Item(port_idx)
-                Me.SVG_Content &= rp.Compute_SVG_Content()
+                Me.SVG_Content &= rp.Get_SVG_Def_Group()
                 Me.SVG_Content &= "  <use xlink:href=""#" & rp.Get_SVG_Id() &
                                       """ transform=""translate(" & req_swc_box_width &
                                       "," & port_y_pos & ")"" />" & vbCrLf
