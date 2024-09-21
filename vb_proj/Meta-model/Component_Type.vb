@@ -10,7 +10,7 @@ Public Class Component_Type
 
     Public Const Metaclass_Name As String = "Component_Type"
 
-    Public Const SVG_COLOR As String = "rgb(0,0,0)"
+    Public Const SVG_COLOR As String = "rgb(255,255,255)"
     Public Const PORT_SPACE As Integer = Port.PORT_SIDE + SVG_TEXT_LINE_HEIGHT _
         + SVG_VERTICAL_MARGIN * 3
 
@@ -716,7 +716,7 @@ Public Class Provider_Port
             PORT_SIDE,
             PORT_SIDE,
             Component_Type.SVG_COLOR,
-            "0.6")
+            "0.2")
 
         Dim line_y_pos As Integer = port_rect_y_pos + PORT_SIDE \ 2
         Me.SVG_Content &= Get_SVG_Horizontal_Line(
@@ -730,7 +730,7 @@ Public Class Provider_Port
             line_y_pos,
             LOLLIPOP_RADIUS,
             Component_Type.SVG_COLOR,
-            "0.6")
+            "0.2")
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
 
@@ -811,7 +811,7 @@ Public Class Requirer_Port
                 PORT_SIDE,
                 PORT_SIDE,
                 Component_Type.SVG_COLOR,
-                "0.6")
+                "0.2")
 
         Dim line_y_pos As Integer = port_rect_y_pos + PORT_SIDE \ 2
         Me.SVG_Content &= Get_SVG_Horizontal_Line(
@@ -820,7 +820,7 @@ Public Class Requirer_Port
                 PORT_LINE_LENGTH,
                 Component_Type.SVG_COLOR)
 
-        Me.SVG_Content &= Get_SVG_Haf_Moon(
+        Me.SVG_Content &= Get_SVG_Half_Moon(
                 PORT_SIDE + PORT_LINE_LENGTH,
                 line_y_pos,
                 LOLLIPOP_RADIUS,

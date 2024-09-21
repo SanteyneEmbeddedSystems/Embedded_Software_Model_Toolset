@@ -46,11 +46,15 @@ Public Class Recordable_Element_Form
         inner_item_y_pos += dir_label.Height
 
         Me.Directory_TextBox = New TextBox With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
             .Location = New Point(Marge, inner_item_y_pos),
             .Size = Path_Text_Size,
             .Text = default_directory}
 
         Me.Directory_Button = New Button With {
+            .BackColor = Foreground_Color,
+            .ForeColor = Background_Color,
             .Location = New Point(Path_Button_X_Pos, inner_item_y_pos),
             .Size = ESMT_Form.Path_Button_Size,
             .Text = "..."}
@@ -80,6 +84,8 @@ Public Class Recordable_Element_Form
         inner_item_y_pos += file_label.Height
 
         Me.File_Name_TextBox = New TextBox With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
             .Location = New Point(Marge, inner_item_y_pos),
             .Size = ESMT_Form.Label_Size,
             .Text = default_file_name & file_extension}

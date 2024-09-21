@@ -43,6 +43,8 @@
         inner_item_y_pos += direction_label.Height
 
         With Me.Direction_ComboBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .Items.AddRange(directions)
             .Text = default_direction
             .Location = New Point(ESMT_Form.Marge, inner_item_y_pos)

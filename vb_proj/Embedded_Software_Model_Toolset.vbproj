@@ -231,21 +231,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Project.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\Array_Type.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\Basic_Type.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\Enumerated_Type.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\Package.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
       <Visible>False</Visible>
       <ProductName>.NET Framework 3.5 SP1</ProductName>
@@ -253,58 +238,145 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Fixed_Point_Type.ico" />
+    <None Include="Icons\pkg.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Field.ico" />
+    <None Include="Icons\enumerated.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Record_Type.ico" />
+    <None Include="Icons\proj.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\CS_Interface.ico" />
+    <None Include="Icons\basic.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\CS_Operation.ico" />
+    <None Include="Icons\cs.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Operation_Parameter.ico" />
+    <None Include="Icons\swct.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Purple_Flash_In_Square.ico" />
+    <None Include="Icons\array.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Purple_Triangle.ico" />
+    <None Include="Icons\enumeral.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Black_Class_With_Ports.ico" />
+    <None Include="Icons\fp.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Black_Gears.ico" />
+    <None Include="Icons\pp.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Black_Cross.ico" />
+    <None Include="Icons\rp.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Provider_Port.ico" />
+    <None Include="Icons\cs_op.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Requirer_Port.ico" />
+    <None Include="Icons\cs_op_param.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Composition.ico" />
+    <None Include="Icons\conf.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Connector.ico" />
+    <None Include="Icons\os_op.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Grey_Object_With_Ports.ico" />
+    <None Include="Icons\ev_arg.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Grey_Cross.ico" />
+    <None Include="Icons\ev_if.png" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\Enumeral.ico" />
+    <None Include="Icons\field.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\record.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\call_os_op.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\compo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\connect.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\prototype.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\task.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Application\default_diagram.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Array_Type.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Basic_Type.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Call_OS_Operation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Component_Prototype.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Component_Type.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Composition.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Configuration_Parameter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Connector.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\CS_Interface.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\CS_Operation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\CS_Operation_Parameter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Enumerated_Type.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Event_Argument.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Event_Interface.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Fixed_Point_Type.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\OS_Operation.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Package.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Project.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Provider_Port.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Record_Field.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Record_Type.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Requirer_Port.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

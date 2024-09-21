@@ -19,7 +19,7 @@
         "Tasks",
         "Shall Aggregate at least one Task.")
 
-    Private Const SVG_COLOR As String = "rgb(127,127,127)"
+    Private Const SVG_COLOR As String = "rgb(100,100,100)"
 
 
     ' -------------------------------------------------------------------------------------------- '

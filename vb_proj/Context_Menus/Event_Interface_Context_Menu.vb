@@ -3,6 +3,8 @@
 
     Protected WithEvents Menu_Add_Parameter As New ToolStripMenuItem("Add Parameter")
     Public Sub New()
+        Me.BackColor = Background_Color
+        Me.ForeColor = Foreground_Color
         Me.Items.AddRange(New ToolStripItem() {
             Me.Menu_Edit,
             Me.Menu_View,

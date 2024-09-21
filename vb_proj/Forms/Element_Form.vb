@@ -47,6 +47,8 @@
             inner_item_y_pos += uuid_label.Height
 
             Me.UUID_TextBox = New TextBox With {
+                .BackColor = Background_Color,
+                .ForeColor = Foreground_Color,
                 .Text = default_uuid,
                 .ReadOnly = True,
                 .Location = New Point(ESMT_Form.Marge, inner_item_y_pos),
@@ -76,6 +78,8 @@
         inner_item_y_pos += name_label.Height
 
         Me.Name_TextBox = New TextBox With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
             .Text = default_name,
             .Location = New Point(ESMT_Form.Marge, inner_item_y_pos),
             .Size = ESMT_Form.Label_Size}
@@ -102,6 +106,8 @@
         inner_item_y_pos += description_label.Height
 
         Me.Description_TextBox = New RichTextBox With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
             .Text = default_description,
             .Location = New Point(ESMT_Form.Marge, inner_item_y_pos),
             .Size = New Size(ESMT_Form.Label_Width, 100)}
@@ -115,6 +121,8 @@
         '------------------------------------------------------------------------------------------'
         ' Design main button
         Me.Main_Button = New Button With {
+            .BackColor = Foreground_Color,
+            .ForeColor = Background_Color,
             .Size = ESMT_Form.Button_Size,
             .Location = New Point((Form_Width - Button_Width) \ 2, item_y_pos)}
         Select Case Me.Kind
@@ -148,6 +156,8 @@
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
+        Me.BackColor = Color.Black
+        Me.ForeColor = Color.Gray
 
     End Sub
 
@@ -191,7 +201,6 @@
 
     Private Sub Form_Created() Handles Me.Load
         If Me.Kind = E_Form_Kind.VIEW_FORM Then
-            Me.Description_TextBox.BackColor = Color.FromArgb(255, 240, 240, 240)
             Me.Set_Fields_Read_Only()
         End If
     End Sub

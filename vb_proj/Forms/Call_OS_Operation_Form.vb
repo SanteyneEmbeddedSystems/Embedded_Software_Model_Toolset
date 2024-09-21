@@ -58,6 +58,8 @@
             .Size = ESMT_Form.Field_Label_Size}
         call_panel.Controls.Add(swc_label)
         With Me.Component_ComboBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .DropDownStyle = ComboBoxStyle.DropDownList
             .Text = default_swc_name
             .Location = New Point(ESMT_Form.Marge + swc_label.Width, inner_item_y_pos)
@@ -72,6 +74,8 @@
             .Size = ESMT_Form.Field_Label_Size}
         call_panel.Controls.Add(op_label)
         With Me.Operation_ComboBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .DropDownStyle = ComboBoxStyle.DropDownList
             .Text = default_os_operation_name
             .Location = New Point(ESMT_Form.Marge + op_label.Width, inner_item_y_pos)
@@ -86,6 +90,8 @@
             .Size = ESMT_Form.Field_Label_Size}
         call_panel.Controls.Add(priority_label)
         Me.Priority_TextBox = New TextBox With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
             .Text = default_priority,
             .Location = New Point(ESMT_Form.Marge + priority_label.Width, inner_item_y_pos),
             .Size = ESMT_Form.Field_Value_Size}

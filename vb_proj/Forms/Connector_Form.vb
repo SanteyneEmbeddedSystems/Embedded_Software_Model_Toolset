@@ -61,6 +61,8 @@
             .Size = ESMT_Form.Field_Label_Size}
         connection_panel.Controls.Add(prov_swc_label)
         With Me.Prov_Component_ComboBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .DropDownStyle = ComboBoxStyle.DropDownList
             .Text = default_prov_swc_path
             .Location = New Point(ESMT_Form.Marge + prov_swc_label.Width, inner_item_y_pos)
@@ -75,6 +77,8 @@
             .Size = ESMT_Form.Field_Label_Size}
         connection_panel.Controls.Add(prov_port_label)
         With Me.Prov_Port_ComboBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .DropDownStyle = ComboBoxStyle.DropDownList
             .Text = default_prov_port_name
             .Location = New Point(ESMT_Form.Marge + prov_port_label.Width, inner_item_y_pos)
@@ -89,6 +93,8 @@
             .Size = ESMT_Form.Field_Label_Size}
         connection_panel.Controls.Add(req_swc_label)
         With Me.Req_Component_ComboBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .DropDownStyle = ComboBoxStyle.DropDownList
             .Text = default_req_swc_path
             .Location = New Point(ESMT_Form.Marge + req_swc_label.Width, inner_item_y_pos)
@@ -103,6 +109,8 @@
             .Size = ESMT_Form.Field_Label_Size}
         connection_panel.Controls.Add(req_port_label)
         With Me.Req_Port_ComboBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .DropDownStyle = ComboBoxStyle.DropDownList
             .Text = default_req_port_name
             .Location = New Point(ESMT_Form.Marge + req_port_label.Width, inner_item_y_pos)

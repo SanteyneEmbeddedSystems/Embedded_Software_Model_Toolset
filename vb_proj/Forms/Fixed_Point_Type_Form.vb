@@ -54,6 +54,8 @@ Public Class Fixed_Point_Type_Form
             .Size = ESMT_Form.Field_Label_Size}
         fixed_point_panel.Controls.Add(unit_label)
         Me.Unit_TexBox = New TextBox With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
             .Text = default_unit,
             .Location = New Point(ESMT_Form.Marge + unit_label.Width, inner_item_y_pos),
             .Size = ESMT_Form.Field_Value_Size}
@@ -66,6 +68,8 @@ Public Class Fixed_Point_Type_Form
             .Size = ESMT_Form.Field_Label_Size}
         fixed_point_panel.Controls.Add(resol_label)
         Me.Resolution_TexBox = New TextBox With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
             .Text = default_resolution,
             .Location = New Point(ESMT_Form.Marge + resol_label.Width, inner_item_y_pos),
             .Size = ESMT_Form.Field_Value_Size}
@@ -78,6 +82,8 @@ Public Class Fixed_Point_Type_Form
             .Size = ESMT_Form.Field_Label_Size}
         fixed_point_panel.Controls.Add(offset_label)
         Me.Offset_TexBox = New TextBox With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
             .Text = default_offset,
             .Location = New Point(ESMT_Form.Marge + offset_label.Width, inner_item_y_pos),
             .Size = ESMT_Form.Field_Value_Size}

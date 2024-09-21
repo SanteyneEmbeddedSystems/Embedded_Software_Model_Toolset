@@ -3,6 +3,8 @@
 
     Protected WithEvents Menu_Add_Call_Operation As New ToolStripMenuItem("Add Call_OS_Operation")
     Public Sub New()
+        Me.BackColor = Background_Color
+        Me.ForeColor = Foreground_Color
         Me.Items.AddRange(New ToolStripItem() {
             Me.Menu_Edit,
             Me.Menu_View,

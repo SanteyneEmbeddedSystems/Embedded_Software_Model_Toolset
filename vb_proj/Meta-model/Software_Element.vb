@@ -317,22 +317,10 @@ Public MustInherit Class Software_Element
     Public Overridable Function Create_SVG_File() As String
         Dim svg_file_full_path As String = Me.Get_SVG_File_Path()
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
-        file_stream.WriteLine("<?xml version=""1.0"" encoding=""UTF-8""?>")
-        file_stream.WriteLine("<svg")
-        file_stream.WriteLine("  Version=""1.1""")
-        file_stream.WriteLine("  xmlns=""http://www.w3.org/2000/svg""")
-        file_stream.WriteLine("  xmlns:xlink=""http://www.w3.org/1999/xlink""")
-        file_stream.WriteLine("  xmlns:svg=""http://www.w3.org/2000/svg""")
-        file_stream.WriteLine("  width=""3000px"" height=""1000px"">")
-        file_stream.WriteLine("  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
-         "px;font-family:Consolas;fill:black;text-anchor:start;}</style>")
-        file_stream.WriteLine("  <style>svg { background-Color: white; color: black;}" &
-        "@media (prefers-color-scheme:dark) " &
-         "{ svg { background-Color: #606060; filter: invert(100%); } } </style>")
+        file_stream.WriteLine(Get_SGV_File_Header())
         file_stream.WriteLine(Me.Get_SVG_Def_Group())
-        file_stream.WriteLine("  <use xlink:href=""#" &
-                              Me.Get_SVG_Id() &
-                              """ transform=""translate(0,0)"" />")
+        file_stream.WriteLine("  <use xlink:href=""#" & Me.Get_SVG_Id() &
+            """ transform=""translate(" & SVG_BOX_MARGIN & "," & SVG_BOX_MARGIN & ")"" />")
         file_stream.WriteLine("</svg>")
         file_stream.Close()
         Return svg_file_full_path
@@ -341,22 +329,10 @@ Public MustInherit Class Software_Element
     Public Function Create_Alternative_SVG_File() As String
         Dim svg_file_full_path As String = Me.Get_Alternative_SVG_File_Path()
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
-        file_stream.WriteLine("<?xml version=""1.0"" encoding=""UTF-8""?>")
-        file_stream.WriteLine("<svg")
-        file_stream.WriteLine("  Version=""1.1""")
-        file_stream.WriteLine("  xmlns=""http://www.w3.org/2000/svg""")
-        file_stream.WriteLine("  xmlns:xlink=""http://www.w3.org/1999/xlink""")
-        file_stream.WriteLine("  xmlns:svg=""http://www.w3.org/2000/svg""")
-        file_stream.WriteLine("  width=""3000px"" height=""1000px"">")
-        file_stream.WriteLine("  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
-         "px;font-family:Consolas;fill:black;text-anchor:start;}</style>")
-        file_stream.WriteLine("  <style>svg { background-Color: white; color: black;}" &
-        "@media (prefers-color-scheme:dark) " &
-         "{ svg { background-Color: #606060; filter: invert(100%); } } </style>")
+        file_stream.WriteLine(Get_SGV_File_Header())
         file_stream.WriteLine(Me.Get_Alternative_SVG_Def_Group())
-        file_stream.WriteLine("  <use xlink:href=""#" &
-                              Me.Get_SVG_Id() & "_alt" &
-                              """ transform=""translate(0,0)"" />")
+        file_stream.WriteLine("  <use xlink:href=""#" & Me.Get_SVG_Id() & "_alt" &
+            """ transform=""translate(" & SVG_BOX_MARGIN & "," & SVG_BOX_MARGIN & ")"" />")
         file_stream.WriteLine("</svg>")
         file_stream.Close()
         Return svg_file_full_path

@@ -1,6 +1,6 @@
 ﻿Public Class ESMT_Main_Window
 
-    Inherits Form
+    Inherits ESMT_Form
 
     Private ReadOnly My_Application As ESMT_Application ' bidirectional association
 
@@ -23,21 +23,27 @@
         Me.Text = "Embedded Software Model Toolset"
         Me.ClientSize = New Size(1000, 750)
 
+
         '------------------------------------------------------------------------------------------'
         ' Create menu bar
         Dim main_menu As New MenuStrip
         Me.Controls.Add(main_menu)
-
+        main_menu.BackColor = Background_Color
+        main_menu.ForeColor = Foreground_Color
         Dim project_menu As ToolStripMenuItem
         project_menu = CType(main_menu.Items.Add("Project"), ToolStripMenuItem)
 
         With Me.Menu_Load_Project
             .Text = "Load project"
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
         End With
         project_menu.DropDownItems.Add(Me.Menu_Load_Project)
 
         With Me.Menu_New_Project
             .Text = "New project"
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
         End With
         project_menu.DropDownItems.Add(Me.Menu_New_Project)
 
@@ -59,6 +65,9 @@
                 Or AnchorStyles.Left Or AnchorStyles.Right
             .Location = New Point(0, 25)
             .AllowDrop = True
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
+            .LineColor = Color.DarkGray
         End With
 
         Me.Model_Browser.ImageList = New ImageList
@@ -74,19 +83,19 @@
             .Add(Record_Field.Metaclass_Name, My.Resources.Record_Field)
             .Add(Client_Server_Interface.Metaclass_Name, My.Resources.CS_Interface)
             .Add(Client_Server_Operation.Metaclass_Name, My.Resources.CS_Operation)
-            .Add(Operation_Parameter.Metaclass_Name, My.Resources.Operation_Parameter)
-            .Add(Event_Interface.Metaclass_Name, My.Resources.Purple_Flash_In_Square)
-            .Add(Event_Parameter.Metaclass_Name, My.Resources.Purple_Triangle)
-            .Add(Component_Type.Metaclass_Name, My.Resources.Black_Class_With_Ports)
-            .Add(Configuration_Parameter.Metaclass_Name, My.Resources.Black_Gears)
-            .Add(OS_Operation.Metaclass_Name, My.Resources.Black_Cross)
+            .Add(Operation_Parameter.Metaclass_Name, My.Resources.CS_Operation_Parameter)
+            .Add(Event_Interface.Metaclass_Name, My.Resources.Event_Interface)
+            .Add(Event_Parameter.Metaclass_Name, My.Resources.Event_Argument)
+            .Add(Component_Type.Metaclass_Name, My.Resources.Component_Type)
+            .Add(Configuration_Parameter.Metaclass_Name, My.Resources.Configuration_Parameter)
+            .Add(OS_Operation.Metaclass_Name, My.Resources.OS_Operation)
             .Add(Provider_Port.Metaclass_Name, My.Resources.Provider_Port)
             .Add(Requirer_Port.Metaclass_Name, My.Resources.Requirer_Port)
             .Add(Composition.Metaclass_Name, My.Resources.Composition)
             .Add(Connector.Metaclass_Name, My.Resources.Connector)
-            .Add(Component_Prototype.Metaclass_Name, My.Resources.Grey_Object_With_Ports)
-            .Add(Composition_Task.Metaclass_Name, My.Resources.Grey_Cross)
-            .Add(Call_OS_Operation.Metaclass_Name, My.Resources.Grey_Cross)
+            .Add(Component_Prototype.Metaclass_Name, My.Resources.Component_Prototype)
+            .Add(Composition_Task.Metaclass_Name, My.Resources.task)
+            .Add(Call_OS_Operation.Metaclass_Name, My.Resources.Call_OS_Operation)
         End With
 
 
@@ -97,6 +106,7 @@
             .Anchor = AnchorStyles.Top Or AnchorStyles.Bottom _
                 Or AnchorStyles.Left Or AnchorStyles.Right
             .Location = New Point(0, 25)
+            .DocumentText = My.Resources.default_diagram
         End With
 
         ResumeLayout(False)

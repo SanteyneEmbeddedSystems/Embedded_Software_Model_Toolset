@@ -42,6 +42,11 @@
         inner_item_y_pos += configurations_label.Height + ESMT_Form.Marge
 
         Me.Config_Values_Table_View = New DataGridView With {
+            .BackColor = Background_Color,
+            .ForeColor = Foreground_Color,
+            .BackgroundColor = Background_Color,
+            .DefaultCellStyle = ESMT_Form.Grid_View_Style,
+            .ColumnHeadersDefaultCellStyle = ESMT_Form.Grid_View_Style,
             .Location = New Point(ESMT_Form.Marge, inner_item_y_pos),
             .Size = New Size(ESMT_Form.Label_Width, 150),
             .DataSource = default_config_data,
@@ -50,7 +55,6 @@
             .ScrollBars = ScrollBars.Vertical,
             .ColumnHeadersVisible = True,
             .RowHeadersVisible = False,
-            .BackgroundColor = Color.FromName("Control"),
             .AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill}
         configurations_panel.Controls.Add(Me.Config_Values_Table_View)
         inner_item_y_pos += Me.Config_Values_Table_View.Height + ESMT_Form.Marge
@@ -96,9 +100,6 @@
     Protected Overrides Sub Set_Fields_Read_Only()
         MyBase.Set_Fields_Read_Only()
         Me.Config_Values_Table_View.ReadOnly = True
-        Dim style As New DataGridViewCellStyle With {
-            .BackColor = Color.LightGray}
-        Me.Config_Values_Table_View.DefaultCellStyle = style
     End Sub
 
 End Class

@@ -3,6 +3,8 @@
 
     Protected WithEvents Menu_Add_Operation As New ToolStripMenuItem("Add Operation")
     Public Sub New()
+        Me.BackColor = Background_Color
+        Me.ForeColor = Foreground_Color
         Me.Items.AddRange(New ToolStripItem() {
             Me.Menu_Edit,
             Me.Menu_View,

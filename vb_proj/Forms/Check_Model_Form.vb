@@ -30,6 +30,8 @@ Public Class Check_Model_Form
         inner_item_y_pos += option_label.Height
 
         With Me.Report_Format_Selector
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             ' Order is coupled with items order in E_Report_File_Format
             .Items.AddRange(formats)
             .Text = default_report_file_format
@@ -41,6 +43,8 @@ Public Class Check_Model_Form
         inner_item_y_pos += Me.Report_Format_Selector.Height + Marge
 
         With Me.Show_Only_Not_Compliant_ChckBx
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .Location = New Point(Marge, inner_item_y_pos)
             .Size = Path_Text_Size
             .Text = "Show only not compliant checkings"
@@ -49,6 +53,8 @@ Public Class Check_Model_Form
         inner_item_y_pos += Me.Show_Only_Not_Compliant_ChckBx.Height + Marge
 
         With Me.Add_Rules_Description_ChckBx
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .Location = New Point(Marge, inner_item_y_pos)
             .Size = Path_Text_Size
             .Text = "Add rules description in report"
@@ -80,12 +86,16 @@ Public Class Check_Model_Form
         inner_item_y_pos += report_directory_label.Height
 
         With Me.Report_Directory_TxtBx
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .Location = New Point(Marge, inner_item_y_pos)
             .Size = Path_Text_Size
             .Text = default_report_directory
         End With
 
         With Me.Report_Directory_Button
+            .BackColor = Foreground_Color
+            .ForeColor = Background_Color
             .Location = New Point(Path_Button_X_Pos, inner_item_y_pos)
             .Size = New Size(Path_Button_Width, 2 * Marge)
             .Text = "..."
@@ -107,6 +117,8 @@ Public Class Check_Model_Form
         '------------------------------------------------------------------------------------------'
         ' Design OK button
         With Me.Check_Button
+            .BackColor = Foreground_Color
+            .ForeColor = Background_Color
             .Text = "Check"
             .Location = New Point((Form_Width - Button_Width) \ 2, item_y_pos)
         End With
@@ -120,6 +132,8 @@ Public Class Check_Model_Form
         Me.MaximizeBox = False
         Me.MinimizeBox = False
         Me.FormBorderStyle = FormBorderStyle.FixedDialog
+        Me.BackColor = Background_Color
+        Me.ForeColor = Foreground_Color
 
     End Sub
 

@@ -54,6 +54,8 @@ Public Class Array_Type_Form
             .Size = ESMT_Form.Field_Label_Size}
         dimension_panel.Controls.Add(first_dim_label)
         With Me.First_Dim_TexBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .Text = default_first_dim
             .Location = New Point(ESMT_Form.Marge + first_dim_label.Width, inner_item_y_pos)
             .Size = ESMT_Form.Field_Value_Size
@@ -67,6 +69,8 @@ Public Class Array_Type_Form
             .Size = ESMT_Form.Field_Label_Size}
         dimension_panel.Controls.Add(second_dim_label)
         With Me.Second_Dim_TexBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .Text = default_second_dim
             .Location = New Point(ESMT_Form.Marge + second_dim_label.Width, inner_item_y_pos)
             .Size = ESMT_Form.Field_Value_Size
@@ -80,6 +84,8 @@ Public Class Array_Type_Form
             .Size = ESMT_Form.Field_Label_Size}
         dimension_panel.Controls.Add(third_dim_label)
         With Me.Third_Dim_TexBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .Text = default_third_dim
             .Location = New Point(ESMT_Form.Marge + third_dim_label.Width, inner_item_y_pos)
             .Size = ESMT_Form.Field_Value_Size

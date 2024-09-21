@@ -51,6 +51,8 @@
             Me.Referenced_Element_ComboBox.Items.Add(default_ref_element_path)
         End If
         With Me.Referenced_Element_ComboBox
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
             .DropDownStyle = ComboBoxStyle.DropDownList
             .Text = default_ref_element_path
             .Location = New Point(ESMT_Form.Marge, inner_item_y_pos)

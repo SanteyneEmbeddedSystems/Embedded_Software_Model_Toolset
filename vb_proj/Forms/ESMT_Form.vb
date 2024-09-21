@@ -32,6 +32,13 @@ Public MustInherit Class ESMT_Form
     Protected Const Button_Height As Integer = 3 * Marge
     Protected Shared Button_Size As New Size(Button_Width, Button_Height)
 
+    Protected Shared Background_Color As Color = Color.Black
+    Protected Shared Foreground_Color As Color = Color.Gray
+
+    Protected Shared Grid_View_Style As New DataGridViewCellStyle With {
+        .BackColor = Background_Color,
+        .ForeColor = Foreground_Color}
+
     Protected Shared Sub Select_Directory(
             title As String,
             ByRef directory_textbox As TextBox)

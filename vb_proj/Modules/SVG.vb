@@ -14,6 +14,21 @@
         Public Y_Pos As Integer
     End Structure
 
+    Public Function Get_SGV_File_Header() As String
+        Dim header As String = ""
+        header &= "<?xml version=""1.0"" encoding=""UTF-8""?>" & vbCr
+        header &= "<svg" & vbCr
+        header &= "  Version=""1.1""" & vbCr
+        header &= "  xmlns=""http://www.w3.org/2000/svg""" & vbCr
+        header &= "  xmlns:xlink=""http://www.w3.org/1999/xlink""" & vbCr
+        header &= "  xmlns:svg=""http://www.w3.org/2000/svg""" & vbCr
+        header &= "  width=""3000px"" height=""1000px"">" & vbCr
+        header &= "  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
+         "px;font-family:Consolas;fill:gray;text-anchor:start;}</style>" & vbCr
+        header &= "  <style>svg { background-Color: black; color: white;}</style>" & vbCr
+        Return header
+    End Function
+
     Public Function Get_Box_Width(nb_char As Integer) As Integer
         Return Get_Text_Width(nb_char) + SVG_TEXT_MARGIN * 2 + SVG_STROKE_WIDTH * 2
     End Function
@@ -40,7 +55,7 @@
             rectangle_witdh,
             SVG_TITLE_HEIGHT,
             color,
-            "0.5",
+            "0.3",
             SVG_STROKE_WIDTH)
 
         ' Add stereotype
@@ -190,7 +205,7 @@
         Return svg_content
     End Function
 
-    Public Function Get_SVG_Haf_Moon(
+    Public Function Get_SVG_Half_Moon(
             x_pos As Integer,
             y_pos As Integer,
             radius As Integer,

@@ -485,25 +485,13 @@ Public Class Software_Project
     End Function
 
     Public Function Create_SVG_File() As String
-
         Dim svg_file_full_path As String = Me.Get_SVG_File_Path()
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
-
-        file_stream.WriteLine("<?xml version=""1.0"" encoding=""UTF-8""?>")
-        file_stream.WriteLine("<svg")
-        file_stream.WriteLine("  Version=""1.1""")
-        file_stream.WriteLine("  xmlns=""http://www.w3.org/2000/svg""")
-        file_stream.WriteLine("  xmlns:xlink=""http://www.w3.org/1999/xlink""")
-        file_stream.WriteLine("  xmlns:svg=""http://www.w3.org/2000/svg""")
-        file_stream.WriteLine("  width=""3000px"" height=""1000px"">")
-        file_stream.WriteLine("  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
-         "px;font-family:Consolas;fill:black;text-anchor:start;}</style>")
+        file_stream.WriteLine(Get_SGV_File_Header())
         file_stream.WriteLine(Me.Compute_SVG_Content())
-
         file_stream.WriteLine("</svg>")
         file_stream.Close()
         Return svg_file_full_path
-
     End Function
 
     Public Function Compute_SVG_Content() As String
@@ -574,7 +562,7 @@ Public Class Software_Project
                     from_point_dico(pkg).Y_Pos,
                     to_point_dico(CType(need_pkg, Top_Level_Package)).X_Pos,
                     to_point_dico(CType(need_pkg, Top_Level_Package)).Y_Pos,
-                    "black",
+                    "white",
                     True,
                     "open_arrow")
             Next

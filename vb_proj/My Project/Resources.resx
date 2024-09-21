@@ -119,75 +119,81 @@
   </resheader>
   <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Array_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Array_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Array_Type.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Basic_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Basic_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Basic_Type.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Basic_Types" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Meta-model\Basic_Types.pkgx;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="Black_Class_With_Ports" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Black_Class_With_Ports.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Call_OS_Operation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Call_OS_Operation.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Black_Cross" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Black_Cross.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Component_Prototype" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Component_Prototype.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Black_Gears" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Black_Gears.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Component_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Component_Type.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Composition" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Composition.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Composition.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Configuration_Parameter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Configuration_Parameter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Connector" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Connector.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Connector.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CS_Interface" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\CS_Interface.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\CS_Interface.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="CS_Operation" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\CS_Operation.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\CS_Operation.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="CS_Operation_Parameter" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\CS_Operation_Parameter.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="default_diagram" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Application\default_diagram.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
   <data name="Enumeral" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Enumeral.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Enumeral.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Enumerated_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Enumerated_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Enumerated_Type.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Event_Argument" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Event_Argument.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Event_Interface" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Event_Interface.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Fixed_Point_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Fixed_Point_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Fixed_Point_Type.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Grey_Cross" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Grey_Cross.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Grey_Object_With_Ports" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Grey_Object_With_Ports.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Operation_Parameter" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Operation_Parameter.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OS_Operation" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\OS_Operation.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Package" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Package.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Package.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Project" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Project.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Project.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Provider_Port" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Provider_Port.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Purple_Flash_In_Square" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Purple_Flash_In_Square.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Purple_Triangle" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Purple_Triangle.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Provider_Port.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Record_Field" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Field.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Record_Field.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Record_Type" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Record_Type.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Record_Type.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Requirer_Port" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Icons\Requirer_Port.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+    <value>..\Icons\Requirer_Port.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Task" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Icons\Task.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

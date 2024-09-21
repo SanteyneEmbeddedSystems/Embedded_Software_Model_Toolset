@@ -12,6 +12,8 @@
     Private WithEvents Menu_Check_Model As New ToolStripMenuItem("Check model")
 
     Public Sub New()
+        Me.BackColor = Color.Black
+        Me.ForeColor = Color.Gray
         Me.Items.AddRange(New ToolStripItem() {
             Me.Menu_Save,
             Me.Menu_Edit,
