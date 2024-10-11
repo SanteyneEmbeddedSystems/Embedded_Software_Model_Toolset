@@ -387,10 +387,14 @@ Public Class Package
             x_position += pkg.Get_SVG_Width() + SVG_BOX_MARGIN
             max_pkg_height = Max(max_pkg_height, pkg.Get_SVG_Height())
         Next
+        Me.Alt_SVG_Width = x_position - SVG_BOX_MARGIN
 
         ' Add Types
         x_position = 0
         Dim y_position As Integer = max_pkg_height + SVG_BOX_MARGIN
+        If max_pkg_height = 0 Then
+            y_position = 0
+        End If
         Dim max_type_height As Integer = 0
         For Each type In Me.Types
             svg_content &= type.Get_SVG_Def_Group()
@@ -400,10 +404,13 @@ Public Class Package
             x_position += type.Get_SVG_Width() + SVG_BOX_MARGIN
             max_type_height = Max(max_type_height, type.Get_SVG_Height())
         Next
+        Me.Alt_SVG_Width = Max(Me.Alt_SVG_Width, x_position - SVG_BOX_MARGIN)
 
         ' Add Interfaces
         x_position = 0
-        y_position += max_type_height + SVG_BOX_MARGIN
+        If max_type_height <> 0 Then
+            y_position += max_type_height + SVG_BOX_MARGIN
+        End If
         Dim max_interface_height As Integer = 0
         For Each sw_if In Me.Interfaces
             svg_content &= sw_if.Get_SVG_Def_Group()
@@ -413,10 +420,13 @@ Public Class Package
             x_position += sw_if.Get_SVG_Width() + SVG_BOX_MARGIN
             max_interface_height = Max(max_interface_height, sw_if.Get_SVG_Height())
         Next
+        Me.Alt_SVG_Width = Max(Me.Alt_SVG_Width, x_position - SVG_BOX_MARGIN)
 
         ' Add Component_Types
         x_position = 0
-        y_position += max_interface_height + SVG_BOX_MARGIN
+        If max_interface_height <> 0 Then
+            y_position += max_interface_height + SVG_BOX_MARGIN
+        End If
         Dim max_swct_height As Integer = 0
         For Each swct In Me.Component_Types
             svg_content &= swct.Get_SVG_Def_Group()
@@ -426,17 +436,28 @@ Public Class Package
             x_position += swct.Get_SVG_Width() + SVG_BOX_MARGIN
             max_swct_height = Max(max_swct_height, swct.Get_SVG_Height())
         Next
+        Me.Alt_SVG_Width = Max(Me.Alt_SVG_Width, x_position - SVG_BOX_MARGIN)
 
         ' Add Compositions
         x_position = 0
-        y_position += max_swct_height + SVG_BOX_MARGIN
+        If max_swct_height <> 0 Then
+            y_position += max_swct_height + SVG_BOX_MARGIN
+        End If
+        Dim max_compo_height As Integer = 0
         For Each compo In Me.Compositions
             svg_content &= compo.Get_SVG_Def_Group()
             svg_content &= "  <use xlink:href=""#" & compo.Get_SVG_Id() &
                            """ transform=""translate(" & x_position &
                            "," & y_position & ")"" />" & vbCrLf
             x_position += compo.Get_SVG_Width() + SVG_BOX_MARGIN
+            max_compo_height = Max(max_compo_height, compo.Get_SVG_Height())
         Next
+        Me.Alt_SVG_Width = Max(Me.Alt_SVG_Width, x_position - SVG_BOX_MARGIN)
+
+        If max_compo_height <> 0 Then
+            y_position += max_compo_height + SVG_BOX_MARGIN
+        End If
+        Me.Alt_SVG_Height = y_position - SVG_BOX_MARGIN
 
         svg_content &= Get_SVG_Def_Group_Footer()
         Return svg_content

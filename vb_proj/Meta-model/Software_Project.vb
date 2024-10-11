@@ -2,6 +2,7 @@
 Imports System.Xml
 Imports System.Xml.Serialization
 Imports System.Text
+Imports System.Math
 
 Public Class Software_Project
 
@@ -32,6 +33,9 @@ Public Class Software_Project
     Private ReadOnly Basic_Integer_Types As New Dictionary(Of Guid, Software_Element)
     Private ReadOnly Interfaces As New Dictionary(Of Guid, Software_Element)
     Private ReadOnly Component_Types As New Dictionary(Of Guid, Software_Element)
+
+    Private SVG_Width As Integer = 0
+    Private SVG_Height As Integer = 0
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -478,17 +482,15 @@ Public Class Software_Project
     ' ------------------------------------------------------------------------------------------- '
 
     Public Function Get_SVG_File_Path() As String
-        Dim svg_folder As String = Path.GetDirectoryName(Me.Xml_File_Path)
-        Dim svg_file_full_path As String
-        svg_file_full_path = svg_folder & Path.DirectorySeparatorChar & Me.Name & ".svg"
-        Return svg_file_full_path
+        Return Path.GetTempPath() & Me.Name & ".svg"
     End Function
 
     Public Function Create_SVG_File() As String
         Dim svg_file_full_path As String = Me.Get_SVG_File_Path()
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
-        file_stream.WriteLine(Get_SGV_File_Header())
-        file_stream.WriteLine(Me.Compute_SVG_Content())
+        Dim svg_content As String = Me.Compute_SVG_Content()
+        file_stream.WriteLine(Get_SGV_File_Header(Me.SVG_Height, Me.SVG_Width))
+        file_stream.WriteLine(svg_content)
         file_stream.WriteLine("</svg>")
         file_stream.Close()
         Return svg_file_full_path
@@ -529,11 +531,14 @@ Public Class Software_Project
 
 
         Dim pkg_list_idx As Integer = 0
+        Dim max_nb_of_pkg_by_row As Integer = 0
+
         For Each pkg_list In sorted_pkgs_list
+            max_nb_of_pkg_by_row = max(max_nb_of_pkg_by_row, pkg_list.Count)
             Dim pkg_idx As Integer = 0
             For Each pkg In pkg_list
-                Dim x_pos = pkg_idx * (Package.SVG_PKG_BOX_WIDTH + 20)
-                Dim y_pos = pkg_list_idx * 200
+                Dim x_pos = SVG_BOX_MARGIN + pkg_idx * (Package.SVG_PKG_BOX_WIDTH + SVG_BOX_MARGIN)
+                Dim y_pos = SVG_BOX_MARGIN + pkg_list_idx * 200
                 svg_content &= pkg.Get_SVG_Def_Group()
                 svg_content &= "  <use xlink:href=""#" & pkg.Get_SVG_Id() &
                                   """ transform=""translate(" & x_pos &
@@ -552,6 +557,10 @@ Public Class Software_Project
             Next
             pkg_list_idx += 1
         Next
+
+        Me.SVG_Width = SVG_BOX_MARGIN _
+            + max_nb_of_pkg_by_row * (Package.SVG_PKG_BOX_WIDTH + SVG_BOX_MARGIN)
+        Me.SVG_Height = (sorted_pkgs_list.Count - 1) * 200 + 2 * SVG_BOX_MARGIN + 80
 
         svg_content &= Get_Open_Arrow_Marker()
 

@@ -269,14 +269,6 @@ Public Class Top_Level_Package
         Return Path.GetDirectoryName(Me.Xml_File_Path)
     End Function
 
-    Public Overrides Function Get_SVG_File_Path() As String
-        If Me.Status <> E_PACKAGE_STATUS.WRITABLE Then
-            Return Path.GetTempPath() & Me.Name & ".svg"
-        Else
-            Return MyBase.Get_SVG_File_Path()
-        End If
-    End Function
-
     Public Function Get_Owner_Project() As Software_Project
         Return Me.Project
     End Function

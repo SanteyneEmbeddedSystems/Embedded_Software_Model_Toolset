@@ -86,10 +86,6 @@ Public MustInherit Class Basic_Type
         Return Software_Element.Read_Only_Context_Menu
     End Function
 
-    Public Overrides Function Get_SVG_File_Path() As String
-        Return Path.GetTempPath() & Me.Name & ".svg"
-    End Function
-
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for diagrams

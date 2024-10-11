@@ -391,6 +391,7 @@ Public Class Component_Type
                 y_position += sw_if.Get_SVG_Height + SVG_BOX_MARGIN
             End If
         Next
+        Me.Alt_SVG_Height = y_position - SVG_BOX_MARGIN
 
         ' Add Component_Type (Me)
         Dim swct_x_position As Integer = max_interface_width + SVG_BOX_MARGIN
@@ -401,21 +402,31 @@ Public Class Component_Type
         svg_content &= "  <use xlink:href=""#" & Me.Get_SVG_Id() &
                            """ transform=""translate(" & swct_x_position &
                            "," & 0 & ")"" />" & vbCrLf
+        Me.Alt_SVG_Height = Max(Me.Alt_SVG_Height, Me.SVG_Height)
 
         ' Add required interfaces
         y_position = 0
+        max_interface_width = 0
         Dim req_if_x_position As Integer = swct_x_position + Me.Get_SVG_Width() + SVG_BOX_MARGIN
         For Each rp In Me.Requirer_Ports
             Dim sw_if As Software_Element = Me.Get_Elmt_From_Prj_By_Id(rp.Referenced_Interface_Id)
             If Not added_interfaces_list.Contains(sw_if) Then
                 added_interfaces_list.Add(sw_if)
                 svg_content &= sw_if.Get_SVG_Def_Group()
+                max_interface_width = Max(max_interface_width, sw_if.Get_SVG_Width())
                 svg_content &= "  <use xlink:href=""#" & sw_if.Get_SVG_Id() &
                            """ transform=""translate(" & req_if_x_position &
                            "," & y_position & ")"" />" & vbCrLf
                 y_position += sw_if.Get_SVG_Height + SVG_BOX_MARGIN
             End If
         Next
+
+        Me.Alt_SVG_Height = Max(Me.Alt_SVG_Height, y_position - SVG_BOX_MARGIN)
+        If max_interface_width <> 0 Then
+            Me.Alt_SVG_Width = req_if_x_position + max_interface_width
+        Else
+            Me.Alt_SVG_Width = req_if_x_position - SVG_BOX_MARGIN
+        End If
 
         svg_content &= Get_SVG_Def_Group_Footer()
         Return svg_content

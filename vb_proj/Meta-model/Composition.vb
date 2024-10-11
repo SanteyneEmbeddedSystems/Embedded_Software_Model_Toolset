@@ -183,7 +183,7 @@
         Next
         Dim nb_max_char_per_line As Integer
         nb_max_char_per_line = Get_Max_Nb_Of_Char_Per_Line(part_lines, SVG_MIN_CHAR_PER_LINE)
-        Dim box_width As Integer = Get_Box_Width(nb_max_char_per_line)
+        Me.SVG_Width = Get_Box_Width(nb_max_char_per_line)
 
         ' ---------------------------------------------------------------------------------------- '
         ' Compute other boxes lines
@@ -200,9 +200,8 @@
         ' Compute box height
         ' do not count title lines
         Dim box_nb_line As Integer = split_description.Count + part_lines.Count + task_lines.Count
-        Dim text_box_height As Integer = SVG_TITLE_HEIGHT + box_nb_line * SVG_TEXT_LINE_HEIGHT _
+        Me.SVG_Height = SVG_TITLE_HEIGHT + box_nb_line * SVG_TEXT_LINE_HEIGHT _
             + SVG_STROKE_WIDTH * 4 + SVG_VERTICAL_MARGIN * 3
-        Me.SVG_Height = text_box_height
 
         Me.SVG_Content = Me.Get_SVG_Def_Group_Header()
 
@@ -211,7 +210,7 @@
 
         ' Add title (Name + stereotype) compartment
         Me.SVG_Content &= Get_Title_Rectangle(0, 0, Me.Name,
-            Composition.SVG_COLOR, box_width, Metaclass_Name)
+            Composition.SVG_COLOR, Me.SVG_Width, Metaclass_Name)
 
         ' Add description compartment
         Dim desc_rect_height As Integer = 0
@@ -220,7 +219,7 @@
             SVG_TITLE_HEIGHT,
             split_description,
             Composition.SVG_COLOR,
-            box_width,
+            Me.SVG_Width,
             desc_rect_height)
 
         ' Add Parts compartement
@@ -230,7 +229,7 @@
             SVG_TITLE_HEIGHT + desc_rect_height,
             part_lines,
             Composition.SVG_COLOR,
-            box_width,
+            Me.SVG_Width,
             conf_rect_height)
 
         ' Add operations compartement
@@ -239,7 +238,7 @@
             SVG_TITLE_HEIGHT + desc_rect_height + conf_rect_height,
             task_lines,
             Composition.SVG_COLOR,
-            box_width)
+            Me.SVG_Width)
 
         Me.SVG_Content &= Get_SVG_Def_Group_Footer()
         Return Me.SVG_Content

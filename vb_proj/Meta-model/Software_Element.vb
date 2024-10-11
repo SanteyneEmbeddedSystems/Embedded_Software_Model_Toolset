@@ -24,6 +24,8 @@ Public MustInherit Class Software_Element
     Protected SVG_Content As String = ""
     Protected SVG_Width As Integer = 0
     Protected SVG_Height As Integer = 0
+    Protected Alt_SVG_Width As Integer = 0
+    Protected Alt_SVG_Height As Integer = 0
 
 
     ' -------------------------------------------------------------------------------------------- '
@@ -305,20 +307,23 @@ Public MustInherit Class Software_Element
         Return "  </g>" & vbCrLf & "  </defs>" & vbCrLf
     End Function
 
-    Public Overridable Function Get_SVG_File_Path() As String
-        Return Me.Get_Top_Package_Folder() & Path.DirectorySeparatorChar & Me.Get_SVG_Id() & ".svg"
+    Public Function Get_SVG_File_Path() As String
+        Return Path.GetTempPath() & Me.Get_SVG_Id() & ".svg"
     End Function
 
-    Public Overridable Function Get_Alternative_SVG_File_Path() As String
-        Return Me.Get_Top_Package_Folder() & Path.DirectorySeparatorChar & Me.Get_SVG_Id() &
-            "_alt.svg"
+    Public Function Get_Alternative_SVG_File_Path() As String
+        Return Path.GetTempPath() & Me.Get_SVG_Id() & "_alt.svg"
     End Function
 
     Public Overridable Function Create_SVG_File() As String
         Dim svg_file_full_path As String = Me.Get_SVG_File_Path()
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
-        file_stream.WriteLine(Get_SGV_File_Header())
-        file_stream.WriteLine(Me.Get_SVG_Def_Group())
+        Dim def_group As String = Me.Get_SVG_Def_Group()
+        file_stream.WriteLine(
+            Get_SGV_File_Header(
+                Me.SVG_Height + 2 * SVG_BOX_MARGIN,
+                Me.SVG_Width + 2 * SVG_BOX_MARGIN))
+        file_stream.WriteLine(def_group)
         file_stream.WriteLine("  <use xlink:href=""#" & Me.Get_SVG_Id() &
             """ transform=""translate(" & SVG_BOX_MARGIN & "," & SVG_BOX_MARGIN & ")"" />")
         file_stream.WriteLine("</svg>")
@@ -329,8 +334,12 @@ Public MustInherit Class Software_Element
     Public Function Create_Alternative_SVG_File() As String
         Dim svg_file_full_path As String = Me.Get_Alternative_SVG_File_Path()
         Dim file_stream As New StreamWriter(svg_file_full_path, False)
-        file_stream.WriteLine(Get_SGV_File_Header())
-        file_stream.WriteLine(Me.Get_Alternative_SVG_Def_Group())
+        Dim def_group As String = Me.Get_Alternative_SVG_Def_Group()
+        file_stream.WriteLine(
+            Get_SGV_File_Header(
+                Me.Alt_SVG_Height + 2 * SVG_BOX_MARGIN,
+                Me.Alt_SVG_Width + 2 * SVG_BOX_MARGIN))
+        file_stream.WriteLine(def_group)
         file_stream.WriteLine("  <use xlink:href=""#" & Me.Get_SVG_Id() & "_alt" &
             """ transform=""translate(" & SVG_BOX_MARGIN & "," & SVG_BOX_MARGIN & ")"" />")
         file_stream.WriteLine("</svg>")

@@ -14,7 +14,7 @@
         Public Y_Pos As Integer
     End Structure
 
-    Public Function Get_SGV_File_Header() As String
+    Public Function Get_SGV_File_Header(height As Integer, width As Integer) As String
         Dim header As String = ""
         header &= "<?xml version=""1.0"" encoding=""UTF-8""?>" & vbCr
         header &= "<svg" & vbCr
@@ -22,7 +22,7 @@
         header &= "  xmlns=""http://www.w3.org/2000/svg""" & vbCr
         header &= "  xmlns:xlink=""http://www.w3.org/1999/xlink""" & vbCr
         header &= "  xmlns:svg=""http://www.w3.org/2000/svg""" & vbCr
-        header &= "  width=""3000px"" height=""1000px"">" & vbCr
+        header &= "  width=""" & width & "px"" height=""" & height & "px"">" & vbCr
         header &= "  <style>text{font-size:" & SVG.SVG_FONT_SIZE &
          "px;font-family:Consolas;fill:gray;text-anchor:start;}</style>" & vbCr
         header &= "  <style>svg { background-Color: black; color: white;}</style>" & vbCr
