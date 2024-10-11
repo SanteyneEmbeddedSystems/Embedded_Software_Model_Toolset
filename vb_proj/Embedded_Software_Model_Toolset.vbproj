@@ -238,73 +238,7 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Icons\pkg.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\enumerated.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\proj.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\basic.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\cs.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\swct.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\array.png" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Icons\enumeral.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\fp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\pp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\rp.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\cs_op.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\cs_op_param.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\conf.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\os_op.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\ev_arg.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\ev_if.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\field.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\record.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\call_os_op.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\compo.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\connect.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Icons\prototype.png" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\task.png" />
@@ -377,6 +311,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Icons\Requirer_Port.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Icons\Appli.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.VisualBasic.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -22,6 +22,7 @@
 
         Me.Text = "Embedded Software Model Toolset"
         Me.ClientSize = New Size(1000, 750)
+        Me.Icon = My.Resources.Appli
 
 
         '------------------------------------------------------------------------------------------'
