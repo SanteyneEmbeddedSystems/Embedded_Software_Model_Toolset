@@ -10,6 +10,9 @@
     Private WithEvents Menu_Load_Project As New ToolStripMenuItem
     Private WithEvents Menu_New_Project As New ToolStripMenuItem
 
+    Private WithEvents Menu_Move_Up As New ToolStripMenuItem
+    Private WithEvents Menu_Move_Down As New ToolStripMenuItem
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods provided to ESMT_Application
@@ -23,7 +26,6 @@
         Me.Text = "Embedded Software Model Toolset"
         Me.ClientSize = New Size(1000, 750)
         Me.Icon = My.Resources.Appli
-
 
         '------------------------------------------------------------------------------------------'
         ' Create menu bar
@@ -48,6 +50,19 @@
         End With
         project_menu.DropDownItems.Add(Me.Menu_New_Project)
 
+        With Me.Menu_Move_Up
+            .Text = "Up"
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
+        End With
+        main_menu.Items.Add(Me.Menu_Move_Up)
+
+        With Me.Menu_Move_Down
+            .Text = "Down"
+            .BackColor = Background_Color
+            .ForeColor = Foreground_Color
+        End With
+        main_menu.Items.Add(Me.Menu_Move_Down)
 
         '------------------------------------------------------------------------------------------'
         ' Split main window in two parts : browser + diagrams
@@ -56,7 +71,6 @@
         vertical_split_container.Panel1.Controls.Add(Me.Model_Browser)
         vertical_split_container.Panel2.Controls.Add(Me.Diagram_Page)
         Me.Controls.Add(vertical_split_container)
-
 
         '------------------------------------------------------------------------------------------'
         ' Create browser
@@ -99,7 +113,6 @@
             .Add(Call_OS_Operation.Metaclass_Name, My.Resources.Call_OS_Operation)
         End With
 
-
         '------------------------------------------------------------------------------------------'
         ' Create diagram panel
         With Me.Diagram_Page
@@ -137,6 +150,19 @@
 
     Private Sub New_Project_Clicked() Handles Menu_New_Project.Click
         Me.My_Application.Create_Project()
+    End Sub
+
+
+    Private Sub Move_Up_Clicked() Handles Menu_Move_Up.Click
+        Dim current_node As TreeNode = Me.Model_Browser.SelectedNode
+        Dim current_elmt As Software_Element = CType(current_node.Tag, Software_Element)
+        current_elmt.Move_Up()
+    End Sub
+
+    Private Sub Move_Down_Clicked() Handles Menu_Move_Down.Click
+        Dim current_node As TreeNode = Me.Model_Browser.SelectedNode
+        Dim current_elmt As Software_Element = CType(current_node.Tag, Software_Element)
+        current_elmt.Move_Down()
     End Sub
 
 

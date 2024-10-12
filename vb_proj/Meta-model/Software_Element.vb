@@ -49,7 +49,6 @@ Public MustInherit Class Software_Element
     End Sub
 
 
-
     ' -------------------------------------------------------------------------------------------- '
     ' Generic methods
     ' -------------------------------------------------------------------------------------------- '
@@ -239,6 +238,32 @@ Public MustInherit Class Software_Element
         End If
     End Sub
 
+    Protected Overridable Function Move_In_My_Owner(offset As Integer) As Boolean
+        Return False
+    End Function
+
+    Private Sub Move(offset As Integer)
+        If Me.Get_Top_Package().Is_Writable() = False Then
+            Exit Sub
+        End If
+        If Move_In_My_Owner(offset) = True Then
+            Dim brother_nodes As TreeNodeCollection = Me.Node.Parent.Nodes
+            Dim node_idx As Integer = brother_nodes.IndexOf(Me.Node)
+            brother_nodes.RemoveAt(node_idx)
+            brother_nodes.Insert(node_idx + offset, Me.Node)
+            Me.Node.TreeView.SelectedNode = Me.Node
+            Me.Display_Package_Modified()
+        End If
+    End Sub
+
+    Public Sub Move_Up()
+        Me.Move(-1)
+    End Sub
+
+    Public Sub Move_Down()
+        Me.Move(1)
+    End Sub
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
@@ -284,7 +309,6 @@ Public MustInherit Class Software_Element
             Me.Description)
         view_form.ShowDialog()
     End Sub
-
 
 
     ' -------------------------------------------------------------------------------------------- '

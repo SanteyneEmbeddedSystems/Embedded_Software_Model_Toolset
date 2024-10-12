@@ -501,6 +501,19 @@ Public Class Configuration_Parameter
         Return TypeOf parent Is Component_Type
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Configuration_Parameter) =
+            CType(Me.Owner, Component_Type).Configurations
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
 End Class
 
 
@@ -546,6 +559,18 @@ Public Class OS_Operation
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return TypeOf parent Is Component_Type
+    End Function
+
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of OS_Operation) = CType(Me.Owner, Component_Type).Operations
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
     End Function
 
 End Class
@@ -702,6 +727,19 @@ Public Class Provider_Port
         Return Provider_Port.Metaclass_Name
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Provider_Port) = CType(Me.Owner, Component_Type).Provider_Ports
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
+
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for diagrams
     ' -------------------------------------------------------------------------------------------- '
@@ -796,6 +834,18 @@ Public Class Requirer_Port
 
     Public Overrides Function Get_Metaclass_Name() As String
         Return Requirer_Port.Metaclass_Name
+    End Function
+
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Requirer_Port) = CType(Me.Owner, Component_Type).Requirer_Ports
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
     End Function
 
 

@@ -782,6 +782,18 @@ Public Class Enumeral
         Return TypeOf parent Is Enumerated_Type
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Enumeral) = CType(Me.Owner, Enumerated_Type).Enumerals
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
 
     '----------------------------------------------------------------------------------------------'
     ' Methods for model consistency checking
@@ -1363,6 +1375,18 @@ Public Class Record_Field
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return (parent.GetType() = GetType(Record_Type))
+    End Function
+
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Record_Field) = CType(Me.Owner, Record_Type).Fields
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
     End Function
 
 

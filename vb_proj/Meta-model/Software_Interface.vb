@@ -305,6 +305,19 @@ Public Class Client_Server_Operation
         Return Me.Children
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Client_Server_Operation) =
+            CType(Me.Owner, Client_Server_Interface).Operations
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
@@ -409,6 +422,19 @@ Public Class Operation_Parameter
 
     Protected Overrides Function Get_Path_Separator() As String
         Return "."
+    End Function
+
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Operation_Parameter) =
+            CType(Me.Owner, Client_Server_Operation).Parameters
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
     End Function
 
 
@@ -673,6 +699,18 @@ Public Class Event_Parameter
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return parent.GetType() = GetType(Event_Interface)
+    End Function
+
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Event_Parameter) = CType(Me.Owner, Event_Interface).Parameters
+        Dim my_index As Integer = container.IndexOf(Me)
+        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+            container.RemoveAt(my_index)
+            container.Insert(my_index + offset, Me)
+            Return True
+        Else
+            Return False
+        End If
     End Function
 
 End Class
