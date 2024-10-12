@@ -282,7 +282,10 @@ Public Class Component_Type
         ' ---------------------------------------------------------------------------------------- '
         ' Compute box height
         ' do not count title lines
-        Dim box_nb_line As Integer = split_description.Count + config_lines.Count + op_lines.Count
+        Dim box_nb_line As Integer =
+            split_description.Count _
+            + Max(config_lines.Count, 1) _
+            + Max(op_lines.Count, 1)
         Dim text_box_height As Integer = SVG_TITLE_HEIGHT + box_nb_line * SVG_TEXT_LINE_HEIGHT _
             + SVG_STROKE_WIDTH * 4 + SVG_VERTICAL_MARGIN * 3
         Dim port_box_height As Integer

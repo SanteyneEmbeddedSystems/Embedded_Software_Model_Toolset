@@ -1,4 +1,6 @@
-﻿Module SVG
+﻿Imports System.Math
+
+Module SVG
 
     Public Const SVG_STROKE_WIDTH As Integer = 1
     Public Const SVG_VERTICAL_MARGIN As Integer = 3
@@ -96,7 +98,7 @@
         Dim svg_content As String
 
         If rectangle_height = 0 Then
-            rectangle_height = Get_SVG_Rectangle_Height(lines.Count)
+            rectangle_height = Get_SVG_Rectangle_Height(Max(lines.Count, 1))
         End If
         svg_content = Get_SVG_Rectangle(
             x_pos,
@@ -124,7 +126,7 @@
     End Function
 
     Public Function Get_SVG_Rectangle_Height(nb_lines As Integer) As Integer
-        Return nb_lines * SVG_TEXT_LINE_HEIGHT + SVG_VERTICAL_MARGIN + 2 * SVG_STROKE_WIDTH
+        Return Max(nb_lines, 1) * SVG_TEXT_LINE_HEIGHT + SVG_VERTICAL_MARGIN + 2 * SVG_STROKE_WIDTH
     End Function
 
     Public Function Get_SVG_Rectangle(
