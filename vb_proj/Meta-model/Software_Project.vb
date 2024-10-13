@@ -562,7 +562,7 @@ Public Class Software_Project
             + max_nb_of_pkg_by_row * (Package.SVG_PKG_BOX_WIDTH + SVG_BOX_MARGIN)
         Me.SVG_Height = (sorted_pkgs_list.Count - 1) * 200 + 2 * SVG_BOX_MARGIN + 80
 
-        svg_content &= Get_Open_Arrow_Marker()
+        svg_content &= Get_Open_Arrow_Marker("gray")
 
         For Each pkg In Me.Top_Level_Packages_List
             For Each need_pkg In pkg.Get_Needed_Element
@@ -571,7 +571,7 @@ Public Class Software_Project
                     from_point_dico(pkg).Y_Pos,
                     to_point_dico(CType(need_pkg, Top_Level_Package)).X_Pos,
                     to_point_dico(CType(need_pkg, Top_Level_Package)).Y_Pos,
-                    "white",
+                    "gray",
                     True,
                     "open_arrow")
             Next

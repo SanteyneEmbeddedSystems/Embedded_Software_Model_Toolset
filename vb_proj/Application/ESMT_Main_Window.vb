@@ -31,36 +31,36 @@
         ' Create menu bar
         Dim main_menu As New MenuStrip
         Me.Controls.Add(main_menu)
-        main_menu.BackColor = Background_Color
-        main_menu.ForeColor = Foreground_Color
+        main_menu.BackColor = ESMT_Form.Background_Color
+        main_menu.ForeColor = ESMT_Form.Foreground_Color
         Dim project_menu As ToolStripMenuItem
         project_menu = CType(main_menu.Items.Add("Project"), ToolStripMenuItem)
 
         With Me.Menu_Load_Project
             .Text = "Load project"
-            .BackColor = Background_Color
-            .ForeColor = Foreground_Color
+            .BackColor = ESMT_Form.Background_Color
+            .ForeColor = ESMT_Form.Foreground_Color
         End With
         project_menu.DropDownItems.Add(Me.Menu_Load_Project)
 
         With Me.Menu_New_Project
             .Text = "New project"
-            .BackColor = Background_Color
-            .ForeColor = Foreground_Color
+            .BackColor = ESMT_Form.Background_Color
+            .ForeColor = ESMT_Form.Foreground_Color
         End With
         project_menu.DropDownItems.Add(Me.Menu_New_Project)
 
         With Me.Menu_Move_Up
             .Text = "Up"
-            .BackColor = Background_Color
-            .ForeColor = Foreground_Color
+            .BackColor = ESMT_Form.Background_Color
+            .ForeColor = ESMT_Form.Foreground_Color
         End With
         main_menu.Items.Add(Me.Menu_Move_Up)
 
         With Me.Menu_Move_Down
             .Text = "Down"
-            .BackColor = Background_Color
-            .ForeColor = Foreground_Color
+            .BackColor = ESMT_Form.Background_Color
+            .ForeColor = ESMT_Form.Foreground_Color
         End With
         main_menu.Items.Add(Me.Menu_Move_Down)
 

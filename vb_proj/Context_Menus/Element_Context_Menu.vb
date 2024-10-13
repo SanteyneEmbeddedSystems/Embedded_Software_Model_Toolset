@@ -6,9 +6,6 @@
     Protected WithEvents Menu_Remove As New ToolStripMenuItem("Remove")
     Protected WithEvents Menu_View As New ToolStripMenuItem("View")
 
-    Protected Shared Background_Color As Color = Color.Black
-    Protected Shared Foreground_Color As Color = Color.Gray
-
     Private Sub Edit(
             ByVal sender As Object,
             ByVal e As EventArgs) Handles Menu_Edit.Click

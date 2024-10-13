@@ -225,12 +225,12 @@ Module SVG
         Return svg_content
     End Function
 
-    Public Function Get_Open_Arrow_Marker() As String
+    Public Function Get_Open_Arrow_Marker(color As String) As String
         Dim svg_content As String _
             = "  <marker id=""open_arrow"" style=""overflow:visible"" orient=""auto"">" & vbCrLf &
-                "  <line style=""stroke:currentColor"" stroke-dasharray=""1,0"" " &
+                "  <line style=""stroke:" & color & """ stroke-dasharray=""1,0"" " &
                     "x1=""0px"" y1=""0px"" x2=""-10px"" y2=""-5px""/>" & vbCrLf &
-                "  <line style=""stroke:currentColor"" stroke-dasharray=""1,0"" " &
+                "  <line style=""stroke:" & color & """ stroke-dasharray=""1,0"" " &
                     "x1=""0px"" y1=""0px"" x2=""-10px"" y2=""5px""/>" & vbCrLf &
                 "  </marker>" & vbCrLf
         Return svg_content

@@ -5,8 +5,8 @@
     Private WithEvents Menu_Make_Writable As New ToolStripMenuItem("Make writable")
 
     Public Sub New()
-        Me.BackColor = Background_Color
-        Me.ForeColor = Foreground_Color
+        Me.BackColor = ESMT_Form.Background_Color
+        Me.ForeColor = ESMT_Form.Foreground_Color
         Me.Items.Clear()
         Me.Items.AddRange(New ToolStripItem() {
             Me.Menu_Remove_Top,
