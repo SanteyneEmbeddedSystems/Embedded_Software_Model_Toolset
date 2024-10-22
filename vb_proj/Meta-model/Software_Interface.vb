@@ -452,7 +452,7 @@ Public Class Operation_Parameter
             Me.Get_Elmt_Path_From_Proj_By_Id(Me.Referenced_Type_Id),
             Me.Get_All_Types_From_Project(),
             Operation_Parameter.Directions,
-            Operation_Parameter.Directions(0))
+            Me.Direction.ToString())
 
         Dim edition_form_result As DialogResult = edition_form.ShowDialog()
 
