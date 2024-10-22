@@ -66,14 +66,6 @@ Public MustInherit Class Basic_Type
 
     Public Const Metaclass_Name As String = "Basic_Type"
 
-    ' -------------------------------------------------------------------------------------------- '
-    ' Methods from Software_Element
-    ' -------------------------------------------------------------------------------------------- '
-
-    Public Overrides Function Get_Metaclass_Name() As String
-        Return Basic_Type.Metaclass_Name
-    End Function
-
     Protected Overrides Sub Move_Me(new_parent As Software_Element)
         Throw New Exception("A Basic Type cannot be moved.")
     End Sub
@@ -98,7 +90,7 @@ Public MustInherit Class Basic_Type
 
         ' Title (Name + stereotype)
         Me.SVG_Content &= Get_Title_Rectangle(
-            0, 0, Me.Name, Type.SVG_COLOR, Me.SVG_Width, "basic_type")
+            0, 0, Me.Name, Type.SVG_COLOR, Me.SVG_Width, Me.Get_Metaclass_Name())
 
         ' Description compartment
         Dim split_description As List(Of String) = Split_String(
@@ -120,7 +112,6 @@ Public MustInherit Class Basic_Type
 
 End Class
 
-
 Public Class Basic_Integer_Type
     Inherits Basic_Type
 
@@ -131,6 +122,21 @@ Public Class Basic_Integer_Type
 
     Public Size As Integer ' number of bytes
     Public Signedness As E_Signedness_Type
+
+    Private Shadows Const Metaclass_Name As String = "Basic_Integer_Type"
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Basic_Integer_Type.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Type
+    ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
         Dim is_valid As Boolean = False
@@ -198,6 +204,21 @@ Public Class Basic_Carrier_Type
 
     Public Size As Integer ' number of bytes
 
+    Private Shadows Const Metaclass_Name As String = "Basic_Carrier_Type"
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Basic_Carrier_Type.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Type
+    ' -------------------------------------------------------------------------------------------- '
+
     Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
         Dim is_valid As Boolean = False
         Dim is_uint As Boolean
@@ -222,6 +243,21 @@ End Class
 Public Class Basic_Boolean_Type
     Inherits Basic_Type
 
+    Private Shadows Const Metaclass_Name As String = "Basic_Boolean_Type"
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Basic_Boolean_Type.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Type
+    ' -------------------------------------------------------------------------------------------- '
+
     Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
         If Regex.IsMatch(value_str, "^(true|false)$", RegexOptions.IgnoreCase) Then
             Return True
@@ -235,6 +271,20 @@ End Class
 Public Class Basic_Character_Type
     Inherits Basic_Type
 
+    Private Shadows Const Metaclass_Name As String = "Basic_Character_Type"
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Software_Element
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Get_Metaclass_Name() As String
+        Return Basic_Character_Type.Metaclass_Name
+    End Function
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods from Type
+    ' -------------------------------------------------------------------------------------------- '
     Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
         Return True
     End Function

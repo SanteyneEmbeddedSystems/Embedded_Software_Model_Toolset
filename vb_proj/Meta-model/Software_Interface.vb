@@ -1,4 +1,6 @@
-﻿Public MustInherit Class Software_Interface
+﻿Imports System.Math
+
+Public MustInherit Class Software_Interface
     Inherits Classifier
 
 
@@ -32,6 +34,59 @@
         Me.Node.Remove()
         parent_pkg.Interfaces.Remove(Me)
     End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
+
+    Public Overrides Function Get_Alternative_SVG_Def_Group() As String
+
+        Dim svg_content As String
+        svg_content = Me.Get_SVG_Def_Group_Header(True)
+
+        ' Add needed types
+        Dim max_dt_height As Integer = 0
+        Dim needed_types_list As List(Of Classifier) = Me.Find_Needed_Elements()
+        Dim dt_x_position As Integer = 0
+        For Each dt In needed_types_list
+            svg_content &= dt.Get_SVG_Def_Group()
+            max_dt_height = Max(max_dt_height, dt.Get_SVG_Height())
+            svg_content &= "  <use xlink:href=""#" & dt.Get_SVG_Id() &
+                           """ transform=""translate(" & dt_x_position &
+                           "," & 0 & ")"" />" & vbCrLf
+            dt_x_position += dt.Get_SVG_Width() + SVG_BOX_MARGIN
+        Next
+        Dim data_types_width As Integer = dt_x_position - SVG_BOX_MARGIN
+
+        ' Add Me (Interface)
+        Dim y_position As Integer
+        If max_dt_height <> 0 Then
+            y_position = max_dt_height + SVG_BOX_MARGIN
+        Else
+            y_position = 0
+        End If
+        svg_content &= Me.Get_SVG_Def_Group()
+        Dim x_position As Integer = 0
+        If data_types_width > Me.SVG_Width Then
+            x_position = (data_types_width - Me.SVG_Width) \ 2
+        End If
+        svg_content &= "  <use xlink:href=""#" & Me.Get_SVG_Id() &
+                           """ transform=""translate(" & x_position &
+                           "," & y_position & ")"" />" & vbCrLf
+
+        If max_dt_height > 0 Then ' At least one type needed
+            Me.Alt_SVG_Height = max_dt_height + SVG_BOX_MARGIN + Me.SVG_Height
+        Else ' No type needed
+            Me.Alt_SVG_Height = Me.SVG_Height
+        End If
+
+        Me.Alt_SVG_Width = Max(data_types_width, Me.SVG_Width)
+
+        svg_content &= Get_SVG_Def_Group_Footer()
+        Return svg_content
+
+    End Function
 
 End Class
 
@@ -135,6 +190,10 @@ Public Class Client_Server_Interface
             Me.Update_Views()
         End If
 
+    End Sub
+
+    Public Sub Show_Dependencies_On_Diagram()
+        Me.Get_Project().Update_Alternative_Diagram(Me)
     End Sub
 
 
@@ -604,6 +663,15 @@ Public Class Event_Interface
         End If
 
     End Sub
+
+    Public Sub Show_Dependencies_On_Diagram()
+        Me.Get_Project().Update_Alternative_Diagram(Me)
+    End Sub
+
+
+    ' -------------------------------------------------------------------------------------------- '
+    ' Methods for diagrams
+    ' -------------------------------------------------------------------------------------------- '
 
     Public Overrides Function Get_SVG_Def_Group() As String
 
