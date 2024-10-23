@@ -408,19 +408,18 @@ Public Class Component_Type
         svg_content = Me.Get_SVG_Def_Group_Header(True)
 
         ' Add needed types
-        Dim sum_dt_width As Integer = 0
         Dim max_dt_height As Integer = 0
         Dim needed_types_list As List(Of Type) = Me.Get_Needed_Types()
         Dim x_position As Integer = 0
         For Each dt In needed_types_list
             svg_content &= dt.Get_SVG_Def_Group()
-            sum_dt_width += dt.Get_SVG_Width()
             max_dt_height = Max(max_dt_height, dt.Get_SVG_Height())
             svg_content &= "  <use xlink:href=""#" & dt.Get_SVG_Id() &
                            """ transform=""translate(" & x_position &
                            "," & 0 & ")"" />" & vbCrLf
             x_position += dt.Get_SVG_Width + SVG_BOX_MARGIN
         Next
+        Dim sum_dt_width As Integer = x_position - SVG_BOX_MARGIN
 
         ' Add provided interfaces
         Dim prov_if_height As Integer = 0
