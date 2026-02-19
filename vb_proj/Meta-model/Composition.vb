@@ -68,6 +68,12 @@
         Return Composition.Context_Menu
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Composition)
+        container = CType(Me.Owner, Package).Compositions
+        Return Move_In_My_Owner_Gen(container, offset)
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Classifier
@@ -353,6 +359,12 @@ Public Class Component_Prototype
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return TypeOf parent Is Composition
+    End Function
+
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Component_Prototype)
+        container = CType(Me.Owner, Composition).Parts
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 
@@ -786,6 +798,12 @@ Public Class Connector
         Return TypeOf parent Is Composition
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Connector)
+        container = CType(Me.Owner, Composition).Links
+        Return Move_In_My_Owner_Gen(container, offset)
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
@@ -938,6 +956,12 @@ Public Class Composition_Task
         Return Composition_Task.Context_Menu
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Composition_Task)
+        container = CType(Me.Owner, Composition).Tasks
+        Return Move_In_My_Owner_Gen(container, offset)
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu
@@ -1029,6 +1053,12 @@ Public Class Call_OS_Operation
 
     Public Overrides Function Is_Allowed_Parent(parent As Software_Element) As Boolean
         Return TypeOf parent Is Composition_Task
+    End Function
+
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Call_OS_Operation)
+        container = CType(Me.Owner, Composition_Task).Calls
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 

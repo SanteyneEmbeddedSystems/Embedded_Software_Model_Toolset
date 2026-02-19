@@ -35,6 +35,13 @@ Public MustInherit Class Software_Interface
         parent_pkg.Interfaces.Remove(Me)
     End Sub
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Software_Interface)
+        container = CType(Me.Owner, Package).Interfaces
+        Return Move_In_My_Owner_Gen(container, offset)
+    End Function
+
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for diagrams
@@ -365,16 +372,9 @@ Public Class Client_Server_Operation
     End Function
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
-        Dim container As List(Of Client_Server_Operation) =
-            CType(Me.Owner, Client_Server_Interface).Operations
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Dim container As List(Of Client_Server_Operation)
+        container = CType(Me.Owner, Client_Server_Interface).Operations
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 
@@ -484,16 +484,9 @@ Public Class Operation_Parameter
     End Function
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
-        Dim container As List(Of Operation_Parameter) =
-            CType(Me.Owner, Client_Server_Operation).Parameters
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Dim container As List(Of Operation_Parameter)
+        container = CType(Me.Owner, Client_Server_Operation).Parameters
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 
@@ -770,15 +763,9 @@ Public Class Event_Parameter
     End Function
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
-        Dim container As List(Of Event_Parameter) = CType(Me.Owner, Event_Interface).Parameters
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Dim container As List(Of Event_Parameter)
+        container = CType(Me.Owner, Event_Interface).Parameters
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 End Class

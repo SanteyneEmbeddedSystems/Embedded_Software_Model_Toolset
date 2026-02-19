@@ -40,6 +40,12 @@ Public MustInherit Class Type
         parent_pkg.Types.Remove(Me)
     End Sub
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Type)
+        container = CType(Me.Owner, Package).Types
+        Return Move_In_My_Owner_Gen(container, offset)
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Classifier
@@ -833,15 +839,9 @@ Public Class Enumeral
     End Function
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
-        Dim container As List(Of Enumeral) = CType(Me.Owner, Enumerated_Type).Enumerals
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Dim container As List(Of Enumeral)
+        container = CType(Me.Owner, Enumerated_Type).Enumerals
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 
@@ -1428,15 +1428,9 @@ Public Class Record_Field
     End Function
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
-        Dim container As List(Of Record_Field) = CType(Me.Owner, Record_Type).Fields
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Dim container As List(Of Record_Field)
+        container = CType(Me.Owner, Record_Type).Fields
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 

@@ -1,5 +1,7 @@
-﻿Imports System.Text.RegularExpressions
+﻿Imports System.ComponentModel
 Imports System.IO
+Imports System.Text.RegularExpressions
+Imports System.Windows.Forms.VisualStyles
 
 Public MustInherit Class Software_Element
 
@@ -237,6 +239,23 @@ Public MustInherit Class Software_Element
             Next
         End If
     End Sub
+
+    ' Genric method to move up/down an element in a container (list of software element)
+    Protected Function Move_In_My_Owner_Gen(Of T As Software_Element)(
+            container As List(Of T), offset As Integer) As Boolean
+        If IsNothing(container) Then
+            Return False
+        Else
+            Dim my_index As Integer = container.IndexOf(CType(Me, T))
+            If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
+                container.RemoveAt(my_index)
+                container.Insert(my_index + offset, CType(Me, T))
+                Return True
+            Else
+                Return False
+            End If
+        End If
+    End Function
 
     Protected Overridable Function Move_In_My_Owner(offset As Integer) As Boolean
         Return False

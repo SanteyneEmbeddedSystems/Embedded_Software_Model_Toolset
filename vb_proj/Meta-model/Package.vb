@@ -96,6 +96,12 @@ Public Class Package
         Return Package.Metaclass_Name
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Package)
+        container = CType(Me.Owner, Package).Packages
+        Return Move_In_My_Owner_Gen(container, offset)
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods for contextual menu

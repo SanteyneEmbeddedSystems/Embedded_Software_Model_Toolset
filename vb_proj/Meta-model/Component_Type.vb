@@ -73,6 +73,12 @@ Public Class Component_Type
         Return Component_Type.RO_Context_Menu
     End Function
 
+    Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
+        Dim container As List(Of Component_Type)
+        container = CType(Me.Owner, Package).Component_Types
+        Return Move_In_My_Owner_Gen(container, offset)
+    End Function
+
 
     ' -------------------------------------------------------------------------------------------- '
     ' Methods from Classifier
@@ -569,16 +575,9 @@ Public Class Configuration_Parameter
     End Function
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
-        Dim container As List(Of Configuration_Parameter) =
-            CType(Me.Owner, Component_Type).Configurations
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Dim container As List(Of Configuration_Parameter)
+        container = CType(Me.Owner, Component_Type).Configurations
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 End Class
@@ -629,15 +628,9 @@ Public Class OS_Operation
     End Function
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
-        Dim container As List(Of OS_Operation) = CType(Me.Owner, Component_Type).Operations
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Dim container As List(Of OS_Operation)
+        container = CType(Me.Owner, Component_Type).Operations
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 End Class
@@ -795,15 +788,9 @@ Public Class Provider_Port
     End Function
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
-        Dim container As List(Of Provider_Port) = CType(Me.Owner, Component_Type).Provider_Ports
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Dim container As List(Of Provider_Port)
+        container = CType(Me.Owner, Component_Type).Provider_Ports
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
 
 
@@ -905,15 +892,9 @@ Public Class Requirer_Port
 
     Protected Overrides Function Move_In_My_Owner(offset As Integer) As Boolean
         Dim container As List(Of Requirer_Port) = CType(Me.Owner, Component_Type).Requirer_Ports
-        Dim my_index As Integer = container.IndexOf(Me)
-        If offset = -1 And my_index <> 0 Or offset = 1 And my_index <> container.Count - 1 Then
-            container.RemoveAt(my_index)
-            container.Insert(my_index + offset, Me)
-            Return True
-        Else
-            Return False
-        End If
+        Return Move_In_My_Owner_Gen(container, offset)
     End Function
+
 
 
     ' -------------------------------------------------------------------------------------------- '
