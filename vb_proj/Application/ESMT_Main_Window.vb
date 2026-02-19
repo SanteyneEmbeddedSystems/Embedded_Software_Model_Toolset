@@ -87,9 +87,9 @@
 
         Me.Model_Browser.ImageList = New ImageList
         With Me.Model_Browser.ImageList.Images
+            .Add(Basic_Type.Metaclass_Name, My.Resources.Basic_Type)
             .Add(Software_Project.Metaclass_Name, My.Resources.Project)
             .Add(Package.Metaclass_Name, My.Resources.Package)
-            .Add(Basic_Type.Metaclass_Name, My.Resources.Basic_Type)
             .Add(Array_Type.Metaclass_Name, My.Resources.Array_Type)
             .Add(Enumerated_Type.Metaclass_Name, My.Resources.Enumerated_Type)
             .Add(Enumeral.Metaclass_Name, My.Resources.Enumeral)
@@ -109,7 +109,7 @@
             .Add(Composition.Metaclass_Name, My.Resources.Composition)
             .Add(Connector.Metaclass_Name, My.Resources.Connector)
             .Add(Component_Prototype.Metaclass_Name, My.Resources.Component_Prototype)
-            .Add(Composition_Task.Metaclass_Name, My.Resources.task)
+            .Add(Composition_Task.Metaclass_Name, My.Resources.Task)
             .Add(Call_OS_Operation.Metaclass_Name, My.Resources.Call_OS_Operation)
         End With
 
