@@ -381,42 +381,59 @@ Public Class Array_Type
     Public Overrides Function Is_Value_Valid(value_str As String) As Boolean
         Dim is_valid As Boolean = True
 
-        Dim validation_regexp_str As String = "\s*(?<data>[a-zA-Z_0-9,.]+)\s*"
+        Dim validation_regexp_str As String = "([\w\+\-,.]+)(?:\s+([\w\+\-,.]+))"
 
         Dim min As String
         Dim max As String
         Dim occurence As String
 
         If Not Me.Third_Dimension.Is_One() Then
-            min = Me.Third_Dimension.Get_Minimum().ToString
+            min = (Me.Third_Dimension.Get_Minimum() - 1).ToString
             If Me.Third_Dimension.Is_Max_Any() Then
                 max = ""
             Else
-                max = Me.Third_Dimension.Get_Maximum().ToString
+                max = (Me.Third_Dimension.Get_Maximum() - 1).ToString
             End If
             occurence = "{" & min & "," & max & "}"
-            validation_regexp_str = "\s*\[(?:" & validation_regexp_str & ")" & occurence & "\s*\]"
+            validation_regexp_str = "(?:\s*\[\s*" & validation_regexp_str & occurence & "\s*\])"
         End If
 
         If Not Me.Second_Dimension.Is_One() Then
-            min = Me.Second_Dimension.Get_Minimum().ToString
+            If Me.Third_Dimension.Is_One() Then
+                min = (Me.Second_Dimension.Get_Minimum() - 1).ToString
+            Else
+                min = Me.Second_Dimension.Get_Minimum().ToString
+            End If
             If Me.Second_Dimension.Is_Max_Any() Then
                 max = ""
             Else
-                max = Me.Second_Dimension.Get_Maximum().ToString
+                If Me.Third_Dimension.Is_One() Then
+                    max = (Me.Second_Dimension.Get_Maximum() - 1).ToString
+                Else
+                    max = Me.Second_Dimension.Get_Maximum().ToString
+                End If
             End If
             occurence = "{" & min & "," & max & "}"
-            validation_regexp_str = "\s*\[(?:" & validation_regexp_str & ")" & occurence & "\s*\]"
+            validation_regexp_str = "(?:\s*\[\s*" & validation_regexp_str & occurence & "\s*\]\s*)"
         End If
 
-        min = Me.First_Dimension.Get_Minimum().ToString
+        If Me.Second_Dimension.Is_One() Then
+            min = (Me.First_Dimension.Get_Minimum() - 1).ToString
+        Else
+            min = Me.First_Dimension.Get_Minimum().ToString
+        End If
         If Me.First_Dimension.Is_Max_Any() Then
             max = ""
         Else
-            max = Me.First_Dimension.Get_Maximum().ToString
+            If Me.Second_Dimension.Is_One() Then
+                ' Only 1 dim
+                max = (Me.First_Dimension.Get_Maximum() - 1).ToString
+            Else
+                max = Me.First_Dimension.Get_Maximum().ToString
+            End If
         End If
         occurence = "{" & min & "," & max & "}"
-        validation_regexp_str = "^\s*\[(?:" & validation_regexp_str & ")" & occurence & "\s*\]$"
+        validation_regexp_str = "^\s*\[\s*" & validation_regexp_str & occurence & "\s*\]\s*$"
 
         Dim validation_regexp As New Regex(validation_regexp_str)
 
@@ -425,7 +442,7 @@ Public Class Array_Type
 
         If regex_match.Success = True Then
             Dim element_match As MatchCollection
-            element_match = Regex.Matches(regex_match.Value, "([a-zA-Z_0-9,.])+")
+            element_match = Regex.Matches(regex_match.Value, "([\w\+\-,.])+")
             Dim base_type As Type = CType(Me.Get_Elmt_From_Prj_By_Id(Me.Base_Type_Ref), Type)
             If Not IsNothing(base_type) Then
                 For idx = 0 To element_match.Count - 1
